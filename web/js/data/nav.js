@@ -11,12 +11,20 @@
 
    Odkazy na lekce míří na kotvy homepage (`index.html#joga`). Slugy
    pocházejí z js/data/zones.js — když se tam kotva přejmenuje, musí se
-   přejmenovat i tady. */
+   přejmenovat i tady.
+
+   „Rozvrh", ne „Rozvrh a ceník": se sedmi položkami se delší popisek do
+   řádku nevešel (změřeno) a cílová stránka má obojí v nadpisu.
+
+   Odkazy na Instagram a Facebook v menu NEJSOU. Odkaz ven mezi sedmi
+   odkazy dovnitř webu je nabídka, aby návštěvník odešel dřív, než najde
+   rozvrh. Sítě žijí v sekci Novinky, na kontaktu a v patičce. */
 export const NAV_ITEMS = [
   { label: "Jóga", href: "index.html#joga", group: "lessons" },
   { label: "Tabata a HIIT", href: "index.html#tabata", group: "lessons" },
   { label: "Jumping", href: "index.html#jumping", group: "lessons" },
-  { label: "Rozvrh a ceník", href: "rozvrh-cenik.html", group: "pages" },
+  { label: "Rozvrh", href: "rozvrh-cenik.html", group: "pages" },
+  { label: "Novinky", href: "index.html#novinky", group: "pages" },
   { label: "O mně", href: "o-mne.html", group: "pages" },
   { label: "Kontakt", href: "kontakt.html", group: "pages" },
 ];

@@ -4,13 +4,14 @@ import { mount, $ } from "../lib/dom.js";
 import { initReveal } from "../lib/reveal.js";
 import { mountChrome } from "../ui/chrome.js";
 import { mountHeartRateMeter } from "../ui/heart-rate-meter.js";
-import { renderVenues } from "../ui/sections.js";
+import { renderVenues, renderFollow } from "../ui/sections.js";
 import { SITE_CONFIG } from "../data/site-config.js";
 import { PHONE_ICON, MAIL_ICON } from "../data/icons.js";
 
 mountChrome();
 
 mount("[data-venues]", renderVenues);
+mount("[data-follow]", renderFollow);
 
 const phone = $("[data-contact-phone]");
 phone.textContent = SITE_CONFIG.phone;

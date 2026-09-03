@@ -150,6 +150,27 @@
         </div>
       </section>
 
+      <!-- Novinky ---------------------------------------------------
+           Vlastní obsah, ne vysypaný feed ze sítí — důvody jsou
+           v js/data/news.js. Sekce se celá skryje, když nejsou položky. -->
+      <section class="section band--alt" id="novinky" aria-labelledby="news-title" hidden>
+        <div class="shell">
+          <header class="section__head section__head--split" data-reveal>
+            <div>
+              <span class="eyebrow">Novinky</span>
+              <h2 id="news-title">Co je u mě nového</h2>
+              <hr class="rule" />
+              <p class="lede">
+                Nejčerstvější věci dávám na sítě, důležité sem.
+              </p>
+            </div>
+            <div data-follow></div>
+          </header>
+
+          <div data-news></div>
+        </div>
+      </section>
+
       <!-- Kde ------------------------------------------------------- -->
       <section class="section" id="kde" aria-labelledby="venues-title">
         <div class="shell">

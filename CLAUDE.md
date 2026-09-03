@@ -291,6 +291,40 @@ Tohle jsou měřené hodnoty, ne odhady. Když se mění, **přeměřit**.
    `venueId` ani `bookingUrl`. Nutné mapování a fallback.
 7. **Sitemap** — na produkci je aktivní plugin XML Sitemaps; nedělat statický
    soubor, byly by dvě konkurenční sitemapy.
+8. **Novinky ze sítí (volitelné).** Sekce `#novinky` je dnes ručně plněná
+   z `js/data/news.js` a karta se umí odkázat na konkrétní příspěvek
+   (`source` + `url`). Automatické tažení z Instagramu a Facebooku ve
+   statickém motivu **nejde** — potřebuje server, který drží a obnovuje
+   token. Na WordPressu to jde, viz „Novinky ze sítí" níž.
+
+## Novinky ze sítí (co to obnáší)
+
+Sekce `#novinky` je připravená tak, aby ji šlo plnit automaticky, ale
+samotné tažení příspěvků je samostatná dávka práce a **nejde ve statickém
+motivu**. Fakta, aby se to nemuselo zjišťovat znovu:
+
+- **Instagram Basic Display API bylo 4. 12. 2024 zrušeno.** Nástupce je
+  Instagram API with Instagram Login (`/me/media`, scope
+  `instagram_business_basic`), který **vyžaduje účet typu Business nebo
+  Creator**. Token platí 60 dní a musí se obnovovat.
+- **Facebook Page** se čte přes Graph API `/{page-id}/posts` s Page Access
+  Tokenem; ten se odvozuje z dlouhodobého uživatelského tokenu, který
+  klientka musí schválit, a Meta k tomu chce projít App Review.
+- **URL obrázků z Instagramu jsou podepsané a vyprší.** Cron je proto musí
+  stáhnout a uložit lokálně, jinak se novinky za pár dní rozsypou na
+  chybějící obrázky.
+- **Cron:** WP-Cron se spouští návštěvou stránky, takže „ráno a večer"
+  negarantuje. Správně je systémový cron na hostingu, který dvakrát denně
+  volá `wp-cron.php` (a `DISABLE_WP_CRON` v `wp-config.php`).
+- **GDPR:** tahle cesta je na souhlas *lepší* než embed widgety — data se
+  stahují serverem, návštěvníkovi se nic třetí strany nenačte a nepadají
+  žádné cizí cookies. Embed (`embed.js`, Page Plugin) by naopak souhlas
+  vyžadoval a přinesl by cizí vzhled.
+- **Doporučení:** nepsat vlastní klienta. Obnovu tokenů by pak někdo musel
+  hlídat navždy, a u jednoho jóga studia je to špatný poměr. Plugin
+  (Smash Balloon a spol.) to řeší včetně cache obrázků; jeho výchozí
+  vzhled je cizí, ale dá se přebít šablonami tak, aby plnil **naše** karty
+  (`.news__item`). Vzhled tak zůstane náš a údržba cizí.
 
 ## Co potřebuje souhlas klientky
 
