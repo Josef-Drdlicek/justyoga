@@ -83,7 +83,7 @@ export class ScheduleWidget extends BaseElement {
         transition: background var(--transition-fast), color var(--transition-fast);
       }
       .tab:hover { color: var(--color-text); }
-      .tab:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+      .tab:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
       .tab[aria-selected="true"] {
         background: var(--color-primary);
         border-color: var(--color-primary);

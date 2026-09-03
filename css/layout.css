@@ -117,7 +117,11 @@
    don't land underneath the sticky site header. An id has to live here, in
    the light DOM — one inside a Shadow DOM (e.g. on a <pricing-cards> card)
    is never reachable by a URL fragment. */
-.anchor-target {
+.anchor-target,
+/* Cíl skip-linku ze site-header.js. Bez offsetu by skok "Přeskočit na
+   obsah" zarovnal <main> pod lepivou hlavičku a její výška by prvním
+   řádkům obsahu zůstala přes. */
+#main {
   scroll-margin-top: var(--header-height-estimate);
 }
 
@@ -264,9 +268,11 @@
   resize: vertical;
 }
 
+/* Tady záměrně :focus, ne :focus-visible — u textového pole má být vidět,
+   že v něm stojí kurzor, i když se do něj kliklo myší. */
 .contact-form input:focus,
 .contact-form textarea:focus {
-  outline: 2px solid var(--color-primary);
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: 1px;
 }
 

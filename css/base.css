@@ -143,7 +143,8 @@ ul {
   font-family: var(--font-heading);
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .btn:hover,
@@ -151,4 +152,12 @@ ul {
   background: var(--color-primary-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
+}
+
+/* Prstenec zvlášť od hover stavu výše: posun o 1 px focus neoznačí
+   a --shadow-sm je v plochém brandu `none`, takže samotný hover efekt
+   nebyl pro klávesnici viditelný. Stejný problém měl cta-button. */
+.btn:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }

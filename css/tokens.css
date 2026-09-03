@@ -114,6 +114,18 @@
   --space-7: 4rem;
   --space-8: clamp(4rem, 8vw, 8rem);
 
+  /* Focus ring — jeden vzhled pro celý web. Dřív byl `outline: 2px solid
+     var(--color-primary)` ručně opsaný na pěti místech (layout.css,
+     faq-list, schedule-widget a dvakrát site-nav), zatímco cta-button —
+     nejpoužívanější interaktivní prvek webu — ho neměl vůbec: měl jen
+     posun o 1 px a box-shadow, který je v plochém brandu `none`, takže
+     klávesnicový uživatel neviděl na tlačítku nic.
+     Offset je zvlášť, protože prvky uvnitř `overflow: hidden` (řádky FAQ)
+     potřebují prstenec dovnitř, tedy zápornou hodnotu. */
+  --focus-ring-width: 2px;
+  --focus-ring-color: var(--color-primary);
+  --focus-ring-offset: 2px;
+
   /* Shape */
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;

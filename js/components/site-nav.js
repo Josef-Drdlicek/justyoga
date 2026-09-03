@@ -70,8 +70,8 @@ export class SiteNav extends BaseElement {
         letter-spacing: 0.05em;
       }
       .nav-toggle:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
+        outline: var(--focus-ring-width) solid var(--focus-ring-color);
+        outline-offset: var(--focus-ring-offset);
       }
       .nav-list {
         display: flex;
@@ -98,8 +98,8 @@ export class SiteNav extends BaseElement {
         color: var(--color-accent);
       }
       .nav-list a:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
+        outline: var(--focus-ring-width) solid var(--focus-ring-color);
+        outline-offset: var(--focus-ring-offset);
       }
 
       /* Single project breakpoint, see tokens.css comment */
