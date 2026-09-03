@@ -26,6 +26,21 @@ Rozdíl proti `main`:
 - **Homepage** nově odpovídá na „kdy můžu přijít" nad ohybem a má sekci pro
   první návštěvu.
 
+Po první dávce přibylo:
+- **Ukazatel tempa je zpět** a je na všech čtyřech stránkách. Nápad
+  klientky (e-mail z 28. 8.) — stránka stoupá od klidu k maximu, plovoucí
+  panel ukazuje tep, tepovou zónu, dech a námahu, a nese CTA, které se
+  mění se zónou. Zastávky si hledá přes `data-zone-stop`, takže je může
+  nabídnout kterákoli stránka.
+- **Rozvrh přestavěný na čitelnost:** každá lekce je blok s jasnou
+  hierarchií a 4px pravítkem v barvě zóny, nad ním legenda.
+- **Sekce Novinky** (`#novinky`) plus odkazy na Instagram a Facebook
+  v sekci, na kontaktu a v patičce.
+- **Průvodce** — plovoucí rozcestník ve tvaru konverzace, bez vstupního
+  pole. Na telefonu bottom sheet.
+- **Menu má sedm položek** ve dvou skupinách: nabídka lekcí (kotvy na
+  homepage) a stránky webu.
+
 `main` drží poslední klientkou schválený stav a nesahá se na něj, dokud
 klientka redesign neuvidí.
 
@@ -44,6 +59,52 @@ klientka redesign neuvidí.
 6. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
+### 2026-09-03 (2. dávka) — tepometr zpět, čitelný rozvrh, novinky, průvodce
+Devět commitů na `redesign-2026`, `main` netknutý.
+
+**Tepometr vrácen.** V první dávce jsem ho vyhodil jako příliš hlasitý pro
+zadání „čistý a svěží". Klientka ho ale výslovně chce a je to její nápad,
+takže je zpátky — přestavěný do nového jazyka: tenký kruhový budík místo
+plné pulzující koule, čtyři hodnoty místo jedné (tep, tepová zóna, dech,
+námaha), všechny interpolované mezi zónami podle scrollu. 75 → 115 → 165
+a ustálení na 96, přesně jak to popsala. Slogany její, převedené do vykání.
+⚠️ Panel se čtyřmi čísly vypadá jako měření — proto věta „orientační
+hodnoty pro tento typ lekce, ne vaše měření" stojí VIDITELNĚ, ne jen pro
+čtečky.
+
+**Rozvrh.** Byl nepřehledný: čas, název a místo ve třech skoro stejných
+velikostech a místo zopakované drobným písmem pod každou z devíti lekcí.
+Teď blok s hierarchií a barevné pravítko podle tempa. Barva zóny je stejná
+v legendě, v rozvrhu i na ukazateli.
+
+**Novinky bez cronu.** Automatické tažení z Instagramu a Facebooku ve
+statickém motivu nejde (Basic Display API zrušeno 12/2024, oEmbed chce
+aplikační token, zbytek jsou cizí widgety s cookies). Sekce je proto
+vlastní obsah ve vlastním vzhledu, který se umí odkázat na konkrétní
+příspěvek. Co obnáší napojit to na produkci cronem, je rozepsané
+v `CLAUDE.md`.
+
+**Průvodce.** Klikací rozcestník, ne chat — bez vstupního pole a bez
+odesílání. Skutečný chat na webu jednoho člověka slibuje obsluhu, která
+tam v šest večer není. Strom se skládá z `faq.js`, `venues.js`
+a `site-config.js`, takže se odpovědi nikde neopisují.
+
+**Chyby nalezené a opravené v téhle dávce:**
+- Loga aktivit byla roztažená z poměru 1,635 na 6,18 (stretch v column
+  flexu proti pevné výšce). Karty navíc srovnány subgridem.
+- Rezervační odkazy nevedou na termín, ale na pozvánku do týmu — opravit
+  nejde bez klientky, ale tlačítko už o tom nelže.
+- Aktuální položka v menu se neoznačovala vůbec: `serve` i WP pretty
+  permalinks doručí `/rozvrh-cenik`, odkazy mají `.html`.
+- Ikony sítí se vykreslovaly jako černé čtverce — jsou tahové, ne
+  výplňové, a `fill: currentColor` vyplnilo jejich podkladový obdélník.
+- Průvodce nešel zavřít: panel ukotvený dole rostl nad horní hranu i se
+  zavíracím křížkem, protože strop se počítal z výšky okna místo
+  z volného místa.
+- **Prázdné okno průvodce na načtené stránce:** autorský `display: flex`
+  přebil prohlížečové `[hidden] { display: none }`. Testy to minuly,
+  protože se ptaly na vlastnost `hidden`, ne na vykreslený `display`.
+
 ### 2026-09-03 — REDESIGN: nový vizuální jazyk, ven ze Shadow DOM
 Na větvi `redesign-2026`, jeden commit, `main` nedotčený.
 
