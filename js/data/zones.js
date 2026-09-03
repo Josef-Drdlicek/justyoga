@@ -19,15 +19,23 @@
                  celého panelu: 6 proti 35 řekne o rozdílu mezi lekcemi víc
                  než odstavec textu.
    effort      – vnímaná námaha na běžné škále 1–10 (RPE)
+   slug        – kotva sekce v URL. Čitelná (#joga), ne technická
+                 (#zona-calm) — chodí se na ni z menu a lidi si ji posílají.
+                 Id sekce je slug, tempo nese `data-zone-stop`, takže se
+                 ta dvě pojmenování nepletou.
    short       – jednoslovný název pro legendu rozvrhu. Vlastní pole, ne
                  ořezaný `eyebrow`: „Zóna klidu" minus „Zóna " dá „klidu",
                  tedy druhý pád, který sám o sobě nedává smysl.
+   cta         – co nabídne tlačítko v ukazateli, když je návštěvník právě
+                 v téhle zóně. Popisek říká, co se po kliknutí stane, ne co
+                 si návštěvník myslí — „Zkusit jumping", ne „Jdu do toho".
    activityIds – které lekce do zóny patří. Vazba jde odsud k aktivitám,
                  takže přidání lekce do zóny je jeden řádek tady.
 */
 export const ZONES = [
   {
     id: "calm",
+    slug: "joga",
     eyebrow: "Zóna klidu",
     short: "Klid",
     bpm: 75,
@@ -40,10 +48,12 @@ export const ZONES = [
       "Protažení, zdravá záda a relaxace. Tempo, u kterého se dá po práci " +
       "vydechnout a u kterého nezáleží na tom, kolik je vám let ani jestli " +
       "jste někdy cvičili.",
+    cta: { label: "Zkusit jógu", href: "rozvrh-cenik.html#rozvrh" },
     activityIds: ["joga"],
   },
   {
     id: "move",
+    slug: "tabata",
     eyebrow: "Zóna rytmu",
     short: "Rytmus",
     bpm: 115,
@@ -56,10 +66,12 @@ export const ZONES = [
       "Dynamičtější cvičení pro běžný den. Střídání stanovišť a intervalů, " +
       "u každého cviku lehčí i těžší varianta — zátěž i rychlost si dávkujete " +
       "sami.",
+    cta: { label: "Zkusit kruhový trénink", href: "rozvrh-cenik.html#rozvrh" },
     activityIds: ["tabata"],
   },
   {
     id: "burn",
+    slug: "jumping",
     eyebrow: "Zóna maxima",
     short: "Maximum",
     bpm: 165,
@@ -71,6 +83,7 @@ export const ZONES = [
     text:
       "Skákání na trampolínách. Spalování, zpevnění a endorfiny — nejzábavnější " +
       "způsob, jak si dát do těla.",
+    cta: { label: "Zkusit jumping", href: "rozvrh-cenik.html#rozvrh" },
     activityIds: ["jumping"],
   },
 ];
@@ -85,6 +98,7 @@ export const REST_ZONE = {
   hrZone: 2,
   breaths: 12,
   effort: 3,
+  cta: { label: "Vybrat si lekci", href: "rozvrh-cenik.html#rozvrh" },
   heading: "Váš dech, váš tep, váš restart",
   text: "Vyberte si tempo, které dnes potřebujete.",
 };

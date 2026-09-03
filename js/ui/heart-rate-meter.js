@@ -151,6 +151,15 @@ export function renderHeartRateMeter() {
     el("p", { class: "hrm__zone", id: "hrm-title", "data-hrm-zone": "", text: first.short }),
     dial,
     readouts,
+    // Tlačítko nabízí přesně tu lekci, jejíž tempo je právě vidět, takže
+    // se mění spolu se zónou. Panel jinak kliknutí nechytá (pointer-events
+    // v CSS) — chytá je jen tohle tlačítko.
+    el("a", {
+      class: "btn btn--accent hrm__cta",
+      "data-hrm-cta": "",
+      href: first.cta.href,
+      text: first.cta.label,
+    }),
     // Viditelně, ne jen pro čtečky: čtyři čísla v kroužku vypadají jako
     // měření a někdo by 165 mohl číst jako svůj vlastní tep.
     el("p", {
@@ -178,6 +187,21 @@ function registerBpmProperty() {
   }
 }
 
+/** Nastaví na panelu všechno, co závisí jen na zóně (ne na scrollu). */
+function applyZone(meter, zone) {
+  meter.dataset.zone = zone.id;
+  meter.style.setProperty("--hrm-bpm", String(zone.bpm));
+  $("[data-hrm-zone]", meter).textContent = zone.short;
+  const cta = $("[data-hrm-cta]", meter);
+  cta.textContent = zone.cta.label;
+  cta.href = zone.cta.href;
+  const fill = $(".hrm__gauge-fill", meter);
+  fill.style.strokeDashoffset = String(100 - gaugeFill(zone.bpm) * 100);
+  for (const readout of READOUTS) {
+    $(`[data-hrm-readout="${readout.key}"]`, meter).textContent = readout.format(zone[readout.key]);
+  }
+}
+
 /** Střed prvku vůči viewportu, 0 = střed obrazovky. */
 function centerOffset(node) {
   const rect = node.getBoundingClientRect();
@@ -196,14 +220,23 @@ export function initHeartRateMeter() {
   // a nezávisí na podpoře selektoru.
   document.documentElement.classList.add("has-meter");
 
-  // Sekce, mezi kterými se interpoluje. Chybějící zóna nevadí — stránka,
-  // která je nemá, ukazatel prostě nespustí.
-  const stops = [...ZONES, REST_ZONE]
-    .map((zone) => ({ zone, node: document.getElementById(`zona-${zone.id}`) }))
-    .filter((stop) => stop.node);
+  const bpmNodeEarly = $("[data-hrm-bpm]", meter);
 
+  // Zastávky, mezi kterými se interpoluje. Zastávku umí nabídnout cokoli
+  // označené `data-zone-stop="<id zóny>"` — na homepage sekce zón, na
+  // stránce rozvrhu jednotlivé položky rezervace. Pořadí je pořadí
+  // v dokumentu, ne pořadí v datech: ukazatel jde po stránce, ne po tabulce.
+  const byId = new Map([...ZONES, REST_ZONE].map((zone) => [zone.id, zone]));
+  const stops = [...document.querySelectorAll("[data-zone-stop]")]
+    .map((node) => ({ zone: byId.get(node.dataset.zoneStop), node }))
+    .filter((stop) => stop.zone);
+
+  // Stránka bez zastávek ukazatel nemaže — jen ho nechá v klidovém stavu.
+  // Je to pořád platná informace („tohle studio jede od 75 do 165") a pořád
+  // to nese výzvu k akci; mizející prvek mezi stránkami působí jako chyba.
   if (stops.length === 0) {
-    meter.remove();
+    applyZone(meter, REST_ZONE);
+    bpmNodeEarly.textContent = String(REST_ZONE.bpm);
     return;
   }
 
@@ -211,6 +244,7 @@ export function initHeartRateMeter() {
   const bpmNode = $("[data-hrm-bpm]", meter);
   const zoneNode = $("[data-hrm-zone]", meter);
   const fillNode = $(".hrm__gauge-fill", meter);
+  const ctaNode = $("[data-hrm-cta]", meter);
   const readoutNodes = READOUTS.map((readout) => [
     readout,
     $(`[data-hrm-readout="${readout.key}"]`, meter),
@@ -247,6 +281,8 @@ export function initHeartRateMeter() {
     if (shown.get("zone") !== zone.id) {
       meter.dataset.zone = zone.id;
       zoneNode.textContent = zone.short;
+      ctaNode.textContent = zone.cta.label;
+      ctaNode.href = zone.cta.href;
       shown.set("zone", zone.id);
     }
   }
@@ -264,4 +300,12 @@ export function initHeartRateMeter() {
   // a prohlížeč teprve tehdy doroluje na fragment v URL (#zona-burn).
   window.addEventListener("load", update);
   update();
+}
+
+/** Vloží ukazatel do slotu a spustí ho. Jedno volání na stránku. */
+export function mountHeartRateMeter() {
+  const slot = $("[data-heart-rate-meter]");
+  if (!slot) return;
+  slot.replaceWith(renderHeartRateMeter());
+  initHeartRateMeter();
 }

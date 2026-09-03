@@ -11,15 +11,29 @@ import { NAV_ITEMS } from "../data/nav.js";
 import { VENUES, formatVenueAddress } from "../data/venues.js";
 import { FACEBOOK_ICON, INSTAGRAM_ICON } from "../data/icons.js";
 
-/** Which nav item is the current page. Filename-based — see the WordPress
- *  deployment checklist: pretty permalinks will need this remapped. */
+/* Poslední část cesty bez přípony. Přípona se zahazuje schválně: odkazy
+   v datech mají `.html`, ale `serve` i WordPress s pretty permalinky
+   doručí stejnou stránku na `/rozvrh-cenik`. Bez normalizace se porovnání
+   nikdy netrefí a aktuální položka v menu se nikdy neoznačí — což se
+   přesně dělo, dokud se to neproměřilo.
+
+   Nezbavuje to nasazení práce navíc (viz checklist v CLAUDE.md), ale
+   znamená to, že motiv nespadne na první pohled. */
+function normalisePath(value) {
+  const file = value.split("?")[0].split("#")[0].split("/").pop();
+  const base = file.replace(/\.html$/, "");
+  return base === "" || base === "index" ? "index" : base;
+}
+
 function currentPage() {
-  const file = window.location.pathname.split("/").pop();
-  return file === "" ? "index.html" : file;
+  return normalisePath(window.location.pathname);
 }
 
 function navLink(item, here) {
-  const isCurrent = item.href === here;
+  // Jen odkazy bez kotvy můžou být „aktuální stránka". Kdyby se
+  // porovnával jen soubor, byly by na homepage aktuální všechny tři
+  // odkazy na lekce naráz, protože všechny míří na index.html.
+  const isCurrent = !item.href.includes("#") && normalisePath(item.href) === here;
   return el("li", { class: "nav__item" }, [
     el("a", {
       class: "nav__link" + (isCurrent ? " is-current" : ""),
@@ -48,11 +62,17 @@ export function renderHeader() {
     }),
   ]);
 
-  const list = el(
-    "ul",
-    { class: "nav__list" },
-    NAV_ITEMS.map((item) => navLink(item, here))
-  );
+  // Dvě skupiny v jednom seznamu: nabídka lekcí a stránky webu. Oddělené
+  // vizuálně (viz .nav__item--divide), ale pořád jeden <ul>, aby čtečka
+  // ohlásila jednu navigaci a ne dvě.
+  const items = NAV_ITEMS.map((item, index) => {
+    const link = navLink(item, here);
+    const previous = NAV_ITEMS[index - 1];
+    if (previous && previous.group !== item.group) link.classList.add("nav__item--divide");
+    return link;
+  });
+
+  const list = el("ul", { class: "nav__list" }, items);
 
   const panel = el("div", { class: "nav__panel", id: "site-nav-panel" }, [
     list,

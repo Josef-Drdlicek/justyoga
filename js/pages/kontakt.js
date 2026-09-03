@@ -3,6 +3,7 @@
 import { mount, $ } from "../lib/dom.js";
 import { initReveal } from "../lib/reveal.js";
 import { mountChrome } from "../ui/chrome.js";
+import { mountHeartRateMeter } from "../ui/heart-rate-meter.js";
 import { renderVenues } from "../ui/sections.js";
 import { SITE_CONFIG } from "../data/site-config.js";
 import { PHONE_ICON, MAIL_ICON } from "../data/icons.js";
@@ -33,5 +34,9 @@ $("[data-contact-form]").addEventListener("submit", (event) => {
     `Formulář zatím není propojený — napište mi prosím přímo na ${SITE_CONFIG.email} ` +
     `nebo zavolejte na ${SITE_CONFIG.phone}.`;
 });
+
+// Až po vykreslení obsahu: ukazatel si při startu hledá své zastávky
+// v DOMu, a kdyby běžel dřív, nenašel by je a spadl by do klidového stavu.
+mountHeartRateMeter();
 
 initReveal();

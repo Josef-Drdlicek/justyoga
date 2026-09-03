@@ -3,6 +3,7 @@
 import { mount } from "../lib/dom.js";
 import { initReveal } from "../lib/reveal.js";
 import { mountChrome } from "../ui/chrome.js";
+import { mountHeartRateMeter } from "../ui/heart-rate-meter.js";
 import {
   renderWeek,
   renderWeekLegend,
@@ -24,5 +25,9 @@ mount("[data-pricing]", () => renderPricing(ACTIVITIES, SITE_CONFIG.passValidity
 // The full list here, not the shortened homepage one: someone on the pricing
 // page is comparing details and wants the answers about passes and cancelling.
 mount("[data-faq]", () => renderFaq(FAQ));
+
+// Až po vykreslení obsahu: ukazatel si při startu hledá své zastávky
+// v DOMu, a kdyby běžel dřív, nenašel by je a spadl by do klidového stavu.
+mountHeartRateMeter();
 
 initReveal();
