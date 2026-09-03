@@ -113,7 +113,7 @@ ul {
 
 /* Generic "boxed content" look, reused by plain light-DOM page markup
    (e.g. kontakt.html's two contact/form blocks). Same visual language as
-   the Shadow-DOM .card rules in data-table.js and activity-card.js —
+   the Shadow-DOM .card rules in activity-card.js and pricing-cards.js —
    Shadow DOM can't share a CSS class across its boundary, so this is the
    light-DOM counterpart of that same recipe rather than a new one. */
 .card {
