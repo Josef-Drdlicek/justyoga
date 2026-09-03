@@ -1,4 +1,9 @@
 import { BaseElement } from "./base-component.js";
+// Tahle komponenta staví <cta-button> ve svém template(), takže si ho musí
+// naimportovat sama. Dosud fungovala jen díky tomu, že ho main.js registruje
+// na každé stránce — jakmile se registrace rozdělí per-page, byla by to
+// skrytá závislost, která rozvrh rozbije.
+import "./cta-button.js";
 import { PIN_ICON, ACTIVITY_TYPE_ICONS } from "../data/icons.js";
 
 const WEEKDAYS = ["Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota", "Neděle"];
@@ -50,11 +55,50 @@ export class ScheduleWidget extends BaseElement {
     // across re-renders without re-attaching a listener each time.
     this.shadowRoot.addEventListener("click", (event) => {
       const tab = event.target.closest("[data-day]");
-      if (!tab) return;
-      this.#selectedDay = tab.dataset.day;
-      this.render();
+      if (tab) this.#select(tab.dataset.day, { moveFocus: false });
     });
+    this.shadowRoot.addEventListener("keydown", this.#onKeydown);
   }
+
+  // Přepnutí dne NENÍ změna dat, takže nesmí projít render(). Ten přepisuje
+  // celý shadow root, tedy i právě rozkliknuté tlačítko — fokus by se
+  // ztratil a klávesnicové ovládání tabů by po prvním přepnutí skončilo.
+  // Mutují se proto jen atributy existujících uzlů (stejný vzor jako
+  // site-nav.js #setOpen).
+  #select(day, { moveFocus }) {
+    if (!this.#days.includes(day)) return;
+    this.#selectedDay = day;
+    for (const tab of this.shadowRoot.querySelectorAll("[data-day]")) {
+      const isSelected = tab.dataset.day === day;
+      tab.setAttribute("aria-selected", String(isSelected));
+      // Roving tabindex: z celé skupiny tabů je v tab orderu jen ten
+      // vybraný, mezi nimi se přechází šipkami (ARIA vzor pro tablist).
+      tab.tabIndex = isSelected ? 0 : -1;
+      if (isSelected && moveFocus) tab.focus();
+    }
+    for (const panel of this.shadowRoot.querySelectorAll("[data-panel]")) {
+      panel.hidden = panel.dataset.panel !== day;
+    }
+  }
+
+  // Šipky jsou povinné, ne bonus: jakmile neaktivní taby dostanou
+  // tabindex="-1", přestanou být dosažitelné Tabem, a bez téhle obsluhy
+  // by se ke zbytku týdne klávesnicí nešlo dostat vůbec.
+  #onKeydown = (event) => {
+    const tab = event.target.closest?.("[data-day]");
+    if (!tab) return;
+    const days = this.#days;
+    const current = days.indexOf(tab.dataset.day);
+    const next = {
+      ArrowRight: days[(current + 1) % days.length],
+      ArrowLeft: days[(current - 1 + days.length) % days.length],
+      Home: days[0],
+      End: days[days.length - 1],
+    }[event.key];
+    if (!next) return;
+    event.preventDefault();
+    this.#select(next, { moveFocus: true });
+  };
 
   get #days() {
     return WEEKDAYS.filter((day) => this.#lessons.some((lesson) => lesson.day === day));
@@ -93,6 +137,10 @@ export class ScheduleWidget extends BaseElement {
         display: grid;
         gap: var(--space-4);
       }
+      /* Nutné explicitně: globální [hidden] { display: none } má nižší
+         specificitu než .lessons { display: grid } výše, takže by samotný
+         atribut hidden panel neskryl. */
+      .lessons[hidden] { display: none; }
       .lesson {
         display: flex;
         flex-direction: column;
@@ -174,17 +222,15 @@ export class ScheduleWidget extends BaseElement {
       .map(
         (day) => `
           <button type="button" class="tab" id="tab-${day}" role="tab" data-day="${day}"
-            aria-selected="${day === this.#selectedDay}" aria-controls="panel-${day}">
+            aria-selected="${day === this.#selectedDay}" aria-controls="panel-${day}"
+            tabindex="${day === this.#selectedDay ? 0 : -1}">
             <span class="text-full">${day}</span><span class="text-short">${DAY_ABBREVIATIONS[day]}</span>
           </button>
         `
       )
       .join("");
 
-    const dayLessons = this.#lessons.filter((lesson) => lesson.day === this.#selectedDay);
-    const cards = dayLessons
-      .map(
-        (lesson) => `
+    const card = (lesson) => `
           <article class="lesson lesson--${lesson.id}">
             <div class="lesson__head">
               <h3 class="lesson__name"><span class="icon">${ACTIVITY_TYPE_ICONS[lesson.id] ?? ""}</span>${lesson.shortName ?? lesson.name}</h3>
@@ -199,15 +245,32 @@ export class ScheduleWidget extends BaseElement {
               <cta-button href="${lesson.bookingUrl}" label="Rezervovat" variant="accent"></cta-button>
             </div>
           </article>
+        `;
+
+    // Panel se renderuje pro KAŽDÝ den, neaktivní jen s atributem hidden.
+    // Dřív existoval v DOM jen panel vybraného dne, takže aria-controls
+    // na ostatních tabech ukazovalo na neexistující id — čtečka ohlásí
+    // rozbitou vazbu tab↔panel. Devět karet ve čtyřech dnech je navíc
+    // zanedbatelný obsah (žádné obrázky, žádná media).
+    // tabindex na panelu záměrně není: panel obsahuje fokusovatelné prvky
+    // (tlačítka Rezervovat), takže by byl jen tab stop navíc.
+    const panels = days
+      .map(
+        (day) => `
+          <div class="lessons" role="tabpanel" data-panel="${day}" id="panel-${day}"
+            aria-labelledby="tab-${day}"${day === this.#selectedDay ? "" : " hidden"}>
+            ${this.#lessons
+              .filter((lesson) => lesson.day === day)
+              .map(card)
+              .join("")}
+          </div>
         `
       )
       .join("");
 
     return `
       <div class="tabs" role="tablist" aria-label="Den v týdnu">${tabs}</div>
-      <div class="lessons" role="tabpanel" id="panel-${this.#selectedDay}" aria-labelledby="tab-${this.#selectedDay}">
-        ${cards}
-      </div>
+      ${panels}
     `;
   }
 }
