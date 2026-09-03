@@ -495,6 +495,14 @@
 
 /* ==== FAQ ============================================================ */
 
+/* Capped here rather than by putting the section in a narrower container:
+   a narrower centred container would shift this block's left edge inwards
+   and the page would gain a second, ragged left margin. One left edge for
+   the whole site, measures set on the blocks themselves. */
+.faq {
+  max-width: var(--measure);
+}
+
 .faq__item {
   border-bottom: 1px solid var(--color-border);
 }
@@ -789,6 +797,7 @@
   list-style: none;
   display: grid;
   gap: var(--space-5);
+  max-width: var(--measure);
 }
 
 .booking__item {
@@ -845,8 +854,12 @@
   padding: var(--space-6);
 }
 
+/* Two lines' worth of room whether or not the name needs it, so the prices
+   line up across the row — "Tabata, HIIT a kruhový trénink" wraps and the
+   other two do not. */
 .pricing__name {
   margin: 0;
+  min-height: calc(2 * var(--leading-snug) * 1em);
   font-size: var(--text-xl);
 }
 
