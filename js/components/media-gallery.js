@@ -58,12 +58,15 @@ export class MediaGallery extends BaseElement {
         height: auto;
         border-radius: var(--radius-md);
         box-shadow: var(--shadow-sm);
-        /* Visible until the first frame loads. */
-        background: var(--color-charcoal);
+        /* Podklad, dokud se nenačte poster. Dřív tu byl --color-charcoal,
+           token z palety verze 1, který po rebrandu na verzi 2 přestal
+           existovat — background se pak nenastavil vůbec a videa byla
+           průhledná (viditelný byl jen černý pruh ovládání). */
+        background: var(--color-primary);
       }
 
       /* Single project breakpoint, see tokens.css comment */
-      @media (max-width: 768px) {
+      @media (width < 768px) {
         .photos {
           grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
           gap: var(--space-2);
@@ -76,10 +79,13 @@ export class MediaGallery extends BaseElement {
     const photos = this.#photos
       .map((photo) => `<img src="${photo.src}" alt="${photo.alt}" loading="lazy" />`)
       .join("");
+    // width/height drží místo prvku ještě před načtením metadat (bez nich
+    // stránka po jejich doručení poskočí), poster ho do té doby zaplní
+    // náhledovým snímkem místo prázdné plochy.
     const videos = this.#videos
       .map(
         (video) =>
-          `<video src="${video.src}" controls preload="metadata" playsinline aria-label="${video.label}"></video>`
+          `<video src="${video.src}" poster="${video.poster}" width="${video.width}" height="${video.height}" controls preload="metadata" playsinline aria-label="${video.label}"></video>`
       )
       .join("");
     return `
