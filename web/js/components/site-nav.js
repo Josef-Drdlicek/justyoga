@@ -120,7 +120,7 @@ export class SiteNav extends BaseElement {
              genuinely floats over page content, so it needs its own edge to
              read as an overlay rather than as part of the page. A solid
              border does that job without reintroducing elevation. */
-          border: 1px solid var(--color-text-muted);
+          border: 1px solid var(--color-border-strong);
           /* Closed by default: invisible AND out of tab order, not just
              visually clipped — visibility (unlike overflow/max-height)
              also removes focusable descendants from the tab sequence. */

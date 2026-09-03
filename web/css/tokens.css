@@ -32,9 +32,34 @@
   --color-text: #2c1f25; /* brandbook: text / darkSurface */
   /* Muted text and borders are mixed from the brand's own text + background
      rather than being separate greys — they stay in the warm plum family
-     instead of drifting to a neutral grey that fights the palette. */
-  --color-text-muted: color-mix(in srgb, var(--color-text), var(--color-bg) 45%);
+     instead of drifting to a neutral grey that fights the palette.
+
+     The background share is 30 %, and that number is measured, not chosen
+     by eye. This token carries real content — lesson taglines, lesson
+     venues, pass prices, form field labels and the whole footer — so it
+     must clear WCAG AA (4.5:1) against EVERY surface it sits on, and the
+     tinted lesson cards are far darker than the page:
+
+        share   color     worst surface (karta Tabata #f3e5ea)
+        45 %    #8a8284   3.08  ✗   <- what it used to be
+        35 %    #756c6f   4.18  ✗
+        32 %    #6f6569   4.60  ✓   first passing value
+        30 %    #6a6164   4.90  ✓   <- chosen, keeps headroom
+        25 %    #60565a   5.79  ✓
+
+     Measured against 7 surfaces (page, white card, all three lesson-card
+     tints, linen badge, blush) with the project's headless-Chrome canvas
+     method. If this value changes, re-measure — do not eyeball it. */
+  --color-text-muted: color-mix(in srgb, var(--color-text), var(--color-bg) 30%);
   --color-border: color-mix(in srgb, var(--color-text) 12%, var(--color-bg));
+  /* A deliberately heavier edge for the one surface that genuinely floats
+     over page content (the mobile nav panel) — the flat brand has no
+     shadows, so that panel needs a visible outline to read as an overlay.
+     It used to borrow --color-text-muted, which tied the panel's look to a
+     text-contrast decision: darkening the text for WCAG also redrew the
+     navigation. Same value as that token had before, now with its own
+     name and its own reason to change. */
+  --color-border-strong: color-mix(in srgb, var(--color-text) 55%, var(--color-bg));
   /* Primary = plum, accent = berry. Both are deliberately dark enough to
      carry white label text at WCAG AA (plum ~13:1, berry ~6.4:1). Coral is
      the logo/decorative color only — at ~3.3:1 against white it must never
