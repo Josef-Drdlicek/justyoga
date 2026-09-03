@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kontakt – Just Yoga Boskovice</title>
+  <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/seo.js"></script>
+  <script type="module" src="js/pages/kontakt.js"></script>
+</head>
+<body>
+  <site-header></site-header>
+
+  <main class="page-shell section">
+    <h1 class="page-heading">Kontakt</h1>
+
+    <div class="contact-grid">
+      <section class="card contact-card">
+        <p class="contact-name">Lenka Nahodilová</p>
+        <ul class="contact-list">
+          <li class="contact-list__address">
+            <span class="icon" data-icon="pin" aria-hidden="true"></span>
+            <span class="contact-list__text">
+              <span class="contact-list__label">Jógové studio</span>
+              <span data-contact-address></span>
+            </span>
+          </li>
+          <li><span class="icon" data-icon="phone" aria-hidden="true"></span><a data-contact-phone></a></li>
+          <li><span class="icon" data-icon="mail" aria-hidden="true"></span><a data-contact-email></a></li>
+        </ul>
+        <!-- No embedded map: the classic maps.google.com/maps?...&output=embed
+             iframe doesn't reliably render in this project's headless-Chrome
+             verification setup, so a plain link to Google Maps is used
+             instead of shipping a potentially blank-looking iframe. -->
+        <cta-button data-contact-map-link label="Otevřít v Google Maps"></cta-button>
+      </section>
+
+      <section class="card contact-form-card">
+        <h2>Napište nám</h2>
+        <form class="contact-form" data-contact-form>
+          <label>
+            Vaše jméno
+            <input type="text" name="your-name" required />
+          </label>
+          <label>
+            Váš e-mail
+            <input type="email" name="your-email" required />
+          </label>
+          <label>
+            Předmět
+            <input type="text" name="your-subject" required />
+          </label>
+          <label>
+            Vaše zpráva (volitelný)
+            <textarea name="your-message" rows="5"></textarea>
+          </label>
+          <button type="submit" class="btn">Odeslat</button>
+        </form>
+        <!-- TODO: až se bude nasazovat do WordPressu, napojit na Contact Form 7
+             (plugin je na produkci už aktivní), aby zprávy chodily klientce
+             na e-mail. Pole výše (your-name/your-email/your-subject/
+             your-message) odpovídají názvům polí reálného formuláře na
+             justyoga.cz/kontakt/, takže při nasazení stačí formulář nahradit
+             CF7 shortcodem beze změny obsahu/pojmenování polí. Do té doby
+             odeslání nikam nevede — viz preventDefault v kontakt.js. -->
+      </section>
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+</body>
+</html>

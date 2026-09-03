@@ -1,0 +1,142 @@
+/* Design tokens — single source of truth for color, spacing, type.
+   Values taken from the client's brandbook (content/brandbook-lenka-web.json,
+   exported from Figma). Change values here only — components read var(--...),
+   nothing hardcodes colors/spacing/radii/breakpoints elsewhere. */
+:root {
+  /* Color — brand palette, straight from the brandbook. These are the raw
+     named values; the functional aliases below are what components use, so
+     re-pointing a role (e.g. which color a button takes) is a one-line
+     change here and never a hunt through components. */
+  --color-white: #ffffff;
+  --color-coral: #e86667; /* logo.primary */
+  --color-coral-dark: #e44443; /* logo.red2 */
+  --color-plum: #402b32; /* logo.dark */
+  --color-berry: #a9436b; /* main.berry — "brand accent" per brandbook */
+  --color-mint: #51d3a7; /* main.mint */
+  --color-yellow: #ffd47d; /* main.yellow */
+  --color-blush: #ffe8e8; /* secondary.blush */
+  --color-linen: #ffe5d9; /* secondary.linen */
+
+  /* Color — functional (aliases used by components) */
+  --color-bg: #fcfaf8; /* brandbook: warm off-white background */
+  /* Cards sit on the warm off-white page background. Plain white reads as
+     a raised surface against it even with shadows switched off (see the
+     Elevation block below) — the brandbook mandates a flat, shadowless look. */
+  --color-surface: var(--color-white);
+  /* Subtle tint derived directly from --color-surface (not a standalone
+     hex) — used to alternate blocks of rows that belong together, e.g.
+     one day's lessons in the schedule table. Deriving from the surface
+     itself keeps it recognizably the same surface as elsewhere, just a few
+     percent darker, rather than a different hue. */
+  --color-surface-alt: color-mix(in srgb, var(--color-surface), var(--color-text) 4%);
+  --color-text: #2c1f25; /* brandbook: text / darkSurface */
+  /* Muted text and borders are mixed from the brand's own text + background
+     rather than being separate greys — they stay in the warm plum family
+     instead of drifting to a neutral grey that fights the palette. */
+  --color-text-muted: color-mix(in srgb, var(--color-text), var(--color-bg) 45%);
+  --color-border: color-mix(in srgb, var(--color-text) 12%, var(--color-bg));
+  /* Primary = plum, accent = berry. Both are deliberately dark enough to
+     carry white label text at WCAG AA (plum ~13:1, berry ~6.4:1). Coral is
+     the logo/decorative color only — at ~3.3:1 against white it must never
+     be used as a filled button or as text. */
+  --color-primary: var(--color-plum);
+  --color-primary-dark: color-mix(in srgb, var(--color-plum), #000 25%);
+  --color-primary-contrast: var(--color-white);
+  --color-accent: var(--color-berry);
+  --color-accent-dark: color-mix(in srgb, var(--color-berry), #000 18%);
+
+  /* Color — lesson type (rozvrh/ceník cards). Hues come straight from the
+     brandbook's main palette — green/yellow/purple as the client asked, no
+     invented colors.
+
+     Each type needs the hue at two very different jobs, so it gets two
+     tokens: "-bg" tints the card (the pastel is exactly right there), while
+     the bare token colors the icon next to the lesson name and must stay
+     legible on a near-white card. The palette's lightness varies enormously
+     (yellow #ffd47d is almost invisible as an icon, berry #a9436b is already
+     dark), so a single mix percentage can't serve all three. Relative color
+     syntax pins them to one perceptual lightness instead: same hue, uniform
+     contrast, one formula rather than three hand-tuned shades. */
+  --type-icon-lightness: 0.55;
+  --color-type-joga: oklch(from var(--color-mint) var(--type-icon-lightness) c h);
+  --color-type-joga-bg: color-mix(in srgb, var(--color-mint) 14%, var(--color-surface));
+  --color-type-jumping: oklch(from var(--color-yellow) var(--type-icon-lightness) c h);
+  --color-type-jumping-bg: color-mix(in srgb, var(--color-yellow) 14%, var(--color-surface));
+  --color-type-tabata: oklch(from var(--color-berry) var(--type-icon-lightness) c h);
+  --color-type-tabata-bg: color-mix(in srgb, var(--color-berry) 14%, var(--color-surface));
+
+  /* Typography — brand fonts, self-hosted in css/fonts.css (no CDN request).
+     System stack stays as the fallback so text is readable if a woff2 fails
+     to load. Weight usage rules from the brandbook are applied in base.css. */
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Raleway", var(--font-body);
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 2.5rem;
+  --font-size-hero: 4rem;
+  --line-height-base: 1.6;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+  --space-7: 4rem;
+  --space-8: clamp(4rem, 8vw, 8rem);
+
+  /* Shape */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Elevation — the brandbook specifies "shadows: none", so the whole site
+     is flat: surfaces are separated by the white-on-off-white contrast and
+     the 1px border every card already has, not by depth. The tokens stay
+     (rather than stripping box-shadow from a dozen components) so elevation
+     remains one switch: this is the single place that decides the site is
+     flat, and the only place to change if that decision ever reverses.
+     The one genuinely floating surface — the mobile nav panel — separates
+     itself with a stronger border in site-nav.js instead. */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+
+  /* Motion */
+  --transition-fast: 150ms ease;
+  --transition-base: 300ms ease;
+  --transition-slow: 500ms ease;
+
+  /* Layout */
+  --content-max-width: 72rem;
+  /* Rendered height of the sticky site header. Content-driven estimate
+     (header padding 2×space-4 + logo height), not measured live — single
+     source for every offset that must clear the header: anchor
+     scroll-margin-top and sticky table headers. */
+  --header-height-estimate: 5.75rem;
+}
+
+/* Single documented breakpoint — reuse this exact value (768px) in every
+   @media query in this project instead of introducing new arbitrary ones. */
+
+@media (min-width: 768px) {
+  :root {
+    /* Desktop header is taller (larger logo, same padding). */
+    --header-height-estimate: 6.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-base: 0ms;
+    --transition-slow: 0ms;
+  }
+}
