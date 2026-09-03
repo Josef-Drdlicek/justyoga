@@ -7,9 +7,18 @@
    Klientka psala slogany v tykání. Celý web vyká (viz CLAUDE.md → Tón
    textů), takže jsou převedené — obsah i rytmus zůstávají její.
 
-   bpm         – orientační tep pro daný typ lekce. NENÍ to změřená hodnota
-                 návštěvníka; tepometr proto nese skrytou větu, která to
-                 říká nahlas, jinak může někdo číst 170 jako svůj vlastní tep.
+   Metriky (bpm, hrZone, breaths, effort) jsou ORIENTAČNÍ hodnoty typické
+   pro daný typ lekce, ne měření návštěvníka. Panel se čtyřmi čísly vypadá
+   jako přístroj, takže to musí být napsané i viditelně, ne jen pro čtečky —
+   jinak si někdo přečte 165 jako svůj vlastní tep.
+
+   bpm         – tep za minutu
+   hrZone      – tepová zóna 1–5 podle běžného pětizónového modelu
+                 (1 = regenerace, 3 = aerobní, 4 = anaerobní)
+   breaths     – nádechů za minutu. U jógy je to ta nejvýmluvnější hodnota
+                 celého panelu: 6 proti 35 řekne o rozdílu mezi lekcemi víc
+                 než odstavec textu.
+   effort      – vnímaná námaha na běžné škále 1–10 (RPE)
    short       – jednoslovný název pro legendu rozvrhu. Vlastní pole, ne
                  ořezaný `eyebrow`: „Zóna klidu" minus „Zóna " dá „klidu",
                  tedy druhý pád, který sám o sobě nedává smysl.
@@ -22,6 +31,9 @@ export const ZONES = [
     eyebrow: "Zóna klidu",
     short: "Klid",
     bpm: 75,
+    hrZone: 1,
+    breaths: 6,
+    effort: 2,
     heading: "Nadechněte se a zklidněte mysl",
     slogan: "Váš prostor pro hluboký nádech.",
     text:
@@ -35,6 +47,9 @@ export const ZONES = [
     eyebrow: "Zóna rytmu",
     short: "Rytmus",
     bpm: 115,
+    hrZone: 3,
+    breaths: 20,
+    effort: 6,
     heading: "Najděte svůj rytmus",
     slogan: "Rozpohybujte tělo.",
     text:
@@ -48,6 +63,9 @@ export const ZONES = [
     eyebrow: "Zóna maxima",
     short: "Maximum",
     bpm: 165,
+    hrZone: 4,
+    breaths: 35,
+    effort: 9,
     heading: "Nakopněte tep na maximum",
     slogan: "Vyskočte ze stereotypu a budujte sílu.",
     text:
@@ -62,7 +80,11 @@ export const ZONES = [
    stabilní hodnotě"). */
 export const REST_ZONE = {
   id: "rest",
+  short: "Restart",
   bpm: 96,
+  hrZone: 2,
+  breaths: 12,
+  effort: 3,
   heading: "Váš dech, váš tep, váš restart",
   text: "Vyberte si tempo, které dnes potřebujete.",
 };
