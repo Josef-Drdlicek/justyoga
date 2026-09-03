@@ -9,6 +9,13 @@ export const SITE_CONFIG = {
   tagline: "Pohyb, který vás nabije energií i klidem.",
   logoSrc: "assets/images/logo-just-yoga-wide.png",
   logoAlt: "Just Yoga – pohybové studio",
+  // Vlastní rozměry souboru. Hlavička logu určuje výšku a šířku nechává na
+  // "auto", takže do načtení obrázku prohlížeč jeho šířku nezná a navigace
+  // vedle něj po dorazu loga poskočí. Ostatní obrázky na webu tyhle atributy
+  // nepotřebují — hero je absolutně pozicovaný a fotky mají aspect-ratio
+  // v CSS, takže jejich místo je známé předem.
+  logoWidth: 2074,
+  logoHeight: 751,
   address: "Bílkova 91, 680 00 Boskovice",
   phone: "723 466 926",
   phoneHref: "tel:+420723466926",

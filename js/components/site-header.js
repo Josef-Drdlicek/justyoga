@@ -86,7 +86,8 @@ export class SiteHeader extends BaseElement {
       <a class="skip-link" href="#main">Přeskočit na obsah</a>
       <div class="bar">
         <a class="brand" href="index.html">
-          <img src="${SITE_CONFIG.logoSrc}" alt="${SITE_CONFIG.logoAlt}" />
+          <img src="${SITE_CONFIG.logoSrc}" alt="${SITE_CONFIG.logoAlt}"
+            width="${SITE_CONFIG.logoWidth}" height="${SITE_CONFIG.logoHeight}" />
         </a>
         <site-nav></site-nav>
       </div>

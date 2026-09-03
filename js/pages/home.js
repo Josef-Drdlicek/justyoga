@@ -1,3 +1,9 @@
+// Komponenty, které žijí jen na této stránce — registruje je ten skript,
+// který je plní daty, ne main.js (viz komentář tam).
+import "../components/activity-card.js";
+import "../components/news-board.js";
+import "../components/faq-list.js";
+
 import { ACTIVITIES } from "../data/activities.js";
 import { NEWS } from "../data/news.js";
 import { FAQ } from "../data/faq.js";

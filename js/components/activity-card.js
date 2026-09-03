@@ -127,7 +127,8 @@ export class ActivityCard extends BaseElement {
       .join("");
     return `
       <article class="card">
-        <h3 class="logo"><img src="${activity.logo}" alt="${activity.name}" /></h3>
+        <h3 class="logo"><img src="${activity.logo.src}" alt="${activity.name}"
+          width="${activity.logo.width}" height="${activity.logo.height}" loading="lazy" /></h3>
         ${activity.logoSubtitle ? `<p class="logo-subtitle">${activity.logoSubtitle}</p>` : ""}
         <div class="content">
           ${activity.headline ? `<p class="headline">${activity.headline}</p>` : ""}
