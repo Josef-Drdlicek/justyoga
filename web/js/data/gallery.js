@@ -18,14 +18,29 @@ const PHOTO_FILES = [
   "foto-10.jpg",
 ];
 
-const VIDEO_FILES = ["video-1.mp4", "video-2.mp4", "video-3.mp4"];
+// Videa se — na rozdíl od fotek — nesmí ořezávat do pevného rámce (viz
+// media-gallery.js), takže si každé drží svůj vlastní poměr stran. Bez
+// rozměrů prohlížeč do načtení metadat nezná výšku prvku a stránka po
+// jejich doručení poskočí. Rozměry jsou proto u každého souboru zvlášť
+// (změřeno z posterů) — video-3 je jediné na šířku, jednotná hodnota by
+// u něj byla nepravdivá.
+const VIDEO_FILES = [
+  { file: "video-1.mp4", width: 720, height: 1280 },
+  { file: "video-2.mp4", width: 720, height: 1280 },
+  { file: "video-3.mp4", width: 848, height: 480 },
+];
 
 export const GALLERY_PHOTOS = PHOTO_FILES.map((file, index) => ({
   src: `${GALLERY_IMAGE_DIR}/${file}`,
   alt: `Momentka z lekcí Just Yoga (${index + 1} z ${PHOTO_FILES.length})`,
 }));
 
-export const GALLERY_VIDEOS = VIDEO_FILES.map((file, index) => ({
+export const GALLERY_VIDEOS = VIDEO_FILES.map(({ file, width, height }, index) => ({
   src: `${GALLERY_VIDEO_DIR}/${file}`,
+  // Náhledový snímek se jmenuje vždy jako video, jen s příponou
+  // "-poster.jpg" — derivuje se, aby název souboru nebyl v datech dvakrát.
+  poster: `${GALLERY_VIDEO_DIR}/${file.replace(".mp4", "-poster.jpg")}`,
+  width,
+  height,
   label: `Video z lekcí Just Yoga (${index + 1} z ${VIDEO_FILES.length})`,
 }));
