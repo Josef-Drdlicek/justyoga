@@ -4,12 +4,14 @@ import "../components/activity-card.js";
 import "../components/news-board.js";
 import "../components/faq-list.js";
 import "../components/heart-rate-meter.js";
+import "../components/studio-venues.js";
 
 import { ACTIVITIES } from "../data/activities.js";
 import { NEWS } from "../data/news.js";
 import { FAQ } from "../data/faq.js";
 import { SITE_CONFIG } from "../data/site-config.js";
 import { ZONES, BRIDGE_ROOT_MARGIN } from "../data/zones.js";
+import { venuesWithActivities } from "../data/venues.js";
 
 // --- scroll-story: texty a karty do jednotlivých tepových zón ----------
 //
@@ -85,6 +87,9 @@ if (phoneButton) {
   phoneButton.setAttribute("href", SITE_CONFIG.phoneHref);
   phoneButton.setAttribute("label", `Zavolat ${SITE_CONFIG.phone}`);
 }
+
+const venuesElement = document.querySelector("[data-studio-venues]");
+if (venuesElement) venuesElement.venues = venuesWithActivities(ACTIVITIES);
 
 const ctaNote = document.querySelector("[data-cta-note]");
 if (ctaNote) {

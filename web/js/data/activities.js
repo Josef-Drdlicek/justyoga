@@ -22,6 +22,10 @@
 //   headline     – one-line hook above the descriptive tagline
 //   benefits     – 3 scannable bullets; mobile visitors skim, they don't read
 //   note         – optional reassurance shown under the card
+//   venueId      – kde lekce probíhá; odkaz do js/data/venues.js. Studio má
+//                  DVĚ adresy (jóga na Bílkově, kondiční lekce a jumping
+//                  v posilovně u ZŠ), takže adresa nesmí být volný text —
+//                  strukturovaná data i navigační odkazy potřebují složky.
 //   capacity     – ⚠️ 10 je číslo z příkladu klientky, ne potvrzený počet míst
 //                  u každé aktivity; nechat ověřit před nasazením na produkci
 export const ACTIVITIES = [
@@ -49,7 +53,7 @@ export const ACTIVITIES = [
     passPrice: 1900,
     passLessons: 10,
     capacity: 10,
-    location: "Just Yoga a pohybové studio, Bílkova 91, Boskovice",
+    venueId: "studio",
     bookingUrl:
       "https://app.tymuj.cz/team-invitation?hash=zt0k0DNTUNKIqqvJf1IJgwRqXGnEkH1F3CZbVAzL",
   },
@@ -74,7 +78,7 @@ export const ACTIVITIES = [
     passPrice: 1400,
     passLessons: 10,
     capacity: 10,
-    location: "Posilovna a vzpírárna, ZŠ III Slovákova, Boskovice",
+    venueId: "hala",
     bookingUrl: "https://justjump.chytra-rezervace.cz/rezervacni-system/",
   },
   {
@@ -104,7 +108,7 @@ export const ACTIVITIES = [
     passPrice: 1500,
     passLessons: 10,
     capacity: 10,
-    location: "Posilovna a vzpírárna, ZŠ III Slovákova, Boskovice",
+    venueId: "hala",
     bookingUrl:
       "https://app.tymuj.cz/team-invitation?hash=H66lpnWVfB7trd02IKLM4aEvMc20vZtdW6UVsG4I",
   },

@@ -30,29 +30,30 @@
   <main id="main" tabindex="-1" class="page-shell section">
     <h1 class="page-heading">Kontakt</h1>
 
+    <!-- Dvě místa, ne jedno. Jóga je ve studiu na Bílkově, jumping
+         a kondiční lekce v posilovně u ZŠ Slovákova — dokud tady byla jen
+         jedna adresa, mohl zákazník dojet na jumping na špatné místo.
+         Karty se odvozují z aktivit, takže se seznam nikde neduplikuje.
+         Mapa se nevkládá iframem: klasický output=embed se v ověřovacím
+         setupu projektu nevykresluje spolehlivě a Static Maps API by
+         znamenalo klíč ve veřejném repu a první požadavek na třetí stranu
+         na celém webu. Odkaz vede rovnou na navigaci. -->
+    <section class="section">
+      <h2 class="section-heading">Kde cvičíme</h2>
+      <studio-venues data-studio-venues></studio-venues>
+    </section>
+
     <div class="contact-grid">
       <section class="card contact-card">
         <p class="contact-name">Lenka Nahodilová</p>
         <ul class="contact-list">
-          <li class="contact-list__address">
-            <span class="icon" data-icon="pin" aria-hidden="true"></span>
-            <span class="contact-list__text">
-              <span class="contact-list__label">Jógové studio</span>
-              <span data-contact-address></span>
-            </span>
-          </li>
           <li><span class="icon" data-icon="phone" aria-hidden="true"></span><a data-contact-phone></a></li>
           <li><span class="icon" data-icon="mail" aria-hidden="true"></span><a data-contact-email></a></li>
         </ul>
-        <!-- No embedded map: the classic maps.google.com/maps?...&output=embed
-             iframe doesn't reliably render in this project's headless-Chrome
-             verification setup, so a plain link to Google Maps is used
-             instead of shipping a potentially blank-looking iframe. -->
-        <cta-button data-contact-map-link label="Otevřít v Google Maps"></cta-button>
       </section>
 
       <section class="card contact-form-card">
-        <h2>Napište nám</h2>
+        <h2>Napište mi</h2>
         <form class="contact-form" data-contact-form>
           <label>
             Vaše jméno
