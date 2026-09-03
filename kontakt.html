@@ -4,8 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kontakt – Just Yoga Boskovice</title>
-  <meta name="description" content="Kontakt na Just Yoga a pohybové studio Boskovice – adresa Bílkova 91, telefon 723 466 926, e-mail info@justyoga.cz a kontaktní formulář." />
+  <meta name="description" content="Dvě místa v Boskovicích: jóga ve studiu na Bílkově 91, jumping a kondiční lekce v posilovně ZŠ Slovákova. Telefon 723 466 926, e-mail info@justyoga.cz." />
   <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
+  <!-- Náhled při sdílení. Klientka je aktivní na Facebooku i Instagramu
+       a odkaz na web tam dosud vypadal jako holý text bez obrázku.
+       og:image MUSÍ být absolutní URL — relativní Facebook ignoruje.
+       ⚠️ PŘI NASAZENÍ: doména i cesta se změní (jako motiv skončí obrázek
+       ve wp-content/themes/…, nebo se nahraje do Media Library).
+       ⚠️ canonical a og:url tady schválně NEJSOU: finální slugy ve
+       WordPressu nejsou známé (živý web má /rozvrh a /ceník zvlášť)
+       a špatný canonical dokáže stránku vyřadit z indexu. Doplnit při
+       nasazení spolu s 301 přesměrováním ze starých adres. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:title" content="Kontakt a dvě místa lekcí – Just Yoga Boskovice" />
+  <meta property="og:description" content="Dvě místa v Boskovicích: jóga na Bílkově 91, jumping a kondiční lekce v posilovně ZŠ Slovákova. Zavolejte na 723 466 926 nebo napište." />
+  <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Adresy Just Yoga Boskovice: Bílkova 91 a posilovna ZŠ Slovákova" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="assets/images/favicon-512.png" sizes="512x512" type="image/png" />
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
