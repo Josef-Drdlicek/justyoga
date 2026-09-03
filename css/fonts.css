@@ -1,98 +1,88 @@
-/* Self-hosted brand fonts — Raleway (headings) + Manrope (body), as required
-   by content/brandbook-lenka-web.json.
+/* Self-hosted webfonts — Fraunces (display) + Manrope (body).
 
    Self-hosted rather than loaded from the Google Fonts CDN on purpose: no
    third-party request at runtime (no GDPR question about a font CDN seeing
    visitors' IPs), no render-blocking external hop, and it keeps working once
    the theme is dropped into WordPress. Files come from the @fontsource
-   packages (v5.3.0), which repackage the official Google Fonts releases.
+   packages, which repackage the official Google Fonts releases.
 
-   Both `latin` and `latin-ext` subsets are declared for every weight:
-   Czech diacritics (ř, ě, ů, č, š, ž, á, í, é) live in latin-ext, so
-   dropping it would silently fall back to a system font for exactly the
-   characters this site is full of. The browser downloads a subset only if
-   the page actually uses characters from its unicode-range, so shipping
-   both costs nothing on pages that don't need the extended one.
+   Both `latin` and `latin-ext` subsets are declared for every cut: Czech
+   diacritics (ř, ě, ů, č, š, ž, á, í, é) live in latin-ext, so dropping it
+   would silently fall back to a system font for exactly the characters this
+   site is full of. The browser downloads a subset only if the page actually
+   uses characters from its unicode-range, so shipping both costs nothing on
+   pages that don't need the extended one.
 
-   Weights are limited to those the brandbook actually specifies —
-   Raleway 300/400/500/600, Manrope 400/700. Adding a weight means adding
-   the matching pair of files here, not restyling components. */
+   ⚠️ Fraunces replaces Raleway, which the brandbook names for headings. The
+   reason is in tokens.css: Raleway is a third humanist sans next to Manrope,
+   so the pair carried no contrast, and Raleway 300 at display sizes was the
+   strongest dated signal on the old build. The serif/sans pairing is the
+   change that does most of the visual work — but it does depart from the
+   brandbook and needs the client's nod.
 
-/* --- Raleway (headings) --------------------------------------------- */
+   Three cuts only, and each one has a job:
+     400 roman   body of a heading, section titles
+     400 italic  the first line of the hero H1
+     600 roman   the accent line of the hero H1, prices, emphasis
+   A fourth cut would have to earn its two files. */
 
-@font-face {
-  font-family: "Raleway";
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url(../assets/fonts/raleway-latin-300-normal.woff2) format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
-  font-family: "Raleway";
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url(../assets/fonts/raleway-latin-ext-300-normal.woff2) format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
+/* --- Fraunces (display) --------------------------------------------- */
 
 @font-face {
-  font-family: "Raleway";
+  font-family: "Fraunces";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(../assets/fonts/raleway-latin-400-normal.woff2) format("woff2");
+  src: url(../assets/fonts/fraunces-latin-400-normal.woff2) format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: "Raleway";
+  font-family: "Fraunces";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(../assets/fonts/raleway-latin-ext-400-normal.woff2) format("woff2");
+  src: url(../assets/fonts/fraunces-latin-ext-400-normal.woff2) format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: "Raleway";
-  font-style: normal;
-  font-weight: 500;
+  font-family: "Fraunces";
+  font-style: italic;
+  font-weight: 400;
   font-display: swap;
-  src: url(../assets/fonts/raleway-latin-500-normal.woff2) format("woff2");
+  src: url(../assets/fonts/fraunces-latin-400-italic.woff2) format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: "Raleway";
-  font-style: normal;
-  font-weight: 500;
+  font-family: "Fraunces";
+  font-style: italic;
+  font-weight: 400;
   font-display: swap;
-  src: url(../assets/fonts/raleway-latin-ext-500-normal.woff2) format("woff2");
+  src: url(../assets/fonts/fraunces-latin-ext-400-italic.woff2) format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: "Raleway";
+  font-family: "Fraunces";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url(../assets/fonts/raleway-latin-600-normal.woff2) format("woff2");
+  src: url(../assets/fonts/fraunces-latin-600-normal.woff2) format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: "Raleway";
+  font-family: "Fraunces";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url(../assets/fonts/raleway-latin-ext-600-normal.woff2) format("woff2");
+  src: url(../assets/fonts/fraunces-latin-ext-600-normal.woff2) format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-/* --- Manrope (body / UI) -------------------------------------------- */
+/* --- Manrope (body) -------------------------------------------------- */
 
 @font-face {
   font-family: "Manrope";

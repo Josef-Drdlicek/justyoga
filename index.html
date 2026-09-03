@@ -1,150 +1,178 @@
 <!DOCTYPE html>
 <html lang="cs">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Just Yoga Boskovice – Jóga, Jumping, Tabata</title>
-  <meta name="description" content="Jóga se světelnou terapií, jumping na trampolínách, tabata, HIIT i kruhový trénink v Boskovicích. Lekce pro každou kondici i pro začátečníky." />
-  <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
-  <!-- Náhled při sdílení. Klientka je aktivní na Facebooku i Instagramu
-       a odkaz na web tam dosud vypadal jako holý text bez obrázku.
-       og:image MUSÍ být absolutní URL — relativní Facebook ignoruje.
-       ⚠️ PŘI NASAZENÍ: doména i cesta se změní (jako motiv skončí obrázek
-       ve wp-content/themes/…, nebo se nahraje do Media Library).
-       ⚠️ canonical a og:url tady schválně NEJSOU: finální slugy ve
-       WordPressu nejsou známé (živý web má /rozvrh a /ceník zvlášť)
-       a špatný canonical dokáže stránku vyřadit z indexu. Doplnit při
-       nasazení spolu s 301 přesměrováním ze starých adres. -->
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="cs_CZ" />
-  <meta property="og:title" content="Just Yoga Boskovice – jóga, jumping a HIIT ve třech tempech" />
-  <meta property="og:description" content="Tři tempa, jedno studio: jóga se světelnou terapií, jumping na trampolínách a HIIT v Boskovicích. Vyberte si podle toho, co dnes potřebujete." />
-  <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Lenka Nahodilová v jógové pozici, logo Just Yoga Boskovice a tři tepové zóny" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png" />
-  <link rel="icon" href="assets/images/favicon-512.png" sizes="512x512" type="image/png" />
-  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
-  <!-- Raleway 300 nese H1, tedy LCP text stránky. Bez preloadu ho prohlížeč
-       objeví až po vyhodnocení CSS (měřeno: start ~49 ms). Dva soubory, ne
-       jeden: české nadpisy potřebují latin i latin-ext subset. crossorigin
-       je povinné i pro same-origin fonty — bez něj se preload zahodí
-       a soubor se stáhne dvakrát. -->
-  <link rel="preload" href="assets/fonts/raleway-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="assets/fonts/raleway-latin-ext-300-normal.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="css/fonts.css" />
-  <link rel="stylesheet" href="css/tokens.css" />
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <script type="module" src="js/main.js"></script>
-  <script type="module" src="js/seo.js"></script>
-  <script type="module" src="js/pages/home.js"></script>
-</head>
-<body>
-  <site-header></site-header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Just Yoga Boskovice – jóga, jumping a kruhový trénink</title>
+    <meta
+      name="description"
+      content="Jóga se světelnou terapií, jumping na trampolínách a kruhový trénink v Boskovicích. Vede Lenka Nahodilová. U každého cviku ukážu lehčí i těžší variantu."
+    />
 
-  <!-- Homepage je scroll-story o třech tempech studia. Sekce s atributem
-       data-hr-zone jsou přímé děti <main> a vyplňují ho beze zbytku, takže
-       mezi zónami není mezera, ve které by tep "nebyl doma". Pořadí, tempa,
-       barvy i texty zón žijí v js/data/zones.js — tady je jen kostra. -->
-  <main id="main" tabindex="-1">
-    <section class="zone" data-hr-zone="calm">
-      <div class="hero">
-        <img class="hero__image" src="assets/images/lenka-hero.jpg" alt="Lenka Nahodilová při cvičení jógy" />
-        <div class="hero__scrim"></div>
-        <div class="hero__content">
-          <p class="hero__kicker">Just Yoga a pohybové studio Boskovice</p>
-          <h1>Jóga v Boskovicích pro zdravá záda – i lekce, které nakopnou tep</h1>
-          <p class="hero__tagline">
-            Jóga se světelnou terapií, jumping na trampolínách, tabata, HIIT
-            i kruhový trénink. Tři tempa, jedno studio – vyberte si to, co dnes
-            potřebujete. Přijít můžete i bez kondice a bez zkušeností.
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Just Yoga Boskovice – jóga, jumping a kruhový trénink" />
+    <meta
+      property="og:description"
+      content="Jóga se světelnou terapií, jumping na trampolínách a kruhový trénink v Boskovicích."
+    />
+    <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
+    <meta property="og:locale" content="cs_CZ" />
+    <!-- canonical a og:url schválně chybí: finální slugy pod WordPressem
+         nejsou známé a špatný canonical dokáže stránku vyřadit z indexu.
+         Viz checklist nasazení v CLAUDE.md. -->
+
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
+
+    <!-- Display face is above the fold in the H1, so it is preloaded; the
+         body face is not, because Manrope only appears below the heading. -->
+    <link
+      rel="preload"
+      href="assets/fonts/fraunces-latin-400-italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+
+    <script type="module" src="js/pages/home.js"></script>
+    <script type="module" src="js/seo.js"></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Přeskočit na obsah</a>
+
+    <div data-site-header></div>
+
+    <main id="main" tabindex="-1">
+      <!-- Hero ------------------------------------------------------
+           The H1 is built from two cuts of the same serif — an italic
+           line and a roman accent line in the brand's berry. One face,
+           two voices; this is the construction that carries the page. -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="shell shell--wide hero__inner">
+          <div class="hero__content">
+            <span class="eyebrow">Boskovice</span>
+            <h1 id="hero-title" class="hero__title">
+              <span class="hero__title-main">Pohyb, který si</span>
+              <span class="hero__title-accent">dávkujete sami</span>
+            </h1>
+            <p class="hero__lede">
+              Vedu jógu se světelnou terapií, jumping na trampolínách a kruhový
+              trénink. U každého cviku ukážu lehčí i těžší variantu, takže
+              cvičíte podle svých možností — ne podle někoho vedle vás.
+            </p>
+            <div class="hero__actions">
+              <a class="btn btn--primary" href="rozvrh-cenik.html#rozvrh">Zobrazit rozvrh</a>
+              <a class="btn btn--ghost" href="#poprve">Jdu poprvé</a>
+            </div>
+          </div>
+
+          <figure class="hero__media">
+            <img
+              src="assets/images/lenka-hero.jpg"
+              alt="Lenka Nahodilová při cvičení jógy ve studiu"
+              class="hero__image"
+              width="1600"
+              height="1200"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <!-- Týden ----------------------------------------------------- -->
+      <section class="section band--alt" aria-labelledby="week-title">
+        <div class="shell">
+          <header class="section__head" data-reveal>
+            <span class="eyebrow">Rozvrh</span>
+            <h2 id="week-title">Kdy se cvičí</h2>
+            <hr class="rule" />
+            <p class="lede">
+              Stálý týdenní rozvrh. Rezervace běží v samostatném systému, který
+              se otevře v novém okně.
+            </p>
+          </header>
+
+          <div data-week></div>
+
+          <p class="section__foot">
+            <a class="btn btn--primary" href="rozvrh-cenik.html#rozvrh">Rozvrh a ceník</a>
           </p>
-          <cta-button href="rozvrh-cenik.html" label="Zobrazit rozvrh a ceník"></cta-button>
         </div>
-      </div>
-
-      <!-- Aktuality i časté otázky začínají skryté a odkrývá je
-           js/pages/home.js, jen když pro ně existuje obsah (news.js / faq.js) —
-           vyprázdnění dat tak nenechá na stránce osamocený nadpis. -->
-      <section class="section page-shell" data-news-section hidden>
-        <h3 class="section-heading">Aktuality</h3>
-        <news-board data-news-board></news-board>
       </section>
 
-      <div class="section page-shell zone__body">
-        <p class="zone__slogan" data-zone-slogan></p>
-        <h2 class="zone__heading" data-zone-heading></h2>
-        <p class="zone__intro lede" data-zone-intro></p>
-        <div class="activities-grid" data-zone-grid></div>
-      </div>
-    </section>
+      <!-- Aktivity -------------------------------------------------- -->
+      <section class="section" id="lekce" aria-labelledby="activities-title">
+        <div class="shell">
+          <header class="section__head" data-reveal>
+            <span class="eyebrow">Co u mě můžete cvičit</span>
+            <h2 id="activities-title">Tři tempa, jedno studio</h2>
+            <hr class="rule" />
+          </header>
 
-    <!-- Most. Tep tady poprvé zrychlí (75 → 100) a tenhle text vysvětlí,
-         proč se kolečko dalo do pohybu — proto stojí přesně mezi klidnou
-         a rozpohybovanou zónou, ne na konci stránky. -->
-    <section class="zone zone--bridge" data-hr-zone="bridge">
-      <div class="section page-shell zone__body">
-        <h2 class="zone__heading zone__heading--bridge" data-zone-heading></h2>
-        <p class="zone__body-text" data-zone-body></p>
-      </div>
-    </section>
-
-    <section class="zone" data-hr-zone="move">
-      <div class="section page-shell zone__body">
-        <p class="zone__slogan" data-zone-slogan></p>
-        <h2 class="zone__heading" data-zone-heading></h2>
-        <p class="zone__intro lede" data-zone-intro></p>
-        <div class="activities-grid" data-zone-grid></div>
-      </div>
-    </section>
-
-    <section class="zone" data-hr-zone="burn">
-      <div class="section page-shell zone__body">
-        <p class="zone__slogan" data-zone-slogan></p>
-        <h2 class="zone__heading" data-zone-heading></h2>
-        <p class="zone__intro lede" data-zone-intro></p>
-        <div class="activities-grid" data-zone-grid></div>
-      </div>
-    </section>
-
-    <!-- Závěrečná zóna: tep se ustálí a stránka nabídne, co dělat dál.
-         FAQ je tady schválně — odpovídá na námitky těsně před rezervací
-         a zároveň dává doběhu tepu ze 170 dost prostoru, aby vypadal jako
-         zklidnění, ne jako porucha. -->
-    <section class="zone zone--cta" data-hr-zone="cta">
-      <section class="section page-shell" data-faq-section hidden>
-        <h3 class="section-heading">Časté otázky</h3>
-        <faq-list data-faq-list></faq-list>
+          <div data-activities></div>
+        </div>
       </section>
 
-      <div class="section page-shell zone__body cta-final">
-        <h2 class="zone__heading" data-zone-heading></h2>
-        <p class="zone__intro lede" data-zone-intro></p>
-        <div class="cta-actions">
-          <cta-button href="rozvrh-cenik.html" label="Zobrazit rozvrh a rezervovat"></cta-button>
-          <cta-button data-cta-phone variant="accent"></cta-button>
+      <!-- Editorial ------------------------------------------------- -->
+      <section class="section band--dark editorial" aria-labelledby="editorial-title">
+        <div class="shell shell--narrow">
+          <h2 id="editorial-title" class="editorial__quote">
+            Nejde o to, jak hluboko se ohnete. Jde o to, že jste přišli.
+          </h2>
+          <p class="editorial__by">Lenka Nahodilová</p>
         </div>
-        <p class="section-note" data-cta-note></p>
-      </div>
+      </section>
 
-      <!-- Adresa a navigace přímo v závěrečném CTA, jak si přála klientka.
-           Dvě karty proto, že studio má dvě místa — viz komentář
-           v js/data/venues.js. -->
-      <div class="section page-shell">
-        <h3 class="section-heading">Kde nás najdete</h3>
-        <studio-venues data-studio-venues></studio-venues>
-      </div>
-    </section>
-  </main>
+      <!-- Poprvé ---------------------------------------------------- -->
+      <section class="section" id="poprve" aria-labelledby="first-title">
+        <div class="shell">
+          <header class="section__head" data-reveal>
+            <span class="eyebrow">Jdete poprvé</span>
+            <h2 id="first-title">Jak to u mě chodí</h2>
+            <hr class="rule" />
+          </header>
 
-  <site-footer></site-footer>
+          <div data-steps></div>
+        </div>
+      </section>
 
-  <!-- MUSÍ zůstat přímým potomkem <body>: position: fixed se zasekne uvnitř
-       předka s transform, filter nebo contain, což je reálné riziko, jakmile
-       tenhle web obalí WordPress motiv. Viz komentář v komponentě. -->
-  <heart-rate-meter></heart-rate-meter>
-</body>
+      <!-- FAQ ------------------------------------------------------- -->
+      <section class="section band--alt" aria-labelledby="faq-title">
+        <div class="shell shell--narrow">
+          <header class="section__head" data-reveal>
+            <span class="eyebrow">Časté otázky</span>
+            <h2 id="faq-title">Na co se ptáte nejčastěji</h2>
+            <hr class="rule" />
+          </header>
+
+          <div data-faq></div>
+        </div>
+      </section>
+
+      <!-- Kde ------------------------------------------------------- -->
+      <section class="section" id="kde" aria-labelledby="venues-title">
+        <div class="shell">
+          <header class="section__head" data-reveal>
+            <span class="eyebrow">Kde cvičíme</span>
+            <h2 id="venues-title">Dvě adresy, ne jedna</h2>
+            <hr class="rule" />
+            <p class="lede">
+              Jóga je v jógovém studiu na Bílkově. Jumping a kondiční lekce jsou
+              v posilovně u ZŠ Slovákova. Před první lekcí si zkontrolujte, kam
+              jdete.
+            </p>
+          </header>
+
+          <div data-venues></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-site-footer></div>
+  </body>
 </html>

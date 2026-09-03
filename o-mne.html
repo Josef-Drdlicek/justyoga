@@ -1,99 +1,136 @@
 <!DOCTYPE html>
 <html lang="cs">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>O mně – Just Yoga Boskovice</title>
-  <meta name="description" content="Lenka Nahodilová – učitelka jógy III. třídy, lektorka jumpingu a trenérka TRX v Boskovicích. Vedu jógu, jumping i kondiční lekce pro každou kondici." />
-  <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
-  <!-- Náhled při sdílení. Klientka je aktivní na Facebooku i Instagramu
-       a odkaz na web tam dosud vypadal jako holý text bez obrázku.
-       og:image MUSÍ být absolutní URL — relativní Facebook ignoruje.
-       ⚠️ PŘI NASAZENÍ: doména i cesta se změní (jako motiv skončí obrázek
-       ve wp-content/themes/…, nebo se nahraje do Media Library).
-       ⚠️ canonical a og:url tady schválně NEJSOU: finální slugy ve
-       WordPressu nejsou známé (živý web má /rozvrh a /ceník zvlášť)
-       a špatný canonical dokáže stránku vyřadit z indexu. Doplnit při
-       nasazení spolu s 301 přesměrováním ze starých adres. -->
-  <meta property="og:type" content="profile" />
-  <meta property="og:locale" content="cs_CZ" />
-  <meta property="og:title" content="Lenka Nahodilová – lektorka jógy a jumpingu v Boskovicích" />
-  <meta property="og:description" content="Učitelka jógy III. třídy, lektorka jumpingu a licencovaná trenérka TRX. U mě v Boskovicích si tempo určujete vy – ať cvičíte poprvé, nebo roky." />
-  <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Lenka Nahodilová, učitelka jógy III. třídy, ve studiu v Boskovicích" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png" />
-  <link rel="icon" href="assets/images/favicon-512.png" sizes="512x512" type="image/png" />
-  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
-  <!-- Raleway 300 nese H1, tedy LCP text stránky. Bez preloadu ho prohlížeč
-       objeví až po vyhodnocení CSS (měřeno: start ~49 ms). Dva soubory, ne
-       jeden: české nadpisy potřebují latin i latin-ext subset. crossorigin
-       je povinné i pro same-origin fonty — bez něj se preload zahodí
-       a soubor se stáhne dvakrát. -->
-  <link rel="preload" href="assets/fonts/raleway-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="assets/fonts/raleway-latin-ext-300-normal.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="css/fonts.css" />
-  <link rel="stylesheet" href="css/tokens.css" />
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <script type="module" src="js/main.js"></script>
-  <script type="module" src="js/seo.js"></script>
-  <script type="module" src="js/pages/o-mne.js"></script>
-</head>
-<body>
-  <site-header></site-header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>O mně – Lenka Nahodilová, Just Yoga Boskovice</title>
+    <meta
+      name="description"
+      content="Lenka Nahodilová, učitelka jógy III. třídy, instruktorka jógy a jumpingu a trenérka TRX. Vedu všechny lekce v Just Yoga Boskovice sama."
+    />
 
-  <main id="main" tabindex="-1" class="page-shell section">
-    <div class="bio">
-      <h1 class="bio__heading page-heading">
-        Provázím vás pohybem k lepší kondici, zdraví i vnitřnímu klidu
-      </h1>
-      <img
-        class="bio__photo bio__photo--portrait"
-        src="assets/images/lenka-o-mne-meditace.jpg"
-        alt="Lenka Nahodilová v meditačním sedu"
-      />
-      <div class="bio__text">
-        <p class="bio__lead">
-          Dobrý den, jmenuji se Lenka. Moje lekce v Boskovicích nejsou o dokonalých
-          pozicích z Instagramu, ale o vás. Věřím, že pohyb má přinášet radost,
-          uvolnění od každodenních povinností a novou energii do života. Jógu,
-          jumping, tabatu, HIIT i kruhové tréninky učím tak, jak to sama cítím –
-          upřímně, od srdce a s respektem k možnostem vašeho těla.
-        </p>
-        <p>
-          <strong>Odbornost a kvalita pro vaše bezpečí:</strong> Jsem učitelkou jógy
-          III. třídy, certifikovanou instruktorkou jógy a jumpingu a licencovanou
-          trenérkou TRX. Dohlížím na to, aby pro vás byl každý pohyb bezpečný,
-          zdravý a anatomicky správně provedený.
-        </p>
-        <p>
-          <strong>Lekce na míru vaší kondici:</strong> Každý trénink přizpůsobuji
-          tomu, kdo na něj zrovna přijde. Ať už s pohybem začínáte, nebo makáte
-          roky, pro každý cvik vám ukážu snazší i pokročilejší variantu. Tempo si
-          určujete vždy vy sami.
-        </p>
-        <p>
-          <strong>Restart pro tělo i mysl:</strong> Pomohu vám na chvíli vypnout od
-          pracovního i osobního kolotoče starostí, protáhnout ztuhlé svaly ze sezení
-          a domů odejít s lehkostí, čistou hlavou a novou vlnou energie.
-        </p>
-      </div>
-      <img
-        class="bio__photo bio__photo--wide"
-        src="assets/images/lenka-o-mne-protazeni.jpg"
-        alt="Lenka Nahodilová při protažení na podložce"
-      />
-    </div>
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
+    <meta property="og:title" content="O mně – Lenka Nahodilová, Just Yoga Boskovice" />
+    <meta
+      property="og:description"
+      content="Učitelka jógy III. třídy, instruktorka jumpingu a trenérka TRX. Vedu všechny lekce sama."
+    />
+    <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
+    <meta property="og:locale" content="cs_CZ" />
 
-    <section class="media-section">
-      <h2 class="section-heading">Fotky a videa</h2>
-      <media-gallery data-media-gallery></media-gallery>
-    </section>
-  </main>
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
 
-  <site-footer></site-footer>
-</body>
+    <link
+      rel="preload"
+      href="assets/fonts/fraunces-latin-400-italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+
+    <script type="module" src="js/pages/o-mne.js"></script>
+    <script type="module" src="js/seo.js"></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Přeskočit na obsah</a>
+
+    <div data-site-header></div>
+
+    <main id="main" tabindex="-1">
+      <section class="section bio" aria-labelledby="bio-title">
+        <div class="shell shell--wide bio__inner">
+          <div class="bio__text">
+            <span class="eyebrow">O mně</span>
+            <h1 id="bio-title" class="bio__title">
+              <span class="hero__title-main">Jmenuji se Lenka</span>
+              <span class="hero__title-accent">a vedu všechny lekce sama</span>
+            </h1>
+            <p class="lede">
+              Jsem učitelka jógy III. třídy, certifikovaná instruktorka jógy
+              a jumpingu a licencovaná trenérka TRX. Každou lekci skládám podle
+              toho, kdo na ni přijde.
+            </p>
+          </div>
+
+          <figure class="bio__figure">
+            <img
+              src="assets/images/lenka-o-mne-meditace.jpg"
+              alt="Lenka Nahodilová v meditačním sedu"
+              class="bio__photo"
+              width="1200"
+              height="1500"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section band--alt" aria-labelledby="approach-title">
+        <div class="shell">
+          <header class="section__head" data-reveal>
+            <h2 id="approach-title">Jak učím</h2>
+            <hr class="rule" />
+          </header>
+
+          <div class="approach">
+            <article class="approach__item" data-reveal style="--reveal-index: 0">
+              <h3>Bezpečně a anatomicky správně</h3>
+              <p class="muted">
+                Dohlížím na to, aby byl každý pohyb bezpečný a zdravý. To je celý
+                důvod, proč mám za sebou výcviky, které mám.
+              </p>
+            </article>
+
+            <article class="approach__item" data-reveal style="--reveal-index: 1">
+              <h3>Podle vaší kondice, ne podle skupiny</h3>
+              <p class="muted">
+                Ať s pohybem začínáte, nebo makáte roky, u každého cviku vám
+                ukážu snazší i pokročilejší variantu. Tempo si určujete vy.
+              </p>
+            </article>
+
+            <article class="approach__item" data-reveal style="--reveal-index: 2">
+              <h3>Restart pro tělo i hlavu</h3>
+              <p class="muted">
+                Protáhnete ztuhlé svaly ze sezení, na chvíli vypnete od
+                starostí a odejdete s čistou hlavou.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="gallery-title">
+        <div class="shell">
+          <header class="section__head" data-reveal>
+            <span class="eyebrow">Ze studia</span>
+            <h2 id="gallery-title">Jak to u nás vypadá</h2>
+            <hr class="rule" />
+          </header>
+
+          <div data-gallery></div>
+        </div>
+      </section>
+
+      <section class="section band--alt" aria-labelledby="videos-title">
+        <div class="shell">
+          <header class="section__head" data-reveal>
+            <h2 id="videos-title">Videa z lekcí</h2>
+            <hr class="rule" />
+          </header>
+
+          <div data-videos></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-site-footer></div>
+  </body>
 </html>

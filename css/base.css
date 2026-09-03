@@ -1,163 +1,389 @@
+/* Reset, element defaults and the small set of primitives every page reuses.
+   Everything here is light DOM: the redesign dropped Shadow DOM from the
+   components, so one stylesheet can finally set the visual language once
+   instead of twelve copies agreeing with each other by hand. */
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Anchored sections must not slide under the sticky header. */
+  scroll-padding-top: 6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
+  margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Heading weights follow the brandbook's usage rules for Raleway, which are
-   size-dependent rather than level-dependent: Light (300) is specified for
-   "28px and above only", because the thin cut turns fragile at small sizes.
-   So h1/h2 (40px/32px) get 300 for the elegant look, while h3 (20px) drops
-   to Medium (500), where readability wins over elegance. */
+/* --- Headings -------------------------------------------------------
+   All display face, all with tracking pulled in. The tighter the size,
+   the more negative the tracking: at 5rem the default spacing of a serif
+   reads as gappy, at 1.25rem it reads as correct. This size-dependent
+   tracking is the difference between type that looks set and type that
+   looks typed. */
+
 h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-heading);
-  line-height: 1.2;
-  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-weight: 400;
   color: var(--color-text);
+  margin: 0 0 var(--space-4);
   overflow-wrap: break-word;
+  text-wrap: balance;
 }
 
 h1 {
-  font-size: var(--font-size-3xl);
-  font-weight: 300;
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
 }
+
 h2 {
-  font-size: var(--font-size-2xl);
-  font-weight: 300;
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
 }
+
 h3 {
-  font-size: var(--font-size-xl);
-  font-weight: 500;
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
 }
+
 h4 {
-  font-weight: 500;
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
 }
 
 p {
   margin: 0 0 var(--space-4);
 }
 
-/* Berry rather than the (darker) primary: --color-primary-dark sits so close
-   to --color-text that links would be told apart only by their underline.
-   Berry is the palette's interactive color — same one the Rezervovat buttons
-   use — and clears AA on the page background at ~5.7:1. */
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* Berry rather than the plum primary: plum sits so close to the body text
+   color that links would be told apart only by their underline. Berry is
+   the palette's interactive color and clears AA on every page surface
+   (5.50 on the page band, 5.08 on the alternate band). */
 a {
   color: var(--color-accent);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: color var(--transition-fast);
 }
 
-img {
-  max-width: 100%;
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+img,
+picture,
+video,
+svg {
   display: block;
+  max-width: 100%;
 }
 
-ul {
+ul,
+ol {
   margin: 0;
   padding: 0;
 }
 
-.page-shell {
-  max-width: var(--content-max-width);
-  margin: 0 auto;
-  padding: 0 var(--space-5);
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* One focus recipe for the whole site. Elements clipped by an overflow
+   container set --focus-offset to a negative value rather than writing
+   their own outline — an outline written by hand drifts from this one the
+   first time either changes. */
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--color-berry);
+  color: var(--color-text-inverse);
+}
+
+/* --- Layout primitives ---------------------------------------------- */
+
+.shell {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.shell--wide {
+  max-width: var(--container-wide);
+}
+
+.shell--narrow {
+  max-width: var(--container-narrow);
 }
 
 .section {
-  /* padding-block only sets top/bottom — plain `padding` here would zero
-     out the left/right padding .page-shell sets on the same element,
-     since both are shorthands touching all four sides and only the one
-     declared later in the cascade would win. */
-  padding-block: var(--space-7);
+  padding-block: var(--space-section);
 }
 
-/* Page H1 centered on its own (not inside an already-centered layout like
-   .hero) — reused across every page whose heading should sit mid-page. */
-.page-heading {
-  text-align: center;
+/* Depth comes from alternating bands, not from shadows — this is the
+   mechanism that replaces the flat single background of the old build.
+   A band is a full-bleed background; the .shell inside keeps the measure. */
+.band--alt {
+  background: var(--color-bg-alt);
 }
 
-/* Enlarged, centered intro paragraph directly under a .page-heading —
-   still a <p>, not another heading level, so it doesn't compete with the
-   page's real <h2> section titles below it. */
+.band--dark {
+  background: var(--color-plum);
+  color: var(--color-text-inverse);
+}
+
+.band--dark h1,
+.band--dark h2,
+.band--dark h3,
+.band--dark h4 {
+  color: var(--color-text-inverse);
+}
+
+.band--dark .eyebrow {
+  color: color-mix(in srgb, var(--color-text-inverse) 72%, transparent);
+}
+
+.band--dark .lede,
+.band--dark .muted {
+  color: color-mix(in srgb, var(--color-text-inverse) 82%, transparent);
+}
+
+/* --- Type primitives ------------------------------------------------- */
+
+/* Small tracked-out label above a heading. The old build had no tracking
+   tokens at all, which is why it had no way to write one of these. */
+.eyebrow {
+  display: block;
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
 .lede {
-  font-size: var(--font-size-lg);
-  text-align: center;
-  max-width: 40rem;
-  margin-inline: auto;
+  max-width: var(--measure);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-muted);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+.measure-narrow {
+  max-width: var(--measure-narrow);
+}
+
+/* The one flourish coral is allowed: a short rule under a section heading.
+   At 3.12:1 coral may draw shapes but never carry text. */
+.rule {
+  width: 3.5rem;
+  height: 2px;
+  border: 0;
+  margin: 0 0 var(--space-5);
+  background: var(--color-coral);
 }
 
 .visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
+  padding: 0;
   overflow: hidden;
-  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
   white-space: nowrap;
+  border: 0;
 }
 
-/* Generic "boxed content" look, reused by plain light-DOM page markup
-   (e.g. kontakt.html's two contact/form blocks). Same visual language as
-   the Shadow-DOM .card rules in activity-card.js and pricing-cards.js —
-   Shadow DOM can't share a CSS class across its boundary, so this is the
-   light-DOM counterpart of that same recipe rather than a new one. */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-4);
+  z-index: var(--z-skiplink);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-overlay);
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+/* --- Buttons ---------------------------------------------------------
+   Two levels only. The pill radius is deliberately not used here: fully
+   round buttons on pastel cards were a large part of the old "coloring
+   book" read. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.9em 1.6em;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse); /* 13.05 */
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: var(--color-text-inverse);
+}
+
+.btn--accent {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-inverse); /* 5.67 */
+}
+
+.btn--accent:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  color: var(--color-text-inverse);
+}
+
+/* Outline variant. Its border is the brand text color at low alpha rather
+   than coral — coral would fail as a boundary a keyboard user must see. */
+.btn--ghost {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.btn--ghost:hover {
+  background: var(--color-surface);
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.band--dark .btn--ghost {
+  border-color: color-mix(in srgb, var(--color-text-inverse) 40%, transparent);
+  color: var(--color-text-inverse);
+}
+
+.band--dark .btn--ghost:hover {
+  background: color-mix(in srgb, var(--color-text-inverse) 12%, transparent);
+  border-color: var(--color-text-inverse);
+  color: var(--color-text-inverse);
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+/* --- Card ------------------------------------------------------------
+   One card recipe for the whole site. The old build had four near-copies
+   of this in four component stylesheets. */
+
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-hairline);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
   padding: var(--space-5);
 }
 
-/* Light-DOM counterpart of <cta-button>'s .primary look, for cases that
-   need a real <button> (e.g. a form submit control) rather than a link —
-   <cta-button> renders an <a> and isn't appropriate for triggering native
-   form submission/validation. Same tokens as cta-button.js's .primary. */
-.btn {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  padding: var(--space-3) var(--space-5);
-  border: none;
-  border-radius: var(--radius-lg);
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
-  font: inherit;
-  /* Buttons are headings-font per the brandbook (Raleway), SemiBold 600 —
-     the weight it reserves for emphasis like CTAs and prices. */
-  font-family: var(--font-heading);
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
-    background var(--transition-fast);
+/* Interactive cards get the one place a shadow is allowed — see the note
+   on --shadow-raise in tokens.css. */
+.card--raise {
+  transition: border-color var(--transition-fast), box-shadow var(--transition-base),
+    translate var(--transition-base);
 }
 
-.btn:hover,
-.btn:focus-visible {
-  background: var(--color-primary-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+.card--raise:hover,
+.card--raise:focus-within {
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-raise);
+  translate: 0 -3px;
 }
 
-/* Prstenec zvlášť od hover stavu výše: posun o 1 px focus neoznačí
-   a --shadow-sm je v plochém brandu `none`, takže samotný hover efekt
-   nebyl pro klávesnici viditelný. Stejný problém měl cta-button. */
-.btn:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
+/* --- Reveal on scroll ------------------------------------------------
+   Blocks only, never individual words. js/reveal.js adds .is-in when the
+   element enters the viewport and then stops observing it. Elements keep
+   their final look if JS never runs, so nothing depends on the script. */
+
+/* The hidden state is scoped to .js, which reveal.js sets on <html> as its
+   first act. Written as a bare [data-reveal] rule it would hide content for
+   good in any context where the observer never runs — a crawler, a headless
+   render, a browser that errored earlier in the module graph. Content is
+   visible unless something is definitely there to reveal it. */
+.js [data-reveal] {
+  opacity: 0;
+  translate: 0 var(--reveal-shift);
+  transition: opacity var(--transition-slow), translate var(--transition-slow);
+  transition-delay: calc(var(--stagger-step) * var(--reveal-index, 0));
+}
+
+.js [data-reveal].is-in {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    opacity: 1;
+    translate: 0 0;
+  }
 }

@@ -7,10 +7,6 @@
 //
 // Shape notes:
 //   name         – full name (ceník heading, alt text)
-//   zone         – do které tepové zóny scroll-story na homepage aktivita
-//                  patří (viz js/data/zones.js). Vazba jde odsud k zónám,
-//                  ne naopak — zones.js o aktivitách neví nic, takže nová
-//                  aktivita si zónu určí sama jedním řádkem.
 //   shortName    – optional, used where space is tight (schedule cards)
 //   logo         – { src, width, height }; rozměry jsou v datech proto, že
 //                  karta určuje výšku loga a šířku nechává na "auto", takže
@@ -28,10 +24,19 @@
 //                  strukturovaná data i navigační odkazy potřebují složky.
 //   capacity     – ⚠️ 10 je číslo z příkladu klientky, ne potvrzený počet míst
 //                  u každé aktivity; nechat ověřit před nasazením na produkci
+//   bookingUrl   – ⚠️ ŽÁDNÁ z těchto adres nevede na konkrétní termín.
+//                  Jóga i kondiční lekce míří na app.tymuj.cz/team-invitation,
+//                  tedy na POZVÁNKU DO TÝMU (registrační obrazovka), jumping
+//                  na kořen rezervačního systému. Návštěvník klikne u úterní
+//                  lekce a dostane rozcestník — je to nejdražší tření na celém
+//                  webu a s redesignem nesouvisí.
+//                  [ZJISTIT u klientky: umí Tymuj vygenerovat veřejný odkaz
+//                  na kalendář nebo přímo na termín? Totéž u chytre-rezervace.]
+//                  Do té doby tlačítko alespoň nelže — viz renderBooking()
+//                  v js/ui/sections.js, které je popisuje jako odchod ze webu.
 export const ACTIVITIES = [
   {
     id: "joga",
-    zone: "calm",
     name: "Jóga a světelná terapie",
     shortName: "Jóga",
     logo: { src: "assets/images/logo-just-yoga.png", width: 788, height: 482 },
@@ -47,7 +52,6 @@ export const ACTIVITIES = [
       "Světelná terapie při závěrečné relaxaci",
       "Klidná hlava a nová energie do dalších dní",
     ],
-    ctaLabel: "Chci začít 🧘",
     durationMinutes: 75,
     pricePerLesson: 210,
     passPrice: 1900,
@@ -59,7 +63,6 @@ export const ACTIVITIES = [
   },
   {
     id: "jumping",
-    zone: "burn",
     name: "Jumping",
     logo: { src: "assets/images/logo-jump.png", width: 788, height: 482 },
     headline: "Naberte čistou energii a vyskočte ze stereotypu!",
@@ -72,7 +75,6 @@ export const ACTIVITIES = [
       "Zábava místo nudného kardia",
       "Skvělá parta, která vás potáhne",
     ],
-    ctaLabel: "Jdu do toho! 🚀",
     durationMinutes: 60,
     pricePerLesson: 150,
     passPrice: 1400,
@@ -83,7 +85,6 @@ export const ACTIVITIES = [
   },
   {
     id: "tabata",
-    zone: "move",
     name: "Tabata, HIIT a kruhový trénink",
     shortName: "Tabata / HIIT",
     logo: { src: "assets/images/logo-tabata.png", width: 848, height: 482 },
@@ -102,7 +103,6 @@ export const ACTIVITIES = [
     note:
       "Je to vaše první lekce? Žádný strach. Kruhový trénink i intervaly jsou " +
       "postavené tak, že si zátěž i rychlost dávkujete úplně sami podle chuti.",
-    ctaLabel: "Chci to vyzkoušet ⚡",
     durationMinutes: 60,
     pricePerLesson: 170,
     passPrice: 1500,

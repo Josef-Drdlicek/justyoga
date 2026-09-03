@@ -1,226 +1,210 @@
-/* Design tokens — single source of truth for color, spacing, type.
-   Values taken from the client's brandbook (content/brandbook-lenka-web.json,
-   exported from Figma). Change values here only — components read var(--...),
-   nothing hardcodes colors/spacing/radii/breakpoints elsewhere. */
+/* Design tokens — the only place colors, type, spacing and shape are defined.
+   Values trace back to content/brandbook-lenka-web.json.
+
+   The brandbook's own wording drives the structure here: it calls the palette
+   "warm off-white background with dusty rose / terracotta accents, berry as
+   brand accent, mint and yellow as complementary POPS". Pops — not equals.
+   The previous build tinted three lesson cards with mint, coral and peach at
+   the same strength, which read as three competing colors rather than one
+   brand with an accent. This file instead lays the warm red family out as a
+   single tonal ramp (the brand's own coral → plum axis) and keeps mint and
+   yellow for marks a few pixels wide. */
+
 :root {
-  /* Color — brand palette, straight from the brandbook. These are the raw
-     named values; the functional aliases below are what components use, so
-     re-pointing a role (e.g. which color a button takes) is a one-line
-     change here and never a hunt through components. */
-  --color-white: #ffffff;
-  --color-coral: #e86667; /* logo.primary */
-  --color-coral-dark: #e44443; /* logo.red2 */
-  --color-plum: #402b32; /* logo.dark */
-  --color-berry: #a9436b; /* main.berry — "brand accent" per brandbook */
-  --color-mint: #51d3a7; /* main.mint */
-  --color-yellow: #ffd47d; /* main.yellow */
-  --color-blush: #ffe8e8; /* secondary.blush */
-  --color-linen: #ffe5d9; /* secondary.linen */
-  --color-peach: #ffac86; /* main.peach — z brandbooku, dosud nepromovaný na token */
+  /* === Tonal ramp ===
+     One warm family, ten steps, walking the brand's own axis: the off-white
+     background (#fcfaf8) at the top, the brandbook's text/darkSurface value
+     (#2c1f25) at the bottom, passing through the blush and dusty-rose tones
+     the brandbook names. Every surface and every text color on the site is
+     one of these — that is what makes the page read as one material rather
+     than as boxes of unrelated color.
 
-  /* Color — functional (aliases used by components) */
-  --color-bg: #fcfaf8; /* brandbook: warm off-white background */
-  /* Cards sit on the warm off-white page background. Plain white reads as
-     a raised surface against it even with shadows switched off (see the
-     Elevation block below) — the brandbook mandates a flat, shadowless look. */
-  --color-surface: var(--color-white);
-  /* Subtle tint derived directly from --color-surface (not a standalone
-     hex) — used to alternate blocks of rows that belong together, e.g.
-     one day's lessons in the schedule table. Deriving from the surface
-     itself keeps it recognizably the same surface as elsewhere, just a few
-     percent darker, rather than a different hue. */
-  --color-surface-alt: color-mix(in srgb, var(--color-surface), var(--color-text) 4%);
-  --color-text: #2c1f25; /* brandbook: text / darkSurface */
-  /* Muted text and borders are mixed from the brand's own text + background
-     rather than being separate greys — they stay in the warm plum family
-     instead of drifting to a neutral grey that fights the palette.
+     Relative luminance of each step (measured, not eyeballed):
+       50  .968   100 .891   200 .757   300 .582   400 .385
+       500 .223   600 .134   700 .075   800 .042   900 .017 */
+  --ramp-50: #fdfbfa;
+  --ramp-100: #f8f1ef;
+  --ramp-200: #efdedb;
+  --ramp-300: #e0c2bf;
+  --ramp-400: #c99c99;
+  --ramp-500: #a9756f;
+  --ramp-600: #8a5a57;
+  --ramp-700: #6b4245;
+  --ramp-800: #4e3238;
+  --ramp-900: #2c1f25;
 
-     The background share is 30 %, and that number is measured, not chosen
-     by eye. This token carries real content — lesson taglines, lesson
-     venues, pass prices, form field labels and the whole footer — so it
-     must clear WCAG AA (4.5:1) against EVERY surface it sits on, and the
-     tinted lesson cards are far darker than the page:
+  /* === Brand accents ===
+     Kept at their exact brandbook values. These never fill a large area —
+     they mark things. Measured contrast decides what each one may do:
 
-        share   color     worst surface (karta Tabata #f3e5ea)
-        45 %    #8a8284   3.08  ✗   <- what it used to be
-        35 %    #756c6f   4.18  ✗
-        32 %    #6f6569   4.60  ✓   first passing value
-        30 %    #6a6164   4.90  ✓   <- chosen, keeps headroom
-        25 %    #60565a   5.79  ✓
+       berry  #a9436b  5.50 on ramp-50, white label on it 5.67  → text + filled button
+       coral  #e86667  3.12 on ramp-50                          → decorative only
+       mint   #51d3a7  1.81 on ramp-50                          → dots/marks only
+       yellow #ffd47d  1.36 on ramp-50                          → dots/marks only
 
-     Measured against 7 surfaces (page, white card, all three lesson-card
-     tints, linen badge, blush) with the project's headless-Chrome canvas
-     method. If this value changes, re-measure — do not eyeball it. */
-  --color-text-muted: color-mix(in srgb, var(--color-text), var(--color-bg) 30%);
-  --color-border: color-mix(in srgb, var(--color-text) 12%, var(--color-bg));
-  /* A deliberately heavier edge for the one surface that genuinely floats
-     over page content (the mobile nav panel) — the flat brand has no
-     shadows, so that panel needs a visible outline to read as an overlay.
-     It used to borrow --color-text-muted, which tied the panel's look to a
-     text-contrast decision: darkening the text for WCAG also redrew the
-     navigation. Same value as that token had before, now with its own
-     name and its own reason to change. */
-  --color-border-strong: color-mix(in srgb, var(--color-text) 55%, var(--color-bg));
-  /* Primary = plum, accent = berry. Both are deliberately dark enough to
-     carry white label text at WCAG AA (plum ~13:1, berry ~6.4:1). Coral is
-     the logo/decorative color only — at ~3.3:1 against white it must never
-     be used as a filled button or as text. */
-  --color-primary: var(--color-plum);
-  --color-primary-dark: color-mix(in srgb, var(--color-plum), #000 25%);
-  --color-primary-contrast: var(--color-white);
-  --color-accent: var(--color-berry);
-  --color-accent-dark: color-mix(in srgb, var(--color-berry), #000 18%);
+     Coral is the logo color. At 3.12 it fails AA for body text and fails as a
+     filled button with a white label — it may only draw shapes: rules, dots,
+     the underline flourish. This is the same conclusion the previous build
+     reached; it is restated here because it is easy to undo by accident. */
+  --color-coral: #e86667;
+  --color-berry: #a9436b;
+  --color-mint: #51d3a7;
+  --color-yellow: #ffd47d;
+  --color-plum: #402b32;
 
-  /* Color — lesson type (rozvrh/ceník cards). Hues come straight from the
-     brandbook's main palette — green/yellow/purple as the client asked, no
-     invented colors.
+  /* === Functional roles ===
+     Components reference only these, never a ramp step directly, so moving a
+     role (which surface a card takes) is one line here. */
+  --color-bg: var(--ramp-50);
+  --color-bg-alt: var(--ramp-100); /* alternating section band */
+  --color-surface: #ffffff; /* cards, sitting on either band */
+  --color-surface-sunk: var(--ramp-200); /* decorative blocks only — see note on muted text */
 
-     Each type needs the hue at two very different jobs, so it gets two
-     tokens: "-bg" tints the card (the pastel is exactly right there), while
-     the bare token colors the icon next to the lesson name and must stay
-     legible on a near-white card. The palette's lightness varies enormously
-     (yellow #ffd47d is almost invisible as an icon, berry #a9436b is already
-     dark), so a single mix percentage can't serve all three. Relative color
-     syntax pins them to one perceptual lightness instead: same hue, uniform
-     contrast, one formula rather than three hand-tuned shades. */
-  /* Zdrojové odstíny typů lekcí jsou zároveň barvy tří tepových zón na
-     homepage (viz js/data/zones.js) — jedna paleta pro obojí, aby tepometr
-     svítil přesně tou barvou, kterou má karta lekce, a nevznikla čtvrtá
-     sada barev. Přiřazení vychází ze zadání klientky, kde jóga je klid,
-     kondiční lekce střední tempo a jumping maximum:
+  --color-text: var(--ramp-900); /* 15.31 on bg, 12.14 on sunk */
+  /* Muted text carries real content — lesson taglines, venues, pass prices,
+     form labels, the whole footer — so it must clear AA (4.5:1) on EVERY
+     surface it can land on, including the sunk one. Measured:
 
-        jóga     mint      klid,   ~75 tepů
-        tabata   oranžová  rytmus, 100–120 tepů
-        jumping  korál     maximum, 150–170 tepů
+        step             bg     alt    sunk   white
+        600 #8a5a57      5.53   5.11   4.39 ✗  5.71
+        700 #6b4245      8.17   7.56   6.48 ✓  8.43   <- chosen
 
-     Oranžovou brandbook nemá. Není proto vymyšlená: je to brandbookový
-     peach dotlačený na plnou saturaci stejnou technikou relativní barvy,
-     jakou používají ikony níž. Samotný --color-yellow (#ffd47d) by v této
-     roli nefungoval, na off-white pozadí je prakticky nevidět. */
-  --color-zone-move: oklch(from var(--color-peach) 0.72 0.17 h);
+     600 reads slightly softer but fails on the sunk surface, and a token that
+     is only safe on some surfaces is a trap the project has already fallen
+     into once. 700 passes everywhere with headroom. Re-measure if it moves. */
+  --color-text-muted: var(--ramp-700);
+  --color-text-inverse: #ffffff;
 
-  --type-icon-lightness: 0.55;
-  --color-type-joga: oklch(from var(--color-mint) var(--type-icon-lightness) c h);
-  --color-type-joga-bg: color-mix(in srgb, var(--color-mint) 14%, var(--color-surface));
-  --color-type-jumping: oklch(from var(--color-coral) var(--type-icon-lightness) c h);
-  --color-type-jumping-bg: color-mix(in srgb, var(--color-coral) 14%, var(--color-surface));
-  --color-type-tabata: oklch(from var(--color-zone-move) var(--type-icon-lightness) c h);
-  --color-type-tabata-bg: color-mix(in srgb, var(--color-zone-move) 14%, var(--color-surface));
+  /* Hairlines do the work shadows would do in a brand that allowed shadows.
+     Two weights: one that whispers between rows, one that outlines a card. */
+  --color-hairline: color-mix(in srgb, var(--ramp-900) 8%, transparent);
+  --color-border: color-mix(in srgb, var(--ramp-900) 14%, transparent);
+  /* The one surface that genuinely floats over content (mobile nav panel)
+     needs a visible edge, since the brand has no shadow to lean on. */
+  --color-border-strong: color-mix(in srgb, var(--ramp-900) 45%, transparent);
 
-  /* Typography — brand fonts, self-hosted in css/fonts.css (no CDN request).
-     System stack stays as the fallback so text is readable if a woff2 fails
-     to load. Weight usage rules from the brandbook are applied in base.css. */
+  --color-primary: var(--color-plum); /* white label: 13.05 */
+  --color-primary-hover: var(--ramp-900);
+  --color-accent: var(--color-berry); /* white label: 5.67 */
+  --color-accent-hover: color-mix(in srgb, var(--color-berry), #000 16%);
+
+  --color-focus: var(--color-berry);
+
+  /* === Typography ===
+     Fraunces is the display face: a variable serif with a soft, slightly
+     humanist cut that suits a body-and-breath subject better than a bookish
+     transitional serif would. Manrope stays for body text — it is already
+     self-hosted, it reads well small, and the serif/sans contrast is the
+     whole point. Raleway is gone: as a third humanist sans it added nothing
+     the other two did not already do, and its 300 weight at display sizes was
+     the single strongest "template" signal on the old site. */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-heading: "Raleway", var(--font-body);
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 2rem;
-  --font-size-3xl: 2.5rem;
-  --font-size-hero: 4rem;
-  --line-height-base: 1.6;
 
-  /* Spacing scale */
+  /* Every step is fluid. Fixed rem steps were the second-strongest dated
+     signal on the old build — a 4rem hero either overflowed narrow phones or
+     had to be patched with a media query. clamp() removes both problems and
+     lets the display sizes go genuinely large on desktop. */
+  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+  --text-sm: clamp(0.875rem, 0.85rem + 0.15vw, 0.9375rem);
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --text-lg: clamp(1.125rem, 1.06rem + 0.32vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.13rem + 0.6vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.28rem + 1.1vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.5rem + 1.9vw, 2.75rem);
+  --text-4xl: clamp(2.25rem, 1.6rem + 3.2vw, 3.75rem);
+  --text-display: clamp(2.75rem, 1.7rem + 5.2vw, 5rem);
+
+  /* Leading and tracking exist as tokens because large display type needs
+     both pulled in, and small uppercase labels need tracking pushed out.
+     The old build had neither, which is why its headings read as typed
+     rather than set. */
+  --leading-display: 0.98;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --tracking-tighter: -0.035em; /* display sizes */
+  --tracking-tight: -0.015em; /* headings */
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em; /* small caps labels */
+  --tracking-wider: 0.16em; /* eyebrow / kicker */
+
+  /* Measure. Body copy is unreadable much past this and the old build let
+     intro paragraphs run the full container width. */
+  --measure: 64ch;
+  --measure-narrow: 48ch;
+
+  /* === Spacing === */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
-  --space-3: 1rem;
-  --space-4: 1.5rem;
-  --space-5: 2rem;
-  --space-6: 3rem;
-  --space-7: 4rem;
-  --space-8: clamp(4rem, 8vw, 8rem);
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  /* Section rhythm is fluid, and generous. Fixed 4rem padding at every
+     viewport made 1920px screens look cramped, which reads as cheap. */
+  --space-section: clamp(4.5rem, 3rem + 7vw, 9rem);
 
-  /* Focus ring — jeden vzhled pro celý web. Dřív byl `outline: 2px solid
-     var(--color-primary)` ručně opsaný na pěti místech (layout.css,
-     faq-list, schedule-widget a dvakrát site-nav), zatímco cta-button —
-     nejpoužívanější interaktivní prvek webu — ho neměl vůbec: měl jen
-     posun o 1 px a box-shadow, který je v plochém brandu `none`, takže
-     klávesnicový uživatel neviděl na tlačítku nic.
-     Offset je zvlášť, protože prvky uvnitř `overflow: hidden` (řádky FAQ)
-     potřebují prstenec dovnitř, tedy zápornou hodnotu. */
-  --focus-ring-width: 2px;
-  --focus-ring-color: var(--color-primary);
-  --focus-ring-offset: 2px;
+  /* === Layout === */
+  --container: 76rem;
+  --container-wide: 88rem;
+  --container-narrow: 54rem;
+  --container-pad: clamp(1.25rem, 0.6rem + 3vw, 2.5rem);
 
-  /* Shape */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
-  --radius-2xl: 1.5rem;
-  --radius-full: 9999px;
+  /* === Shape ===
+     Tight. The old scale ran to 1.5rem on cards plus fully round buttons,
+     and rounded pastel boxes are exactly the "coloring book" read. These
+     values are in px on purpose: a corner radius is an optical constant, it
+     should not grow with the user's font size. */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-pill: 999px; /* small chips and tags only, never a primary button */
 
-  /* Elevation — the brandbook specifies "shadows: none", so the whole site
-     is flat: surfaces are separated by the white-on-off-white contrast and
-     the 1px border every card already has, not by depth. The tokens stay
-     (rather than stripping box-shadow from a dozen components) so elevation
-     remains one switch: this is the single place that decides the site is
-     flat, and the only place to change if that decision ever reverses.
-     The one genuinely floating surface — the mobile nav panel — separates
-     itself with a stronger border in site-nav.js instead. */
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
+  /* === Elevation ===
+     The brandbook says "shadows: none" and the flat look is deliberate, so
+     depth on this site comes from alternating section bands and hairlines,
+     not from shadows. These two tokens exist for the two cases where a
+     surface genuinely leaves the page — the mobile nav panel and a lifted
+     card on hover — and they are tinted with the brand's own darkest value
+     rather than black, so they read as shade, not as grey.
+     ⚠️ This is a deliberate step past the brandbook's literal wording; it
+     needs the client's nod before launch. */
+  --shadow-raise: 0 1px 2px color-mix(in srgb, var(--ramp-900) 5%, transparent),
+    0 4px 12px color-mix(in srgb, var(--ramp-900) 6%, transparent);
+  --shadow-overlay: 0 8px 32px color-mix(in srgb, var(--ramp-900) 16%, transparent);
 
-  /* Motion */
-  --transition-fast: 150ms ease;
-  --transition-base: 300ms ease;
-  --transition-slow: 500ms ease;
+  /* === Motion ===
+     Never write a duration inline: these zero out under reduced-motion and a
+     hard-coded value does not. --ease-out is the standard entrance curve, a
+     long tail that settles rather than stops. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --transition-fast: 150ms var(--ease-out);
+  --transition-base: 280ms var(--ease-out);
+  --transition-slow: 520ms var(--ease-out);
+  /* Reveal distance and stagger are tokens so reduced-motion can flatten
+     them too — an opacity fade that still jumps 16px is worse than no
+     animation at all. */
+  --reveal-shift: 1.25rem;
+  --stagger-step: 70ms;
 
-  /* Layout */
-  --content-max-width: 72rem;
-  /* Rendered height of the sticky site header. Content-driven estimate
-     (header padding 2×space-4 + logo height), not measured live — single
-     source for every offset that must clear the header: anchor
-     scroll-margin-top and sticky table headers. */
-  --header-height-estimate: 5.75rem;
-}
+  /* === Focus ===
+     One recipe, referenced everywhere. Elements clipped by overflow set
+     --focus-offset to a negative value rather than inventing an outline. */
+  --focus-width: 2px;
+  --focus-offset: 3px;
 
-/* Stav tepometru (js/components/heart-rate-meter.js). Registrace je tady,
-   a ne v komponentě, protože @property je vždy záležitost dokumentu —
-   uvnitř shadow rootu by se ignorovala.
-
-   Registrovat je potřeba proto, že obě hodnoty vstupují do calc() a mají
-   plynule přecházet; neregistrovaná custom property je pro prohlížeč jen
-   text, takže by v calc() selhala a nedala se animovat.
-
-   inherits: true je podstatné — hodnotu zapisuje JS na hostitele
-   <heart-rate-meter> a musí projít dovnitř jeho shadow rootu k prvkům,
-   které ji používají. S inherits: false by tam tiše nedorazila.
-
-   initial-value je zároveň podoba tepometru, když scroll vůbec neběží
-   (vypnutý JS, prefers-reduced-motion): kolečko střední velikosti
-   v barvě cílové zóny. */
-@property --hrm-progress {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0.55;
-}
-@property --hrm-mix {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 1;
-}
-
-/* Single documented breakpoint — reuse this exact value (768px) in every
-   @media query in this project instead of introducing new arbitrary ones.
-
-   Two spellings, and they are NOT interchangeable:
-     desktop and up  →  @media (min-width: 768px)
-     below desktop   →  @media (width < 768px)
-   The second one used to be written as `max-width: 768px`, which overlaps
-   the first one: at a viewport of exactly 768px BOTH queries matched and
-   their rules competed (worst case was schedule-widget.js, which contains
-   both). `width < 768px` is the exact complement of `min-width: 768px`, so
-   every viewport matches precisely one of them — and it says so without a
-   767.98px fudge value that would look like a second breakpoint. */
-
-@media (min-width: 768px) {
-  :root {
-    /* Desktop header is taller (larger logo, same padding). */
-    --header-height-estimate: 6.5rem;
-  }
+  /* === Depth order === */
+  --z-base: 1;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-skiplink: 500;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -228,5 +212,7 @@
     --transition-fast: 0ms;
     --transition-base: 0ms;
     --transition-slow: 0ms;
+    --reveal-shift: 0rem;
+    --stagger-step: 0ms;
   }
 }

@@ -1,9 +1,14 @@
-// Komponenty, které žijí jen na této stránce — registruje je ten skript,
-// který je plní daty, ne main.js (viz komentář tam).
-import "../components/media-gallery.js";
+/* About page. */
 
+import { mount } from "../lib/dom.js";
+import { initReveal } from "../lib/reveal.js";
+import { mountChrome } from "../ui/chrome.js";
+import { renderGallery, renderVideos } from "../ui/sections.js";
 import { GALLERY_PHOTOS, GALLERY_VIDEOS } from "../data/gallery.js";
 
-const gallery = document.querySelector("[data-media-gallery]");
-gallery.photos = GALLERY_PHOTOS;
-gallery.videos = GALLERY_VIDEOS;
+mountChrome();
+
+mount("[data-gallery]", () => renderGallery(GALLERY_PHOTOS));
+mount("[data-videos]", () => renderVideos(GALLERY_VIDEOS));
+
+initReveal();
