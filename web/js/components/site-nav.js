@@ -103,7 +103,7 @@ export class SiteNav extends BaseElement {
       }
 
       /* Single project breakpoint, see tokens.css comment */
-      @media (max-width: 768px) {
+      @media (width < 768px) {
         .nav-toggle { display: flex; }
 
         .nav-list {

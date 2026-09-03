@@ -113,7 +113,7 @@ export class ActivityCard extends BaseElement {
         text-align: left;
       }
 
-      @media (max-width: 768px) {
+      @media (width < 768px) {
         .card { padding: var(--space-5); }
       }
     `;
