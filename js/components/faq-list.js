@@ -1,9 +1,12 @@
 import { BaseElement } from "./base-component.js";
+import { FOCUS_RING } from "./styles.js";
 
 // <faq-list>: set `.items = FAQ` (see js/data/faq.js) — an accordion of
 // questions built on native <details>/<summary>, so open/close, keyboard
 // operation and in-page search work without a line of JavaScript.
 export class FaqList extends BaseElement {
+  static sheets = [FOCUS_RING];
+
   #items = [];
 
   set items(value) {
@@ -42,7 +45,8 @@ export class FaqList extends BaseElement {
       }
       summary::-webkit-details-marker { display: none; }
       summary:hover { color: var(--color-accent); }
-      summary:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: calc(-1 * var(--focus-ring-offset)); }
+      /* Prstenec dovnitř: karta má overflow: hidden, vně by se odřízl. */
+      :host { --focus-offset: calc(-1 * var(--focus-ring-offset)); }
       /* Chevron drawn from two borders rather than an SVG icon: it has to
          rotate on open, and a CSS-only mark keeps this component free of
          the shared icon set. */

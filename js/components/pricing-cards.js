@@ -1,4 +1,5 @@
 import { BaseElement } from "./base-component.js";
+import { ICON, LESSON_TYPE } from "./styles.js";
 // Karty mají vlastní akční tlačítko, takže si cta-button musí naimportovat
 // samy — spoléhat na registraci odjinud je skrytá závislost.
 import "./cta-button.js";
@@ -12,6 +13,8 @@ import { formatVenueLine } from "../data/venues.js";
 // to it), so the page anchor for external links lives on the wrapping
 // light-DOM <section id="cenik"> in rozvrh-cenik.html instead.
 export class PricingCards extends BaseElement {
+  static sheets = [ICON, LESSON_TYPE];
+
   #activities = [];
 
   set activities(value) {
@@ -35,9 +38,9 @@ export class PricingCards extends BaseElement {
         border-radius: var(--radius-2xl);
         padding: var(--space-6);
       }
-      .card--joga { background: var(--color-type-joga-bg); }
-      .card--jumping { background: var(--color-type-jumping-bg); }
-      .card--tabata { background: var(--color-type-tabata-bg); }
+      /* Odstín podle typu lekce dodává sdílený recept LESSON_TYPE
+         (aktivuje ho atribut data-type na kartě). */
+      .card { background: var(--type-bg, var(--color-surface)); }
       .name {
         display: flex;
         align-items: center;
@@ -46,11 +49,8 @@ export class PricingCards extends BaseElement {
         font-weight: 600;
         margin: 0 0 var(--space-2);
       }
-      .icon { width: 2.25rem; height: 2.25rem; flex-shrink: 0; }
-      .icon svg { width: 100%; height: 100%; display: block; }
-      .card--joga .icon { color: var(--color-type-joga); }
-      .card--jumping .icon { color: var(--color-type-jumping); }
-      .card--tabata .icon { color: var(--color-type-tabata); }
+      .icon { width: 2.25rem; height: 2.25rem; }
+      .name .icon { color: var(--type-color); }
       .duration { color: var(--color-text-muted); margin: 0; }
       .price { font-size: var(--font-size-xl); font-weight: 600; margin: 0; }
       .pass { color: var(--color-text-muted); margin: 0; }
@@ -92,7 +92,7 @@ export class PricingCards extends BaseElement {
       .map((activity) => {
         const savings = activity.pricePerLesson * activity.passLessons - activity.passPrice;
         return `
-          <article class="card card--${activity.id}">
+          <article class="card" data-type="${activity.id}">
             <h3 class="name"><span class="icon">${ACTIVITY_TYPE_ICONS[activity.id] ?? ""}</span>${activity.name}</h3>
             <p class="duration">${activity.durationMinutes} minut</p>
             <p class="price">${activity.pricePerLesson} Kč / lekce</p>

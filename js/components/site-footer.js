@@ -1,9 +1,12 @@
 import { BaseElement } from "./base-component.js";
+import { ICON } from "./styles.js";
 import { SITE_CONFIG } from "../data/site-config.js";
 import { PIN_ICON, PHONE_ICON, MAIL_ICON, FACEBOOK_ICON, INSTAGRAM_ICON } from "../data/icons.js";
 import { getVenueById, formatVenueAddress } from "../data/venues.js";
 
 export class SiteFooter extends BaseElement {
+  static sheets = [ICON];
+
   styles() {
     return `
       :host {
@@ -44,7 +47,6 @@ export class SiteFooter extends BaseElement {
         color: var(--color-primary);
         flex-shrink: 0;
       }
-      .info .icon svg { width: 100%; height: 100%; display: block; }
       a { color: var(--color-text-muted); }
       a:hover, a:focus-visible { color: var(--color-text); }
       .social {

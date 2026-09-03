@@ -1,4 +1,5 @@
 import { BaseElement } from "./base-component.js";
+import { FOCUS_RING, ICON, LESSON_TYPE } from "./styles.js";
 // Tahle komponenta staví <cta-button> ve svém template(), takže si ho musí
 // naimportovat sama. Dosud fungovala jen díky tomu, že ho main.js registruje
 // na každé stránce — jakmile se registrace rozdělí per-page, byla by to
@@ -37,6 +38,8 @@ function pickDefaultDay(daysWithLessons) {
 // Activity fields are already resolved by js/pages/rozvrh-cenik.js, so this
 // component only renders — it doesn't look anything up.
 export class ScheduleWidget extends BaseElement {
+  static sheets = [FOCUS_RING, ICON, LESSON_TYPE];
+
   #lessons = [];
   #selectedDay = null;
 
@@ -127,7 +130,6 @@ export class ScheduleWidget extends BaseElement {
         transition: background var(--transition-fast), color var(--transition-fast);
       }
       .tab:hover { color: var(--color-text); }
-      .tab:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
       .tab[aria-selected="true"] {
         background: var(--color-primary);
         border-color: var(--color-primary);
@@ -148,10 +150,10 @@ export class ScheduleWidget extends BaseElement {
         border: 1px solid var(--color-border);
         border-radius: var(--radius-2xl);
         padding: var(--space-5);
+        /* Odstín podle typu lekce dodává sdílený recept LESSON_TYPE
+           (aktivuje ho atribut data-type na kartě lekce). */
+        background: var(--type-bg, var(--color-surface));
       }
-      .lesson--joga { background: var(--color-type-joga-bg); }
-      .lesson--jumping { background: var(--color-type-jumping-bg); }
-      .lesson--tabata { background: var(--color-type-tabata-bg); }
       .lesson__head {
         display: flex;
         align-items: center;
@@ -180,12 +182,9 @@ export class ScheduleWidget extends BaseElement {
         font-size: var(--font-size-sm);
         margin: 0;
       }
-      .icon { width: 1.5rem; height: 1.5rem; flex-shrink: 0; }
+      .icon { width: 1.5rem; height: 1.5rem; }
       .lesson__location .icon { width: 1rem; height: 1rem; color: var(--color-text-muted); }
-      .icon svg { width: 100%; height: 100%; display: block; }
-      .lesson--joga .lesson__name .icon { color: var(--color-type-joga); }
-      .lesson--jumping .lesson__name .icon { color: var(--color-type-jumping); }
-      .lesson--tabata .lesson__name .icon { color: var(--color-type-tabata); }
+      .lesson__name .icon { color: var(--type-color); }
       .lesson__foot {
         display: flex;
         align-items: center;
@@ -231,7 +230,7 @@ export class ScheduleWidget extends BaseElement {
       .join("");
 
     const card = (lesson) => `
-          <article class="lesson lesson--${lesson.id}">
+          <article class="lesson" data-type="${lesson.id}">
             <div class="lesson__head">
               <h3 class="lesson__name"><span class="icon">${ACTIVITY_TYPE_ICONS[lesson.id] ?? ""}</span>${lesson.shortName ?? lesson.name}</h3>
               <span class="lesson__time">${lesson.time}</span>

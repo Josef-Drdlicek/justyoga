@@ -1,7 +1,13 @@
 import { BaseElement } from "./base-component.js";
+import { FOCUS_RING } from "./styles.js";
 
 // <cta-button href="…" label="…" variant="primary|accent"></cta-button>
 export class CtaButton extends BaseElement {
+  // Prstenec ze sdíleného receptu. Samotný posun o 1 px focus neoznačí
+  // a --shadow-sm je v plochém brandu nulový, takže hover efekt níž nebyl
+  // pro klávesnici viditelný vůbec.
+  static sheets = [FOCUS_RING];
+
   static get observedAttributes() {
     return ["href", "label", "variant"];
   }
@@ -41,13 +47,6 @@ export class CtaButton extends BaseElement {
           background var(--transition-fast);
       }
       a:hover, a:focus-visible { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-      /* Vlastní prstenec. Samotný posun o 1 px focus neoznačí a --shadow-sm
-         je v plochém brandu nulový (none), takže hover efekt výše nebyl
-         pro klávesnici viditelný vůbec. */
-      a:focus-visible {
-        outline: var(--focus-ring-width) solid var(--focus-ring-color);
-        outline-offset: var(--focus-ring-offset);
-      }
       .primary { background: var(--color-primary); color: var(--color-primary-contrast); }
       .primary:hover, .primary:focus-visible { background: var(--color-primary-dark); }
       .accent { background: var(--color-accent); color: var(--color-primary-contrast); }
