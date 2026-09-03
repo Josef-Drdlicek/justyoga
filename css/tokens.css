@@ -16,6 +16,7 @@
   --color-yellow: #ffd47d; /* main.yellow */
   --color-blush: #ffe8e8; /* secondary.blush */
   --color-linen: #ffe5d9; /* secondary.linen */
+  --color-peach: #ffac86; /* main.peach — z brandbooku, dosud nepromovaný na token */
 
   /* Color — functional (aliases used by components) */
   --color-bg: #fcfaf8; /* brandbook: warm off-white background */
@@ -82,13 +83,29 @@
      dark), so a single mix percentage can't serve all three. Relative color
      syntax pins them to one perceptual lightness instead: same hue, uniform
      contrast, one formula rather than three hand-tuned shades. */
+  /* Zdrojové odstíny typů lekcí jsou zároveň barvy tří tepových zón na
+     homepage (viz js/data/zones.js) — jedna paleta pro obojí, aby tepometr
+     svítil přesně tou barvou, kterou má karta lekce, a nevznikla čtvrtá
+     sada barev. Přiřazení vychází ze zadání klientky, kde jóga je klid,
+     kondiční lekce střední tempo a jumping maximum:
+
+        jóga     mint      klid,   ~75 tepů
+        tabata   oranžová  rytmus, 100–120 tepů
+        jumping  korál     maximum, 150–170 tepů
+
+     Oranžovou brandbook nemá. Není proto vymyšlená: je to brandbookový
+     peach dotlačený na plnou saturaci stejnou technikou relativní barvy,
+     jakou používají ikony níž. Samotný --color-yellow (#ffd47d) by v této
+     roli nefungoval, na off-white pozadí je prakticky nevidět. */
+  --color-zone-move: oklch(from var(--color-peach) 0.72 0.17 h);
+
   --type-icon-lightness: 0.55;
   --color-type-joga: oklch(from var(--color-mint) var(--type-icon-lightness) c h);
   --color-type-joga-bg: color-mix(in srgb, var(--color-mint) 14%, var(--color-surface));
-  --color-type-jumping: oklch(from var(--color-yellow) var(--type-icon-lightness) c h);
-  --color-type-jumping-bg: color-mix(in srgb, var(--color-yellow) 14%, var(--color-surface));
-  --color-type-tabata: oklch(from var(--color-berry) var(--type-icon-lightness) c h);
-  --color-type-tabata-bg: color-mix(in srgb, var(--color-berry) 14%, var(--color-surface));
+  --color-type-jumping: oklch(from var(--color-coral) var(--type-icon-lightness) c h);
+  --color-type-jumping-bg: color-mix(in srgb, var(--color-coral) 14%, var(--color-surface));
+  --color-type-tabata: oklch(from var(--color-zone-move) var(--type-icon-lightness) c h);
+  --color-type-tabata-bg: color-mix(in srgb, var(--color-zone-move) 14%, var(--color-surface));
 
   /* Typography — brand fonts, self-hosted in css/fonts.css (no CDN request).
      System stack stays as the fallback so text is readable if a woff2 fails
