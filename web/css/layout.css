@@ -1660,3 +1660,303 @@
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
+
+/* ==== Průvodce =======================================================
+   Na desktopu plovoucí panel vlevo dole (vpravo sedí ukazatel tempa —
+   dva plovoucí prvky v jednom rohu se překrývají a jeden z nich zůstane
+   nepoužitelný). Na telefonu bottom sheet přes skoro celou výšku: okénko
+   v rohu se na 390 px nedá číst a většina návštěvníků chodí z mobilu.
+
+   Vzhled je vzhled webu: karta, hairline, náš font. Bubliny nejsou modré
+   a nemají špičku — má to vypadat jako součást stránky, ne jako nalepený
+   widget. */
+
+.assistant {
+  position: fixed;
+  left: clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem);
+  bottom: clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem);
+  z-index: var(--z-overlay);
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+}
+
+/* Zámek scrollu pod otevřeným sheetem. Na html, ne na body: iOS Safari
+   jinak scroll řetězí dál na dokument. */
+.assistant-locked {
+  overflow: hidden;
+}
+
+.assistant__backdrop {
+  display: none;
+}
+
+.assistant__launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.8em 1.2em;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-text-inverse); /* 13.05 */
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--shadow-raise);
+  transition: background var(--transition-fast);
+}
+
+.assistant__launcher:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Tečka, ne ikona bubliny: bublina slibuje, že na druhé straně někdo je. */
+.assistant__launcher-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-zone-calm);
+}
+
+/* Panel je sloupcový flex s vlastním stropem výšky: hlavička, nabídky
+   a poznámka mají pevnou výšku, vlákno si vezme zbytek. Bez toho by
+   dlouhá odpověď z FAQ vytáhla panel přes celou obrazovku. */
+.assistant__panel {
+  order: -1; /* panel nad spouštěčem, ne pod ním */
+  display: flex;
+  flex-direction: column;
+  width: min(23rem, calc(100vw - 2 * var(--space-4)));
+  max-height: min(78vh, 40rem);
+  max-height: min(78svh, 40rem);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+}
+
+.assistant__head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.assistant__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
+}
+
+.assistant__close {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.assistant__close:hover {
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+/* `min-height: 0` je to, co dovolí flexovému dítěti scrollovat — bez něj
+   se vlákno roztáhne podle obsahu a strop panelu se ignoruje. */
+.assistant__thread {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  overflow-y: auto;
+  padding-block: var(--space-4);
+  overscroll-behavior: contain;
+}
+
+.assistant__row {
+  display: flex;
+}
+
+.assistant__row--you {
+  justify-content: flex-end;
+}
+
+.assistant__bubble {
+  margin: 0;
+  max-width: 92%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-alt);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+}
+
+/* Vybraná možnost se vrací jako ozvěna, aby bylo poznat, odkud odpověď
+   přišla. Tlumeně — je to připomínka, ne obsah. */
+.assistant__bubble--you {
+  background: transparent;
+  border: 1px solid var(--color-hairline);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+/* Nabídky mají taky vlastní strop a scroll: uzel FAQ jich má devět
+   a jinak by vytlačily vlákno úplně mimo panel. */
+.assistant__choices {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: grid;
+  gap: var(--space-2);
+  max-height: 45%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-hairline);
+}
+
+.assistant__choice {
+  display: block;
+  width: 100%;
+  /* 44px minimum na dotek — do menšího terče se na telefonu netrefí. */
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.assistant__choice:hover {
+  background: var(--color-bg-alt);
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.assistant__choice--link {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.assistant__choice--link:hover {
+  background: var(--color-bg-alt);
+  border-color: var(--color-accent-hover);
+  color: var(--color-accent-hover);
+}
+
+.assistant__note {
+  flex-shrink: 0;
+  margin: var(--space-3) 0 0;
+  font-size: 0.625rem;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+/* --assistant-lift dopočítá JS z reálné výšky proužku ukazatele (viz
+   keepClearOfMeter v js/ui/assistant.js). Hodnota tady je jen záchranná
+   síť pro případ, že by skript neběžel. */
+@media (width < 1280px) {
+  .assistant {
+    bottom: calc(var(--space-3) + var(--assistant-lift, 9rem));
+  }
+}
+
+/* ---- Bottom sheet (telefon) ---------------------------------------- */
+
+@media (width < 768px) {
+  /* Kontejner přestává být kotvou v rohu a roztáhne se přes celou plochu,
+     aby v něm mohl sedět překryv i panel u spodní hrany. */
+  .assistant[data-open="true"] {
+    inset: 0;
+    display: block;
+  }
+
+  .assistant[data-open="true"] .assistant__backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--ramp-900) 45%, transparent);
+  }
+
+  /* Spouštěč pod otevřeným sheetem nemá co dělat — zavírá se křížkem
+     nebo klepnutím do překryvu. */
+  .assistant[data-open="true"] .assistant__launcher {
+    display: none;
+  }
+
+  .assistant[data-open="true"] .assistant__panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    /* svh, ne vh: na iOS se vh počítá k adresní liště a spodek sheetu
+       by skončil pod ohybem obrazovky. */
+    height: min(88vh, 44rem);
+    height: min(88svh, 44rem);
+    max-height: none;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border-bottom: 0;
+    padding: var(--space-4);
+    /* Domovský indikátor iPhonu jinak sedí na posledním tlačítku. */
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  }
+
+  /* Úchyt: jediný signál, že jde o plachtu vytaženou zdola. */
+  .assistant[data-open="true"] .assistant__panel::before {
+    content: "";
+    flex-shrink: 0;
+    align-self: center;
+    width: 2.25rem;
+    height: 4px;
+    margin-bottom: var(--space-4);
+    border-radius: var(--radius-pill);
+    background: var(--color-border);
+  }
+
+  .assistant[data-open="true"] .assistant__title {
+    font-size: var(--text-xl);
+  }
+
+  /* Ve sheetu je místa dost: text i terče můžou být větší. */
+  .assistant[data-open="true"] .assistant__bubble {
+    max-width: 100%;
+    font-size: var(--text-base);
+  }
+
+  .assistant[data-open="true"] .assistant__choice {
+    min-height: 3rem;
+    font-size: var(--text-base);
+  }
+
+  .assistant[data-open="true"] .assistant__note {
+    font-size: var(--text-xs);
+  }
+
+  /* Sheet zakrývá proužek ukazatele tempa; nechat ho pod překryvem
+     prosvítat by jen mátlo. */
+  .assistant-locked .hrm {
+    display: none;
+  }
+}

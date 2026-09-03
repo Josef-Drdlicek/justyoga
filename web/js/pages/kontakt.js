@@ -4,6 +4,7 @@ import { mount, $ } from "../lib/dom.js";
 import { initReveal } from "../lib/reveal.js";
 import { mountChrome } from "../ui/chrome.js";
 import { mountHeartRateMeter } from "../ui/heart-rate-meter.js";
+import { mountAssistant } from "../ui/assistant.js";
 import { renderVenues, renderFollow } from "../ui/sections.js";
 import { SITE_CONFIG } from "../data/site-config.js";
 import { PHONE_ICON, MAIL_ICON } from "../data/icons.js";
@@ -39,5 +40,6 @@ $("[data-contact-form]").addEventListener("submit", (event) => {
 // Až po vykreslení obsahu: ukazatel si při startu hledá své zastávky
 // v DOMu, a kdyby běžel dřív, nenašel by je a spadl by do klidového stavu.
 mountHeartRateMeter();
+mountAssistant();
 
 initReveal();

@@ -21,6 +21,7 @@ import {
   FIRST_VISIT_STEPS,
 } from "../ui/sections.js";
 import { mountHeartRateMeter } from "../ui/heart-rate-meter.js";
+import { mountAssistant } from "../ui/assistant.js";
 import { ACTIVITIES } from "../data/activities.js";
 import { FAQ } from "../data/faq.js";
 import { NEWS } from "../data/news.js";
@@ -61,5 +62,6 @@ mount("[data-faq]", () => renderFaq(FAQ.slice(0, 6)));
 
 // Až po vykreslení zón: ukazatel si při startu hledá své zastávky v DOMu.
 mountHeartRateMeter();
+mountAssistant();
 
 initReveal();
