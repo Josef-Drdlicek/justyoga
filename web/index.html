@@ -6,6 +6,24 @@
   <title>Just Yoga Boskovice – Jóga, Jumping, Tabata</title>
   <meta name="description" content="Jóga se světelnou terapií, jumping na trampolínách, tabata, HIIT i kruhový trénink v Boskovicích. Lekce pro každou kondici i pro začátečníky." />
   <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
+  <!-- Náhled při sdílení. Klientka je aktivní na Facebooku i Instagramu
+       a odkaz na web tam dosud vypadal jako holý text bez obrázku.
+       og:image MUSÍ být absolutní URL — relativní Facebook ignoruje.
+       ⚠️ PŘI NASAZENÍ: doména i cesta se změní (jako motiv skončí obrázek
+       ve wp-content/themes/…, nebo se nahraje do Media Library).
+       ⚠️ canonical a og:url tady schválně NEJSOU: finální slugy ve
+       WordPressu nejsou známé (živý web má /rozvrh a /ceník zvlášť)
+       a špatný canonical dokáže stránku vyřadit z indexu. Doplnit při
+       nasazení spolu s 301 přesměrováním ze starých adres. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:title" content="Just Yoga Boskovice – jóga, jumping a HIIT ve třech tempech" />
+  <meta property="og:description" content="Tři tempa, jedno studio: jóga se světelnou terapií, jumping na trampolínách a HIIT v Boskovicích. Vyberte si podle toho, co dnes potřebujete." />
+  <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Lenka Nahodilová v jógové pozici, logo Just Yoga Boskovice a tři tepové zóny" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="assets/images/favicon-512.png" sizes="512x512" type="image/png" />
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />

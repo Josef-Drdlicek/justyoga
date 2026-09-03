@@ -4,8 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>O mně – Just Yoga Boskovice</title>
-  <meta name="description" content="Lenka Nahodilová – učitelka jógy III. třídy, lektorka jumpingu a licencovaná trenérka TRX v Boskovicích. Jóga, jumping, tabata, HIIT a kruhové tréninky, fotky a videa z lekcí." />
+  <meta name="description" content="Lenka Nahodilová – učitelka jógy III. třídy, lektorka jumpingu a trenérka TRX v Boskovicích. Vedu jógu, jumping i kondiční lekce pro každou kondici." />
   <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
+  <!-- Náhled při sdílení. Klientka je aktivní na Facebooku i Instagramu
+       a odkaz na web tam dosud vypadal jako holý text bez obrázku.
+       og:image MUSÍ být absolutní URL — relativní Facebook ignoruje.
+       ⚠️ PŘI NASAZENÍ: doména i cesta se změní (jako motiv skončí obrázek
+       ve wp-content/themes/…, nebo se nahraje do Media Library).
+       ⚠️ canonical a og:url tady schválně NEJSOU: finální slugy ve
+       WordPressu nejsou známé (živý web má /rozvrh a /ceník zvlášť)
+       a špatný canonical dokáže stránku vyřadit z indexu. Doplnit při
+       nasazení spolu s 301 přesměrováním ze starých adres. -->
+  <meta property="og:type" content="profile" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:title" content="Lenka Nahodilová – lektorka jógy a jumpingu v Boskovicích" />
+  <meta property="og:description" content="Učitelka jógy III. třídy, lektorka jumpingu a licencovaná trenérka TRX. U mě v Boskovicích si tempo určujete vy – ať cvičíte poprvé, nebo roky." />
+  <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Lenka Nahodilová, učitelka jógy III. třídy, ve studiu v Boskovicích" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="assets/images/favicon-512.png" sizes="512x512" type="image/png" />
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
