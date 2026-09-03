@@ -1,4 +1,4 @@
-# Lenka-web — Status
+# Just Yoga — Status
 
 ## Klient / projekt
 Redesign webu **justyoga.cz** (Just Yoga Boskovice, jóga studio).
@@ -9,9 +9,109 @@ Stávající vzhled webu (šablona `fyoga`) je nevyhovující a nebude se upravo
 Aktuální fáze: **implementace a vizuální ladění** (proveditelnost i přístupy ověřeny, staví se reálný frontend — homepage, rozvrh/ceník; nasazení do WordPressu přijde na řadu později).
 
 ## Current status
-Úvodní analýza proveditelnosti i přístupy do wp-admin jsou hotové (viz `01-analyza-proveditelnosti.md`), projekt běží ve fázi stavby vlastního HTML/vanilla JS motivu. Homepage, Rozvrh a ceník, O mně i Kontakt jsou teď všechny funkční se skutečným obsahem (žádná stránka už nemá placeholder text) a průběžně se vizuálně dolaďují ve spolupráci s klientkou — viz Log níže, nejnovější dávka je z 2026-08-27 (verze 3 = zapracovaná textová a obsahová zpětná vazba klientky ze 14. 8.).
+Homepage je od 3. 9. 2026 **scroll-story se třemi tepovými zónami** podle
+nápadu klientky (plovoucí „tepometr", který se scrollem zrychluje a mění
+barvu). Zbylé tři stránky mají stejný vizuální jazyk, ale strukturu beze
+změny. Projekt se přestěhoval do vlastního repa `Josef-Drdlicek/justyoga`
+s čistou historií; předchozí historie včetně tagu `v1-terracotta` zůstala
+v lokálním archivu `../lenka-web/`.
+
+Web je po stránce obsahu i přístupnosti hotový. Před ostrým nasazením chybí
+jen fakta od klientky (parkování, kapacita, pravidla odhlašování, souřadnice,
+fotka studia) a kroky z checklistu v `CLAUDE.md` — canonical, 301
+přesměrování a napojení formuláře na Contact Form 7.
 
 ## Log
+### 2026-09-03 — VERZE 4: nové repo, tepometr a scroll-story homepage
+Velká dávka: úklid repa, přesun na vlastní repozitář, oprava chyb
+a přístupnosti, výkon, hlavní nová feature a přepsaná dokumentace.
+Rozdělené do 13 samostatně vratných commitů.
+
+**Nové repo.** `Josef-Drdlicek/justyoga`, čistý `git init` (historie se
+nepřenášela — 21 MB packu, z toho ~19 MB videa zdvojená subtree historií).
+Zjistilo se, že **verze 3 nikdy nebyla pushnutá**, takže klientka na náhledu
+nikdy neviděla stav, který v srpnu schválila e-mailem. Na staré repo navíc
+nejsou práva (`push: false`, `admin: false`), takže ho nelze ani aktualizovat,
+ani zprivátnit — to musí vlastník organizace.
+Struktura: `web/` beze změny, analýzy do `docs/`, `content/` zredukován na
+jediný platný brandbook. Vyřazeno do archivu: nezávazný náčrt UX, mrtvý
+`index-nástřel.html`, dokumentace v paletě verze 1, podklad pro grafika,
+osobní korespondence, PDF výběru loga, diktovaná zpětná vazba klientky
+a 6 hash-identických duplikátů fotek a log.
+
+**Opravené chyby.** Rozjetá galerie videí (mrtvý token `--color-charcoal`
+po rebrandu, kvůli kterému byla videa do načtení prvního snímku průhledná;
+připojeny postery, které v assetech ležely od začátku). Favicony, které
+v repu byly, ale nic na ně neodkazovalo. Chybějící meta description na
+kontaktu. Kolize breakpointů — `min-width` a `max-width` na 768px platily
+na té šířce oba zároveň, nejhůř v `schedule-widget`, který obsahuje oba.
+
+**Přístupnost, všechno měřené.** Tlumený text propadal WCAG AA na sedmi
+plochách (3,08 na kartě Tabata) → mix 45 % na 30 %, teď 4,98. Hero text
+propadal na **všech třech** řádcích (kicker 1,64) a měření percentilů
+ukázalo, proč nestačí zesílit scrim: fotka je pod textem téměř bílá, medián
+jasu #e8e8e8. Text dostal vlastní podklad, kicker je teď 5,37. Focus prstenec
+sjednocen do tokenů — a přitom se ukázalo, že `cta-button` a `.btn`,
+nejpoužívanější tlačítka webu, neměly focus indikátor vůbec. Skip-link.
+Rozvrh: `aria-controls` ukazovalo na neexistující id a klik na tab zahazoval
+fokusovaný button; opraveno renderováním všech panelů a mutací atributů
+místo `render()`, včetně roving tabindexu a obsluhy šipek.
+
+**Výkon.** Audit tvrdil, že layout shift mají hero a bio fotky — měření to
+vyvrátilo (mají velikost z CSS). Skutečný shift měla jen dvě loga s
+`width: auto`. Preload Raleway 300 (LCP text) posunul jeho start z 49 a 76 ms
+na 24 ms. `main.js` registroval všech devět komponent na každé stránce;
+per-page registrace snížila počet JS modulů — kontakt z 17 na 11.
+
+**Tepometr a scroll-story homepage.** Hlavní nová feature podle nápadu
+klientky. Homepage má pět pásem (klid → most → rytmus → maximum → CTA),
+tep jde 75 → 88 → 110 → 154 → 102 a pulz se **skutečně zrychluje**.
+Zásadní technické zjištění: `animation-duration` není animovatelná, takže
+čisté CSS ani scroll-driven animace neumí pulz plynule zrychlit — jde to
+jen přes Web Animations API a `updatePlaybackRate`. Zóny, tempa, barvy
+i texty žijí v novém `js/data/zones.js`; aktivity se k zónám hlásí polem
+`zone`, takže nová aktivita se zařadí jedním řádkem.
+Barvy typů lekcí přemapované, aby tepometr svítil barvou karty: jumping →
+korál, tabata → oranžová (brandbookový peach dotlačený na plnou saturaci,
+protože oranžovou brandbook nemá).
+⚠️ Tři chyby našlo až měření, ne čtení kódu: `updatePlaybackRate` se vůbec
+nevolal (pulz se nezrychloval, tedy celá pointa feature nefungovala),
+`contain: paint` ořezával zvětšené kolečko do podoby plochého štítu,
+a kolečko lezlo na text pod sebou.
+
+**Dvě adresy.** Nejvážnější obsahové riziko: jóga je na Bílkově, jumping
+a kondiční lekce v posilovně u ZŠ Slovákova, ale kontakt znal jen Bílkovu —
+kdo šel přímo tam, mohl dojet na špatné místo. Nový `js/data/venues.js`
+s adresami rozloženými na složky, komponenta `<studio-venues>` na kontaktu
+i v CTA homepage, navigační odkaz místo odkazu na hledání. Ceníkové karty
+přestaly být slepou uličkou (dostaly místo konání a dvě akce).
+
+**SEO.** Strukturovaná data přepsána na `@graph` (firma + Place pro druhé
+místo + Person + OfferCatalog + FAQPage), s otevíracími hodinami
+generovanými z reálného rozvrhu zvlášť pro každé místo. Doplněny náhledy
+pro sdílení včetně vygenerovaného obrázku 1200×630 — dosud každé sdílení
+na Facebook vypadalo jako holý odkaz. FAQ přepsáno na 8 otázek, alt texty
+galerie popisují, co je na fotkách skutečně vidět.
+
+**Refaktor.** `BaseElement` adoptuje stylesheety místo vkládání do
+`innerHTML` (parsování jednou pro třídu, ne pro instanci — na rozvrhu
+15 adopcí, 8 unikátních objektů), sdílené recepty ve `styles.js`,
+atributová mechanika v základní třídě, `layout.css` po sekcích. Vypadl
+mrtvý CSS, včetně tří tříd, které osiřely mou vlastní změnou o dvě dávky
+dřív.
+
+**Nová metodika ověřování.** Ukázalo se, že `--virtual-time-budget`
+**vůbec nefiruje `requestAnimationFrame` v iframu**, takže tepometr
+standardní metodou vypadá zamrzlý a rozbitá feature by testem prošla.
+Vznikl proto ovladač přes DevTools Protocol (bez závislostí), který
+vyhodnocuje testy přímo v kontextu stránky a umí emulovat mobilní šířku
+i `prefers-reduced-motion`. Podrobnosti v `CLAUDE.md`.
+
+**Dokumentace.** `CLAUDE.md` přepsán — popisoval komponentu `<data-table>`
+smazanou 19. 7. a `content/brandbook.md` jako zdroj pravdy. Nově obsahuje
+i invarianty přístupnosti s naměřenými hodnotami, pasti v datech, checklist
+nasazení a pravidlo „refaktor a vizuální změna nikdy v jednom commitu".
+
 ### 2026-08-27 (2) — Podklad pro Facebook bannery (jeden soubor pro Figmu)
 - Klient chtěl **jeden soubor s HTML + CSS pro Figmu**, aby si mohl nechat vyrobit bannery na Facebook ve stejné identitě. Vzniklo `bannery-facebook-figma.html` v kořeni repa (1,25 MB, mimo `web/` — není to část webu, je to podklad pro grafika).
 - **Soubor je samostatný**: fonty (12× woff2), loga i dvě fotky jsou zapečené jako data URI, takže funguje offline a jde otevřít dvojklikem (žádné ES moduly, tedy ani problém s `file://`). Import do Figmy přes plugin `html.to.design` (záložka Code/File), fallback je tisk do PDF.
@@ -53,7 +153,7 @@ Klientka poslala texty a seznam úprav (diktované do mikrofonu, originál i map
 
 ### 2026-07-22 (2) — VERZE 2: rebrand podle nového brandbooku „Lenka Web"
 - **Klientka dodala nový brandbook** (JSON export z Figmy) a chtěla podle něj novou verzi webu — ne skrytou ukázku, ale skutečně přeoblečený web. Upřesněno, že jde o **stejné studio** (stejné aktivity/ceny/rozvrh/kontakt), mění se **jen vizuál**.
-- **Verze 1 zajištěna v gitu** místo ruční zálohy: commit + tag **`v1-terracotta`**, obojí pushnuto na GitHub. Návrat k původnímu vzhledu = `git checkout v1-terracotta`.
+- **Verze 1 zajištěna v gitu** místo ruční zálohy: commit + tag **`v1-terracotta`**, obojí pushnuto na GitHub. Návrat k původnímu vzhledu = `git -C ../lenka-web checkout v1-terracotta` (tag zůstal v archivu, v novém repu neexistuje).
 - **Brandbook uložen do repa** jako `content/brandbook-lenka-web.json` (dřív existoval jen ve zprávě v chatu). Starý `content/brandbook.md` ponechán jako historie rozhodnutí, jen doplněna hlavička, že ho nový JSON nahrazuje.
 - **Fonty Raleway + Manrope, self-hostované** (`web/css/fonts.css`, `web/assets/fonts/`, 12 souborů woff2, ~236 kB). Google Fonts CDN je z tohoto prostředí nedostupný (`curl` → 000), takže staženo z npm balíčků `@fontsource/raleway` a `@fontsource/manrope` (v5.3.0). Self-hosting je zároveň lepší varianta než CDN — zachovává dosavadní „žádný third-party request" vlastnost projektu, žádná GDPR otázka, přežije nasazení do WordPressu. **Subsety `latin` i `latin-ext`** — česká diakritika je v latin-ext, bez něj by ř/ě/ů/č/š/ž tiše spadly na systémový font.
 - **`css/tokens.css` přepsán** na novou paletu. Mění se jen barvy a typografie — mezery, rádiusy, motion a layout tokeny zůstaly (klientka si rádiusy i pilulková tlačítka nedávno sama odladila).
@@ -158,31 +258,100 @@ Klientka poslala texty a seznam úprav (diktované do mikrofonu, originál i map
   - Poznámka: karty aktivit na homepage zůstávají na `--radius-xl` (nezměněny) — případná sjednocení je otevřená otázka, klientka zatím neřekla, jestli to chce sjednotit i tam.
 
 ## Next steps
-- **Doladit verzi 3 podle odpovědi klientky** — čeká se na: (a) její vlastní **FAQ texty** (v e-mailu 14. 8. je slíbila, ale nedorazily — nynější FAQ je poskládané z jejího potvrzovacího e-mailu), (b) **konkrétní novinky „od září"** do aktualit, (c) **skutečné kapacity lekcí** místo příkladových 10 míst, (d) **fotku studia v použitelném rozlišení** (bez ní zůstává v hero sekci původní portrét — jediná fotka sálu, kterou máme, je 768×1024 na výšku a v širokém pásu se rozpadá), (e) potvrzení, že chce v tlačítkách **emoji** („Chci začít 🧘") a malé „vás" v textu O mně. Odeslaná odpověď: `odpovedi/odpoved-klientce-2026-08-27.txt`.
-- **Nechat klientku posoudit verzi 2** (nový vizuál) — hlavně: švestková vs. berry na tlačítkách, a jestli jí nevadí, že coral z loga se na webu skoro nepoužívá (je světlý, na výplň tlačítek nemá dost kontrastu). Návrat na verzi 1 je `git checkout v1-terracotta`.
-- Ikony typů lekcí jsou kvůli čitelnosti výrazně ztmavené oproti pastelům z palety (jumping vyšel jako olivově zlatá `#916a00`). Odstín se řídí jedním číslem `--type-icon-lightness` v `tokens.css` — pokud je chce světlejší, je to změna na jednom řádku (za cenu kontrastu).
-- **Rozhodnout, co z `04-ux-ui-audit.md` se bude opravovat.** Doporučené pořadí je v závěru dokumentu; nejnaléhavější jsou rozbitá videa (mrtvý token `--color-charcoal`), kontrast tlumeného textu (propadá AA) a hero kicker.
-- Galerie videí na „O mně": příčina nalezena v auditu (mrtvý token `--color-charcoal` v `media-gallery.js:62` po rebrandu) — zbývá opravit, viz `04-ux-ui-audit.md` A1.
-- **Rozhodnout s klientkou o rezervačním systému** — viz `03-rezervacni-systemy-srovnani.md` (sloučit Tymuj + Chytrá rezervace do jednoho systému s kalendářem přímo na webu, nebo zůstat u dvou externích systémů). Beze změny, dokud nepadne rozhodnutí.
-- Pokračovat v ladění vizuálu podle další zpětné vazby klientky.
-- `assets/images/lenka-portrait.jpg` (třetí fotka klientky, z `content/lenka-nahodilova-yoga-3.jpg`) je stále nepoužitá — klientka ji zatím nezmínila, ponechat k dispozici pro budoucí použití.
-- Ujasnit osud popup okna "test" (Popup Maker) a starých neaktivních šablon (yoga-coach, yogasana-lite, yoga-studio) — řeší se až u nasazení.
-- Nasazení do WordPressu (obalení do motivu, napojení ceníku na needitovatelný obsah, napojení kontaktního formuláře na produkční Contact Form 7 — pole už jsou pojmenovaná shodně) — zatím záměrně neřešeno, přijde na řadu později.
-- K opětovnému přihlášení do wp-adminu (pokud bude znovu potřeba ověřit/upravit CF7 nebo cokoliv v administraci) je potřeba, aby klientka přístupové údaje poskytla znovu — z bezpečnostních důvodů se nikde neukládají.
+
+### Blokuje ostré nasazení — potřebujeme od klientky
+Tyhle údaje se **nedají odhadnout** a v datech jsou proto jako `null` nebo
+zakomentované s `[ZJISTIT]`; UI je zatím prostě nevykreslí. Nesprávný údaj
+o parkování nebo lhůtě je horší než chybějící, protože podle něj člověk jedná.
+- **Parkování u obou míst** — kde se stojí, kolik míst, zdarma nebo zóna.
+  Podle auditu bariéra číslo jedna u první návštěvy a na webu o ní není
+  ani slovo. (`venues.js` → `parking`)
+- **Jak najít vchod** u obou míst, orientační bod. (`venues.js` → `directions`,
+  `landmark`)
+- **Reálná kapacita** lekcí — dnes je u všech tří `capacity: 10`, což je
+  číslo z příkladu klientky, ne potvrzený počet míst.
+- **Pravidla rezervace a odhlašování** — jak dlouho předem, jde přijít bez
+  rezervace, do kdy se dá odhlásit, aby nepropadl vstup z permanentky.
+  Dnešní odpověď „odhlaste se prosím včas" je zdvořilá prosba, ne pravidlo.
+- **GPS souřadnice obou míst** a potvrzení PSČ — bylo uvedené 680 00, což
+  jako doručovací PSČ neexistuje; změněno na 680 01, ale nechat potvrdit.
+  Chybné PSČ kazí párování s firemním profilem na Googlu.
+  (`venues.js` → `geo`, `postalCode`)
+- **Číslo popisné posilovny** — bez něj se vypisuje jen město a navigace se
+  opírá o název místa. (`venues.js` → `streetAddress`)
+- **Věta pro akutní bolest zad / stav po operaci** do FAQ. Je to zdravotní
+  tvrzení, takže ho nemůže formulovat nikdo jiný než ona.
+- **Věková hranice** a jestli je permanentka přenosná na jinou osobu.
+
+### Obsah, který zlepší web, ale neblokuje
+- **Fotka studia na šířku ve velkém rozlišení.** Klientčin vlastní požadavek
+  č. 1 ze 14. 8. je pořád nesplněný a je to zároveň řešení kompromisu v hero:
+  text tam má vlastní tmavý podklad, který leží přes lektorku. Nejlepší, co
+  máme, je 768×1024 na výšku.
+- **Fotka světelné terapie** — hlavní novinka, kterou klientka tlačí na webu,
+  v ceníku i v potvrzovacím e-mailu, a nemáme z ní jediný snímek.
+- **Recenze od 4–5 klientek** — web nemá ani jednu referenci, a u pohybového
+  studia je to to, co rozhoduje. Ideálně i hodnocení na Google Maps.
+- **Konkrétní novinky „od září"** do aktualit; dnešní zpráva je obecná
+  a bez data po pár týdnech působí spíš špatně než dobře.
+- **Co bylo za akci** na `foto-09` (skupina v maskách) a `foto-10` — alt texty
+  teď popisují jen viditelné.
+- `foto-01.jpg` je vyřazená z galerie, protože má přes sebe nalepený
+  screenshot Google Maps. Až bude čím ji oříznout, dá se vrátit — případně
+  se hodí na kontakt jako vizuální navigace, kde ta mapa smysl má.
+
+### Otevřená rozhodnutí
+- **Rezervační systém** — viz `docs/03-rezervacni-systemy-srovnani.md`
+  (sloučit Tymuj + Chytrá rezervace do jednoho systému s kalendářem přímo
+  na webu, nebo zůstat u dvou externích). Beze změny, dokud nepadne
+  rozhodnutí.
+- **Přemapované barvy typů lekcí** (jumping → korál, tabata → oranžová) jsou
+  vizuální změna na ceníku i v rozvrhu. Nechat klientku posoudit; je to
+  jediná dávka, kterou lze samostatně vrátit (`13445ef`).
+- **Poprosit vlastníka organizace o archivaci starého repa**
+  `andreadamaskova-ops/Lenka-web`. Je veřejné, obsahuje fotky a videa
+  klientky, a z tohoto účtu s ním nelze nic dělat. Až po zavedení nového
+  odkazu na náhled, ať se klientce nerozpadne odkaz z e-mailu.
+- **Osud popupu „test"** (Popup Maker) a starých neaktivních šablon
+  (yoga-coach, yogasana-lite, yoga-studio) — řeší se až u nasazení.
+
+### Technický dluh
+- **Videa váží 19,3 MB** (`video-1.mp4` samo 10,1 MB). Překomprimovat na
+  ~1–2 MB/kus. **Zablokováno: v prostředí není ffmpeg.**
+- **`cta-button` interpoluje `href` a `label` do `innerHTML` bez escapování.**
+  Dnes to není vektor (data jsou naše), ale hlídat při napojení na obsah
+  z WordPressu.
+- **Ikony typů lekcí** jsou kvůli čitelnosti ztmavené oproti pastelům
+  z palety. Odstín řídí jedno číslo `--type-icon-lightness` v `tokens.css` —
+  změna je jednořádková, za cenu kontrastu.
+- **Zbytek `docs/04-ux-ui-audit.md`** — nálezy A1–A4, B1–B7 a C2 jsou
+  hotové. Zbývá projít, co z UX části (C1, C3–C8) má ještě smysl, a probrat
+  to s klientkou po jedné dávce.
+- **Nasazení do WordPressu** — checklist je v `CLAUDE.md`. K přihlášení do
+  wp-adminu je potřeba, aby klientka přístupové údaje poskytla znovu;
+  z bezpečnostních důvodů se nikde neukládají.
 
 ## Náhled pro klientku (GitHub Pages)
 
-Web je průběžně publikovaný na **<https://andreadamaskova-ops.github.io/Lenka-web/>** — tohle je odkaz, který dostává klientka k prohlédnutí. Není to ostrý web, justyoga.cz zůstává beze změny.
+Web je publikovaný na **<https://josef-drdlicek.github.io/justyoga/>** —
+tohle je odkaz, který dostává klientka. Není to ostrý web, justyoga.cz
+zůstává beze změny. `web/robots.txt` s `Disallow: /` brání indexaci náhledu.
 
-- Servíruje se z větve **`gh-pages`**, která obsahuje **jen obsah složky `web/`** (proto je URL bez `/web/`). Větev `master` zůstává zdrojem pravdy a Pages se z ní neservíruje.
-- **Aktualizace náhledu po commitu do masteru:**
-  ```
-  git push origin master
-  git subtree push --prefix web origin gh-pages
-  ```
-  Build na GitHubu pak trvá cca půl minuty (stav: `gh api repos/andreadamaskova-ops/Lenka-web/pages --jq .status`).
-- `web/robots.txt` (`Disallow: /`) brání zaindexování náhledu, aby duplicitním obsahem nekonkuroval živému justyoga.cz. **Při nasazení do WordPressu:** soubor skončí uvnitř složky motivu, kde ho vyhledávače nečtou, takže produkci neovlivní — pokud by se ale `web/` někdy nasazovalo jako kořen webu, je nutné ho smazat.
-- Ověřeno po nasazení (headless Chrome, ne jen HTTP kód): všechny 4 stránky se načtou, web komponenty se upgradují (hlavička/logo, 4 položky menu, patička), rozvrh vykreslí karty lekcí, homepage 3 karty aktivit, `robots.txt` vrací 200. Jediná chyba v konzoli je **404 na `/favicon.ico`** — což je přesně bod A3 auditu (favicony jsou v repu vygenerované, ale odkazující kód byl vrácen).
+Aktualizace náhledu (běží z větve `gh-pages`, obsah je podstrom `web/`):
+
+```
+git subtree push --prefix web origin gh-pages
+```
+
+⚠️ Trvá i několik minut a snadno narazí na timeout — pouštět zvlášť, ne
+v jednom příkazu s `git push`. Stav buildu:
+`gh api repos/Josef-Drdlicek/justyoga/pages --jq .status`.
+
+⚠️ **Starý odkaz `andreadamaskova-ops.github.io/Lenka-web/` je zamrzlý na
+verzi 2** a z tohoto účtu ho aktualizovat nelze — repo hlásí `push: false`
+a `admin: false`. Klientka ho může mít v e-mailu; až bude nový odkaz
+zavedený, poprosit vlastníka organizace o archivaci starého repa (je
+veřejné a obsahuje fotky i videa klientky).
 
 ## Jak si web prohlédnout (lokálně, bez nasazení)
 Soubory jsou v `web/`. Používá se čistý HTML + ES moduly JavaScriptu — **nejde jen otevřít dvojklikem** (prohlížeče blokují moduly na `file://`), je potřeba lokální server, např.:
@@ -192,20 +361,21 @@ npx serve .
 ```
 a pak otevřít adresu, kterou `serve` vypíše (obvykle `http://localhost:3000`).
 
-## Struktura kódu (`web/`)
-```
-web/
-  index.html, rozvrh-cenik.html, o-mne.html, kontakt.html
-  css/tokens.css      – design tokeny (barvy/mezery/typografie), jediné místo pro úpravu vzhledu
-  css/base.css        – reset a základní styly
-  css/layout.css      – rozvržení stránek (grid, hero, sekce)
-  js/data/            – veškerý obsah (aktivity, rozvrh, kontakt, navigace) odděleně od zobrazení
-  js/components/      – vanilla Web Components (site-header, site-nav, site-footer, cta-button,
-                        activity-card, schedule-widget, pricing-cards, news-board, faq-list, media-gallery)
-  js/pages/           – napojení dat na konkrétní stránku
-  assets/images/      – reálné logo, fotky (od klientky)
-```
-Obsah (ceny, rozvrh, kontakt) je reálný, stažený z justyoga.cz (ceník + rozvrh + rezervace-terminu, ověřeno 2026-07-07). Barevná paleta v `tokens.css` je z reálného brandbooku klientky (`content/brandbook.md`).
+## Struktura kódu a ověřování
 
-## Jak se teď ověřuje vzhled/layout
-V tomto prostředí není interaktivní prohlížeč, ale je k dispozici Chrome, který jde spustit v tzv. headless režimu (bez okna) a udělat z něj screenshot nebo přes JS změřit přesné rozměry prvků (`getBoundingClientRect`, `scrollWidth`). Přímý screenshot na úzkou šířku (mobil) přes `--window-size` je ale nespolehlivý (nerespektuje media queries správně) — funguje spolehlivě jen přes iframe se stejnou originou nastavený na přesnou šířku. Této metodě se říká v projektu neformálně "diag.html" a používá se jako dočasný soubor, který se po ověření zase smaže.
+Obojí se popisuje na jednom místě, a to v **`CLAUDE.md`** — architektura
+`web/`, klíčové principy, datový kontrakt komponent, invarianty přístupnosti
+s naměřenými hodnotami, pasti v datech a checklist pro nasazení do
+WordPressu. Dřív to bylo popsané tady i tam a obě verze se rozešly
+(`STATUS.md` i `CLAUDE.md` ještě v srpnu odkazovaly na komponentu
+`<data-table>` smazanou 19. 7. a na `content/brandbook.md` nahrazený JSON
+exportem).
+
+Stručně: obsah žije v `web/js/data/*.js`, vzhled v `web/css/tokens.css`,
+komponenty jsou vanilla Web Components se Shadow DOM v `web/js/components/`.
+Web nemá build krok — lokálně se spouští `cd web && npx serve .`.
+
+Vzhled se ověřuje headless Chromem dvěma způsoby: diagnostickou stránkou
+v iframu (statická měření) a přes DevTools Protocol (cokoli závislého na
+`requestAnimationFrame` — pod `--virtual-time-budget` v iframu nefiruje).
+Detaily i pasti měření barev jsou v `CLAUDE.md`.
