@@ -18,7 +18,7 @@ import {
   renderRestZone,
   FIRST_VISIT_STEPS,
 } from "../ui/sections.js";
-import { renderHeartRateMeter, initHeartRateMeter } from "../ui/heart-rate-meter.js";
+import { mountHeartRateMeter } from "../ui/heart-rate-meter.js";
 import { ACTIVITIES } from "../data/activities.js";
 import { FAQ } from "../data/faq.js";
 import { ZONES, REST_ZONE, BRIDGE_TEXT } from "../data/zones.js";
@@ -48,8 +48,7 @@ mount("[data-venues]", renderVenues);
 // lives on the schedule page, where someone comparing details will look.
 mount("[data-faq]", () => renderFaq(FAQ.slice(0, 6)));
 
-const meterSlot = $("[data-heart-rate-meter]");
-if (meterSlot) meterSlot.replaceWith(renderHeartRateMeter());
-initHeartRateMeter();
+// Až po vykreslení zón: ukazatel si při startu hledá své zastávky v DOMu.
+mountHeartRateMeter();
 
 initReveal();

@@ -154,9 +154,9 @@ export function renderZone(zone, activities) {
     "section",
     {
       class: "section zone",
-      id: `zona-${zone.id}`,
-      dataset: { zone: zone.id },
-      "aria-labelledby": `zona-${zone.id}-title`,
+      id: zone.slug,
+      dataset: { zone: zone.id, zoneStop: zone.id },
+      "aria-labelledby": `${zone.slug}-title`,
     },
     [
       el("div", { class: "shell zone__inner" }, [
@@ -165,7 +165,7 @@ export function renderZone(zone, activities) {
             el("span", { class: "zone__dot", "aria-hidden": "true" }),
             el("span", { text: zone.eyebrow }),
           ]),
-          el("h2", { class: "zone__heading", id: `zona-${zone.id}-title`, text: zone.heading }),
+          el("h2", { class: "zone__heading", id: `${zone.slug}-title`, text: zone.heading }),
           el("p", { class: "zone__slogan", text: zone.slogan }),
           el("p", { class: "zone__text muted", text: zone.text }),
         ]),
@@ -197,13 +197,13 @@ export function renderRestZone(zone) {
     "section",
     {
       class: "section band--dark zone zone--rest",
-      id: `zona-${zone.id}`,
-      dataset: { zone: zone.id },
-      "aria-labelledby": `zona-${zone.id}-title`,
+      id: "restart",
+      dataset: { zone: zone.id, zoneStop: zone.id },
+      "aria-labelledby": "restart-title",
     },
     [
       el("div", { class: "shell shell--narrow zone__rest-inner" }, [
-        el("h2", { class: "zone__rest-heading", id: `zona-${zone.id}-title`, text: zone.heading }),
+        el("h2", { class: "zone__rest-heading", id: "restart-title", text: zone.heading }),
         el("p", { class: "zone__rest-text", text: zone.text }),
         el("div", { class: "zone__rest-actions" }, [
           el("a", {
@@ -254,7 +254,14 @@ export function renderBooking(activities) {
     "ul",
     { class: "booking" },
     activities.map((activity, index) =>
-      el("li", { class: "booking__item", dataset: { reveal: "" }, style: `--reveal-index:${index}` }, [
+      // data-zone-stop dělá z položky zastávku pro ukazatel tempa: ten
+      // pak i na téhle stránce ukazuje tempo lekce, u které návštěvník
+      // právě je, a nabízí ji tlačítkem.
+      el("li", {
+        class: "booking__item",
+        dataset: { reveal: "", zoneStop: zoneForActivity(activity.id)?.id ?? "" },
+        style: `--reveal-index:${index}`,
+      }, [
         el("span", { class: "booking__name", text: activity.name }),
         el("a", {
           class: "btn btn--accent",

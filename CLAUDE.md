@@ -150,9 +150,14 @@ web/
   typografii, tvar a motion. Nic nehardcoduje barvu, mezeru ani radius jinde —
   **a žádný literál v `transition`**: token se při `prefers-reduced-motion`
   nuluje, zapsaná hodnota ne.
-- **Jediný breakpoint 768px, dvě nezaměnitelná znění.** `min-width: 768px`
-  pro desktop a výš, `width < 768px` pro nižší. `max-width: 768px` se
-  nepoužívá — přesahoval by s prvním a na šířce přesně 768px platily oba.
+- **Jediný breakpoint layoutu 768px, dvě nezaměnitelná znění.**
+  `min-width: 768px` pro desktop a výš, `width < 768px` pro nižší.
+  `max-width: 768px` se nepoužívá — přesahoval by s prvním a na šířce
+  přesně 768px platily oba.
+  Výjimka: **1280px u ukazatele tempa.** Není to breakpoint layoutu, ale
+  odpověď na otázku „vejde se vedle obsahu svislý panel?". Pod ním se
+  ukazatel překlopí do vodorovného proužku dole. Druhou výjimkou je 480px
+  uvnitř toho proužku. Jinam se breakpoint nepřidává.
 - **Obsah je reálný**, stažený z justyoga.cz. Neověřené údaje jsou označené
   (viz Pasti v datech).
 
