@@ -31,7 +31,15 @@ export class SiteNav extends BaseElement {
   }
 
   #onKeydown = (event) => {
-    if (event.key === "Escape" && this.#isOpen) this.#setOpen(false);
+    if (event.key !== "Escape" || !this.#isOpen) return;
+    // Panel se zavírá přes visibility: hidden, což fokusovaný odkaz uvnitř
+    // vyřadí z tab orderu — fokus by tak zůstal na prvku, který už není
+    // vidět, a další Tab by pokračoval od začátku stránky. Vrátit ho na
+    // tlačítko, kterým se menu otevírá, je zároveň to, co uživatel čeká.
+    // Jen když fokus opravdu byl uvnitř komponenty, ať se neukradne odjinud.
+    const focusWasInside = this.shadowRoot.activeElement !== null;
+    this.#setOpen(false);
+    if (focusWasInside) this.#toggle.focus();
   };
 
   #onOutsideClick = (event) => {
