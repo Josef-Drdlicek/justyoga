@@ -1,107 +1,132 @@
 <!DOCTYPE html>
 <html lang="cs">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kontakt – Just Yoga Boskovice</title>
-  <meta name="description" content="Dvě místa v Boskovicích: jóga ve studiu na Bílkově 91, jumping a kondiční lekce v posilovně ZŠ Slovákova. Telefon 723 466 926, e-mail info@justyoga.cz." />
-  <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
-  <!-- Náhled při sdílení. Klientka je aktivní na Facebooku i Instagramu
-       a odkaz na web tam dosud vypadal jako holý text bez obrázku.
-       og:image MUSÍ být absolutní URL — relativní Facebook ignoruje.
-       ⚠️ PŘI NASAZENÍ: doména i cesta se změní (jako motiv skončí obrázek
-       ve wp-content/themes/…, nebo se nahraje do Media Library).
-       ⚠️ canonical a og:url tady schválně NEJSOU: finální slugy ve
-       WordPressu nejsou známé (živý web má /rozvrh a /ceník zvlášť)
-       a špatný canonical dokáže stránku vyřadit z indexu. Doplnit při
-       nasazení spolu s 301 přesměrováním ze starých adres. -->
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="cs_CZ" />
-  <meta property="og:title" content="Kontakt a dvě místa lekcí – Just Yoga Boskovice" />
-  <meta property="og:description" content="Dvě místa v Boskovicích: jóga na Bílkově 91, jumping a kondiční lekce v posilovně ZŠ Slovákova. Zavolejte na 723 466 926 nebo napište." />
-  <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Adresy Just Yoga Boskovice: Bílkova 91 a posilovna ZŠ Slovákova" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png" />
-  <link rel="icon" href="assets/images/favicon-512.png" sizes="512x512" type="image/png" />
-  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
-  <!-- Raleway 300 nese H1, tedy LCP text stránky. Bez preloadu ho prohlížeč
-       objeví až po vyhodnocení CSS (měřeno: start ~49 ms). Dva soubory, ne
-       jeden: české nadpisy potřebují latin i latin-ext subset. crossorigin
-       je povinné i pro same-origin fonty — bez něj se preload zahodí
-       a soubor se stáhne dvakrát. -->
-  <link rel="preload" href="assets/fonts/raleway-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="assets/fonts/raleway-latin-ext-300-normal.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="css/fonts.css" />
-  <link rel="stylesheet" href="css/tokens.css" />
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <script type="module" src="js/main.js"></script>
-  <script type="module" src="js/seo.js"></script>
-  <script type="module" src="js/pages/kontakt.js"></script>
-</head>
-<body>
-  <site-header></site-header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kontakt – Just Yoga Boskovice</title>
+    <meta
+      name="description"
+      content="Kontakt na Lenku Nahodilovou a obě místa, kde Just Yoga Boskovice cvičí: jógové studio na Bílkově a posilovna u ZŠ Slovákova."
+    />
 
-  <main id="main" tabindex="-1" class="page-shell section">
-    <h1 class="page-heading">Kontakt</h1>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
+    <meta property="og:title" content="Kontakt – Just Yoga Boskovice" />
+    <meta
+      property="og:description"
+      content="Telefon, e-mail a obě adresy, kde se cvičí."
+    />
+    <meta property="og:image" content="https://justyoga.cz/assets/images/og-default.png" />
+    <meta property="og:locale" content="cs_CZ" />
 
-    <!-- Dvě místa, ne jedno. Jóga je ve studiu na Bílkově, jumping
-         a kondiční lekce v posilovně u ZŠ Slovákova — dokud tady byla jen
-         jedna adresa, mohl zákazník dojet na jumping na špatné místo.
-         Karty se odvozují z aktivit, takže se seznam nikde neduplikuje.
-         Mapa se nevkládá iframem: klasický output=embed se v ověřovacím
-         setupu projektu nevykresluje spolehlivě a Static Maps API by
-         znamenalo klíč ve veřejném repu a první požadavek na třetí stranu
-         na celém webu. Odkaz vede rovnou na navigaci. -->
-    <section class="section">
-      <h2 class="section-heading">Kde cvičíme</h2>
-      <studio-venues data-studio-venues></studio-venues>
-    </section>
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
 
-    <div class="contact-grid">
-      <section class="card contact-card">
-        <p class="contact-name">Lenka Nahodilová</p>
-        <ul class="contact-list">
-          <li><span class="icon" data-icon="phone" aria-hidden="true"></span><a data-contact-phone></a></li>
-          <li><span class="icon" data-icon="mail" aria-hidden="true"></span><a data-contact-email></a></li>
-        </ul>
+    <link
+      rel="preload"
+      href="assets/fonts/fraunces-latin-400-italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+
+    <script type="module" src="js/pages/kontakt.js"></script>
+    <script type="module" src="js/seo.js"></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Přeskočit na obsah</a>
+
+    <div data-site-header></div>
+
+    <main id="main" tabindex="-1">
+      <section class="page-hero">
+        <div class="shell">
+          <span class="eyebrow">Kontakt</span>
+          <h1 class="page-hero__title">
+            <span class="hero__title-main">Napište mi,</span>
+            <span class="hero__title-accent">ozvu se</span>
+          </h1>
+          <p class="lede">
+            Nejste si jistí, která lekce je pro vás? Napište mi nebo zavolejte,
+            probereme to.
+          </p>
+        </div>
       </section>
 
-      <section class="card contact-form-card">
-        <h2>Napište mi</h2>
-        <form class="contact-form" data-contact-form>
-          <label>
-            Vaše jméno
-            <input type="text" name="your-name" required />
-          </label>
-          <label>
-            Váš e-mail
-            <input type="email" name="your-email" required />
-          </label>
-          <label>
-            Předmět
-            <input type="text" name="your-subject" required />
-          </label>
-          <label>
-            Vaše zpráva (volitelné)
-            <textarea name="your-message" rows="5"></textarea>
-          </label>
-          <button type="submit" class="btn">Odeslat</button>
-        </form>
-        <!-- TODO: až se bude nasazovat do WordPressu, napojit na Contact Form 7
-             (plugin je na produkci už aktivní), aby zprávy chodily klientce
-             na e-mail. Pole výše (your-name/your-email/your-subject/
-             your-message) odpovídají názvům polí reálného formuláře na
-             justyoga.cz/kontakt/, takže při nasazení stačí formulář nahradit
-             CF7 shortcodem beze změny obsahu/pojmenování polí. Do té doby
-             odeslání nikam nevede — viz preventDefault v kontakt.js. -->
-      </section>
-    </div>
-  </main>
+      <section class="section" aria-labelledby="contact-title">
+        <div class="shell">
+          <div class="contact">
+            <div class="contact__direct">
+              <h2 id="contact-title">Lenka Nahodilová</h2>
+              <hr class="rule" />
+              <ul class="contact__list">
+                <li>
+                  <span class="contact__icon" data-icon="phone" aria-hidden="true"></span>
+                  <a data-contact-phone></a>
+                </li>
+                <li>
+                  <span class="contact__icon" data-icon="mail" aria-hidden="true"></span>
+                  <a data-contact-email></a>
+                </li>
+              </ul>
+            </div>
 
-  <site-footer></site-footer>
-</body>
+            <div class="card contact__form-card">
+              <h2>Formulář</h2>
+              <form class="contact__form" data-contact-form>
+                <label>
+                  <span>Vaše jméno</span>
+                  <input type="text" name="your-name" autocomplete="name" required />
+                </label>
+                <label>
+                  <span>Váš e-mail</span>
+                  <input type="email" name="your-email" autocomplete="email" required />
+                </label>
+                <label>
+                  <span>Čeho se dotaz týká</span>
+                  <input type="text" name="your-subject" required />
+                </label>
+                <label>
+                  <span>Zpráva (volitelné)</span>
+                  <textarea name="your-message" rows="5"></textarea>
+                </label>
+                <button type="submit" class="btn btn--primary btn--block">Odeslat</button>
+                <p class="contact__status" data-form-status role="status"></p>
+              </form>
+              <!-- TODO: při nasazení do WordPressu nahradit shortcodem Contact
+                   Form 7 (plugin je na produkci aktivní). Názvy polí
+                   (your-name / your-email / your-subject / your-message)
+                   odpovídají reálnému formuláři na justyoga.cz/kontakt/,
+                   takže se mění jen obal, ne obsah. Do té doby odeslání
+                   nikam nevede — viz js/pages/kontakt.js. -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band--alt" aria-labelledby="venues-title">
+        <div class="shell">
+          <header class="section__head" data-reveal>
+            <span class="eyebrow">Kde cvičíme</span>
+            <h2 id="venues-title">Dvě adresy, ne jedna</h2>
+            <hr class="rule" />
+            <p class="lede">
+              Jóga je v jógovém studiu na Bílkově. Jumping a kondiční lekce jsou
+              v posilovně u ZŠ Slovákova.
+            </p>
+          </header>
+
+          <div data-venues></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-site-footer></div>
+  </body>
 </html>

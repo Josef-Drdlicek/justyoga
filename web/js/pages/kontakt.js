@@ -1,30 +1,37 @@
-// Komponenty, které žijí jen na této stránce — registruje je ten skript,
-// který je plní daty, ne main.js (viz komentář tam).
-import "../components/studio-venues.js";
+/* Contact page. */
 
+import { mount, $ } from "../lib/dom.js";
+import { initReveal } from "../lib/reveal.js";
+import { mountChrome } from "../ui/chrome.js";
+import { renderVenues } from "../ui/sections.js";
 import { SITE_CONFIG } from "../data/site-config.js";
-import { ACTIVITIES } from "../data/activities.js";
-import { venuesWithActivities } from "../data/venues.js";
 import { PHONE_ICON, MAIL_ICON } from "../data/icons.js";
 
-document.querySelector('[data-icon="phone"]').innerHTML = PHONE_ICON;
-document.querySelector('[data-icon="mail"]').innerHTML = MAIL_ICON;
+mountChrome();
 
-// Místa se odvozují z aktivit, takže adresy nejsou nikde opsané podruhé
-// a nová aktivita v novém místě přidá kartu sama.
-document.querySelector("[data-studio-venues]").venues = venuesWithActivities(ACTIVITIES);
+mount("[data-venues]", renderVenues);
 
-const phoneLink = document.querySelector("[data-contact-phone]");
-phoneLink.textContent = SITE_CONFIG.phone;
-phoneLink.href = SITE_CONFIG.phoneHref;
+const phone = $("[data-contact-phone]");
+phone.textContent = SITE_CONFIG.phone;
+phone.href = SITE_CONFIG.phoneHref;
 
-const emailLink = document.querySelector("[data-contact-email]");
-emailLink.textContent = SITE_CONFIG.email;
-emailLink.href = SITE_CONFIG.emailHref;
+const email = $("[data-contact-email]");
+email.textContent = SITE_CONFIG.email;
+email.href = SITE_CONFIG.emailHref;
 
-// Not wired to anything yet (see TODO in kontakt.html) — prevented so a
-// stray click doesn't reload the page with the field values as a query
-// string before Contact Form 7 is wired up at WordPress deployment.
-document.querySelector("[data-contact-form]").addEventListener("submit", (event) => {
+$('[data-icon="phone"]').innerHTML = PHONE_ICON;
+$('[data-icon="mail"]').innerHTML = MAIL_ICON;
+
+// Not wired to anything yet (see the TODO in kontakt.html). Submitting is
+// prevented so a stray click cannot reload the page with the visitor's
+// answers pasted into the query string, and the visitor is told plainly
+// rather than being left to think the message went somewhere.
+const status = $("[data-form-status]");
+$("[data-contact-form]").addEventListener("submit", (event) => {
   event.preventDefault();
+  status.textContent =
+    `Formulář zatím není propojený — napište mi prosím přímo na ${SITE_CONFIG.email} ` +
+    `nebo zavolejte na ${SITE_CONFIG.phone}.`;
 });
+
+initReveal();
