@@ -153,7 +153,7 @@ export class ScheduleWidget extends BaseElement {
       /* Narrow cards (mobile) don't reliably fit "150 Kč / lekce" beside a
          "Rezervovat" button on one line — stack them instead of risking an
          awkward mid-price wrap. */
-      @media (max-width: 768px) {
+      @media (width < 768px) {
         .lesson__foot { flex-direction: column; align-items: stretch; gap: var(--space-4); }
         .tabs { width: 100%; }
         .tab { flex: 1; text-align: center; }

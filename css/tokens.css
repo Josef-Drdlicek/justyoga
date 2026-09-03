@@ -124,7 +124,17 @@
 }
 
 /* Single documented breakpoint — reuse this exact value (768px) in every
-   @media query in this project instead of introducing new arbitrary ones. */
+   @media query in this project instead of introducing new arbitrary ones.
+
+   Two spellings, and they are NOT interchangeable:
+     desktop and up  →  @media (min-width: 768px)
+     below desktop   →  @media (width < 768px)
+   The second one used to be written as `max-width: 768px`, which overlaps
+   the first one: at a viewport of exactly 768px BOTH queries matched and
+   their rules competed (worst case was schedule-widget.js, which contains
+   both). `width < 768px` is the exact complement of `min-width: 768px`, so
+   every viewport matches precisely one of them — and it says so without a
+   767.98px fudge value that would look like a second breakpoint. */
 
 @media (min-width: 768px) {
   :root {
