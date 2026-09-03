@@ -1,0 +1,14 @@
+# Náhled rozpracovaného webu pro klientku (GitHub Pages).
+#
+# Je to kopie obsahu živého justyoga.cz na jiné doméně — kdyby ji vyhledávače
+# zaindexovaly, konkurovala by v hledání skutečnému webu klientky duplicitním
+# obsahem. Náhled proto nechceme mít ve výsledcích vyhledávání vůbec.
+#
+# POZOR PŘI NASAZENÍ DO WORDPRESSU: tenhle soubor platí jen tam, kde je
+# v kořeni domény (tj. na náhledu github.io). Až se web/ nasadí jako motiv do
+# WordPressu, skončí uvnitř složky motivu (wp-content/themes/...), kde ho
+# vyhledávače nečtou a produkci tedy neovlivní. Kdyby se ale web/ někdy
+# nasazoval jako kořen webu, je nutné tenhle soubor smazat — jinak by
+# zablokoval indexaci ostrého webu.
+User-agent: *
+Disallow: /

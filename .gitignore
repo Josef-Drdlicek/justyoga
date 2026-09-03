@@ -1,0 +1,15 @@
+# Lokální nastavení Claude Code — strojové, ne zdroj projektu
+.claude/
+
+# OS smetí
+Thumbs.db
+.DS_Store
+
+# Dočasné soubory headless ověřování layoutu (viz CLAUDE.md → „diag.html")
+diag*.html
+
+# Výstupy jednorázových diagnostik (soupisy tokenů apod.)
+*_vars.txt
+
+# Osobní korespondence s klientkou — do repa nepatří
+odpovedi/

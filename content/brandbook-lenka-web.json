@@ -1,0 +1,73 @@
+{
+  "brand": "Lenka Web",
+  "colors": {
+    "logo": {
+      "primary": "#e86667",
+      "primaryMuted": "rgba(232, 102, 103, 0.55)",
+      "red1": "#e54e4d",
+      "red2": "#e44443",
+      "dark": "#402b32"
+    },
+    "main": {
+      "salmon": "#ffafb0",
+      "peach": "#ffac86",
+      "yellow": "#ffd47d",
+      "mint": "#51d3a7",
+      "berry": "#a9436b"
+    },
+    "secondary": {
+      "blush": "#ffe8e8",
+      "linen": "#ffe5d9",
+      "cream": "#ffefcd",
+      "foam": "#b2ffe5",
+      "pink": "#f6c3d8"
+    },
+    "text": "#2c1f25",
+    "background": "#fcfaf8",
+    "darkSurface": "#2c1f25"
+  },
+  "typography": {
+    "headings": {
+      "family": "Raleway",
+      "googleFont": "Raleway:ital,wght@0,300;0,400;0,500;0,600",
+      "weights": {
+        "300": {
+          "name": "Light",
+          "usage": "Hero headings, section titles over splash images — 28px and above only"
+        },
+        "400": {
+          "name": "Regular",
+          "usage": "Logotype / header — preserves thin character at smaller sizes"
+        },
+        "500": {
+          "name": "Medium",
+          "usage": "h2, h3, lesson card names, buttons — readability over elegance"
+        },
+        "600": {
+          "name": "SemiBold",
+          "usage": "Emphasis only — prices, CTA buttons, statistics"
+        }
+      }
+    },
+    "body": {
+      "family": "Manrope",
+      "googleFont": "Manrope:wght@400;700",
+      "weights": {
+        "400": {
+          "name": "Regular",
+          "usage": "Body text, paragraphs, UI labels"
+        },
+        "700": {
+          "name": "Bold",
+          "usage": "Section headings in UI, labels"
+        }
+      }
+    }
+  },
+  "shadows": "none",
+  "notes": {
+    "palette": "Warm off-white background (#fcfaf8) with dusty rose / terracotta accents. Berry (#a9436b) as brand accent. Mint (#51d3a7) and yellow (#ffd47d) as complementary pops.",
+    "typography": "Raleway for all headings (elegant, thin), Manrope for all body and UI text (clean, readable). No Poppins in production — it appeared in the style guide annotation only.",
+    "logoColor": "Logo uses the red-coral range (#e86667 → #e44443) with dark plum (#402b32) as contrast."
+  }
+}

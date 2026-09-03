@@ -1,0 +1,318 @@
+/* Page-level composition (light-DOM layout only).
+   Each <component> owns its own look via Shadow DOM — this file never
+   restyles inside a component, only arranges things on the page. */
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32rem;
+  text-align: center;
+  overflow: hidden;
+  color: var(--color-white);
+}
+
+.hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+/* Darkening wash so white hero text stays readable over the photo. Mixed
+   from --color-text rather than a hardcoded grey (it used to repeat the old
+   charcoal literal), so the scrim follows the brand's dark tone instead of
+   drifting to a neutral that fights the warm palette. */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-text) 20%, transparent),
+    color-mix(in srgb, var(--color-text) 60%, transparent)
+  );
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 40rem;
+  /* .hero is a flex container — flex items default to min-width:auto, which
+     stops them shrinking below their content's intrinsic width and forces
+     the whole page to overflow horizontally. min-width:0 lets it actually
+     shrink to fit narrow viewports. */
+  min-width: 0;
+  width: 100%;
+  padding: var(--space-6) var(--space-5);
+}
+
+.hero__kicker {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.85);
+  margin: 0 0 var(--space-3);
+}
+
+.hero__content h1 {
+  color: var(--color-white);
+  /* Fluid instead of a fixed --font-size-hero: a single formula that scales
+     continuously with viewport width, so no word can force horizontal
+     overflow on a narrow phone — no per-breakpoint override needed. */
+  font-size: clamp(2rem, 6vw + 1rem, var(--font-size-hero));
+}
+
+.hero__tagline {
+  font-size: var(--font-size-lg);
+  color: rgb(255 255 255 / 0.92);
+  margin: 0 0 var(--space-6);
+}
+
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-5);
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+/* Small print under a section's main content (e.g. the limited-capacity
+   note below the schedule) — one shared rule so such notes don't each
+   invent their own size/color. */
+.section-note {
+  margin: var(--space-4) 0 0;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.section-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* Offset so anchor jumps (homepage activity cards → rozvrh-cenik.html#cenik)
+   don't land underneath the sticky site header. An id has to live here, in
+   the light DOM — one inside a Shadow DOM (e.g. on a <pricing-cards> card)
+   is never reachable by a URL fragment. */
+.anchor-target {
+  scroll-margin-top: var(--header-height-estimate);
+}
+
+.prose {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+/* "O mně" — bio text with two photos woven in. Mobile (default) stacks in
+   DOM order: heading, portrait photo, text, wide photo. Desktop re-places
+   the same items on the grid: text beside the portrait, wide photo as a
+   full-width band below. */
+.bio {
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* The grid gap owns the vertical rhythm between bio items — the heading's
+   own bottom margin would double it. */
+.bio__heading {
+  margin-bottom: 0;
+}
+
+.bio__text p:last-child {
+  margin-bottom: 0;
+}
+
+/* Opening paragraph of the bio, set one step larger than the labelled
+   paragraphs that follow it — same role .lede plays on the other pages,
+   but left-aligned inside the bio grid instead of a centered page intro. */
+.bio__lead {
+  font-size: var(--font-size-lg);
+}
+
+/* Both source photos are landscape (2560×1707) shown in differently shaped
+   frames — same technique/rationale as .hero__image: cover-crop inside a
+   size-constrained frame instead of pre-cropping the asset. */
+.bio__photo {
+  width: 100%;
+  aspect-ratio: 3 / 2; /* mobile: (near-)natural ratio, no visible crop */
+  object-fit: cover;
+  object-position: center;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* Sub-section that follows the main content of a page (here the media
+   gallery under the bio) — same offset the booking sub-section uses on
+   the schedule page. */
+.media-section {
+  margin-top: var(--space-8);
+}
+
+/* Kontakt page: contact-info card beside the message form. Contact info
+   is the first DOM child, so it's simultaneously "top" of the mobile
+   single-column stack and "left" of the desktop two-column grid — no
+   reordering needed for either framing. */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.contact-name {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0 0 var(--space-4);
+}
+
+.contact-list {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.contact-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Two text lines (label + address) instead of one, so the icon aligns to
+   the top of the block rather than its vertical center. */
+.contact-list__address {
+  align-items: flex-start;
+}
+
+.contact-list__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-list__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.contact-list .icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-primary);
+}
+
+.contact-list .icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.contact-form label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.contact-form input,
+.contact-form textarea {
+  font: inherit;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+.contact-form textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+/* Single project breakpoint, see tokens.css comment */
+@media (min-width: 768px) {
+  /* Source photo is landscape (2560x1707) but the desktop hero band is much
+     wider/shorter than that — object-fit: cover then only shows a thin
+     horizontal slice of it. Taller band = less of the photo cropped away. */
+  .hero {
+    min-height: 40rem;
+  }
+
+  .hero__content h1 {
+    line-height: 1.1;
+  }
+
+  .bio {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    column-gap: var(--space-6);
+    align-items: center;
+  }
+
+  .bio__heading {
+    grid-column: 1 / -1;
+  }
+
+  .bio__text {
+    grid-row: 2;
+    grid-column: 1;
+  }
+
+  /* Portrait-ish crop beside the text: the meditation shot has the subject
+     centered, so a 4:5 center crop keeps her fully in frame. */
+  .bio__photo--portrait {
+    grid-row: 2;
+    grid-column: 2;
+    aspect-ratio: 4 / 5;
+  }
+
+  /* Full-width band under the text. The stretch pose is low and horizontal,
+     so the band crop keeps the upper-middle of the photo (same object-position
+     reasoning as the homepage hero, which uses this very photo). */
+  .bio__photo--wide {
+    grid-column: 1 / -1;
+    aspect-ratio: 21 / 9;
+    object-position: center 30%;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: var(--space-6) 0;
+  }
+
+  .activities-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+}

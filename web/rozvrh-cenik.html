@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rozvrh a ceník – Just Yoga Boskovice</title>
+  <meta name="description" content="Týdenní rozvrh a ceník lekcí jógy se světelnou terapií, jumpingu, tabaty, HIITu a kruhového tréninku v Boskovicích." />
+  <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/seo.js"></script>
+  <script type="module" src="js/pages/rozvrh-cenik.js"></script>
+</head>
+<body>
+  <site-header></site-header>
+
+  <main class="page-shell section">
+    <h1 class="page-heading">Rozvrh a ceník</h1>
+    <p class="lede">
+      Otevřené lekce pro všechny, permanentka platí 6 měsíců. Vyberte si lekci
+      a rezervujte termín přímo u příslušné aktivity.
+    </p>
+
+    <div class="section-stack">
+      <section>
+        <h2 class="section-heading">Rozvrh</h2>
+        <schedule-widget data-schedule-widget></schedule-widget>
+        <p class="section-note">Kapacita lekcí je omezená – rezervujte si místo včas.</p>
+      </section>
+      <section id="cenik" class="anchor-target">
+        <h2 class="section-heading">Ceník</h2>
+        <pricing-cards data-pricing-cards></pricing-cards>
+      </section>
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+</body>
+</html>

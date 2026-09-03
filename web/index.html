@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Just Yoga Boskovice – Jóga, Jumping, Tabata</title>
+  <meta name="description" content="Jóga se světelnou terapií, jumping, tabata, HIIT a kruhový trénink v Boskovicích. Otevřené lekce pro každou kondici, rezervace online." />
+  <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/seo.js"></script>
+  <script type="module" src="js/pages/home.js"></script>
+</head>
+<body>
+  <site-header></site-header>
+
+  <main>
+    <section class="hero">
+      <img class="hero__image" src="assets/images/lenka-hero.jpg" alt="Lenka Nahodilová při cvičení jógy" />
+      <div class="hero__scrim"></div>
+      <div class="hero__content">
+        <p class="hero__kicker">Just Yoga a pohybové studio Boskovice</p>
+        <h1>Pohyb, který vás nabije energií i klidem.</h1>
+        <p class="hero__tagline">
+          Jóga se světelnou terapií, jumping, tabata, HIIT i kruhový trénink –
+          otevřené lekce v Boskovicích pro každou kondici.
+        </p>
+        <cta-button href="rozvrh-cenik.html" label="Zobrazit rozvrh a ceník"></cta-button>
+      </div>
+    </section>
+
+    <!-- Aktuality i časté otázky začínají skryté a odkrývá je
+         js/pages/home.js, jen když pro ně existuje obsah (news.js / faq.js) —
+         vyprázdnění dat tak nenechá na stránce osamocený nadpis. -->
+    <section class="section page-shell" data-news-section hidden>
+      <h2 class="section-heading">Aktuality</h2>
+      <news-board data-news-board></news-board>
+    </section>
+
+    <section class="section page-shell">
+      <h2 class="section-heading">Naše lekce</h2>
+      <div class="activities-grid" data-activities-grid></div>
+    </section>
+
+    <section class="section page-shell" data-faq-section hidden>
+      <h2 class="section-heading">Časté otázky</h2>
+      <faq-list data-faq-list></faq-list>
+    </section>
+  </main>
+
+  <site-footer></site-footer>
+</body>
+</html>

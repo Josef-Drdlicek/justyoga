@@ -1,0 +1,154 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+}
+
+/* Heading weights follow the brandbook's usage rules for Raleway, which are
+   size-dependent rather than level-dependent: Light (300) is specified for
+   "28px and above only", because the thin cut turns fragile at small sizes.
+   So h1/h2 (40px/32px) get 300 for the elegant look, while h3 (20px) drops
+   to Medium (500), where readability wins over elegance. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  margin: 0 0 var(--space-4);
+  color: var(--color-text);
+  overflow-wrap: break-word;
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 300;
+}
+h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: 300;
+}
+h3 {
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+}
+h4 {
+  font-weight: 500;
+}
+
+p {
+  margin: 0 0 var(--space-4);
+}
+
+/* Berry rather than the (darker) primary: --color-primary-dark sits so close
+   to --color-text that links would be told apart only by their underline.
+   Berry is the palette's interactive color — same one the Rezervovat buttons
+   use — and clears AA on the page background at ~5.7:1. */
+a {
+  color: var(--color-accent);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.page-shell {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+.section {
+  /* padding-block only sets top/bottom — plain `padding` here would zero
+     out the left/right padding .page-shell sets on the same element,
+     since both are shorthands touching all four sides and only the one
+     declared later in the cascade would win. */
+  padding-block: var(--space-7);
+}
+
+/* Page H1 centered on its own (not inside an already-centered layout like
+   .hero) — reused across every page whose heading should sit mid-page. */
+.page-heading {
+  text-align: center;
+}
+
+/* Enlarged, centered intro paragraph directly under a .page-heading —
+   still a <p>, not another heading level, so it doesn't compete with the
+   page's real <h2> section titles below it. */
+.lede {
+  font-size: var(--font-size-lg);
+  text-align: center;
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Generic "boxed content" look, reused by plain light-DOM page markup
+   (e.g. kontakt.html's two contact/form blocks). Same visual language as
+   the Shadow-DOM .card rules in data-table.js and activity-card.js —
+   Shadow DOM can't share a CSS class across its boundary, so this is the
+   light-DOM counterpart of that same recipe rather than a new one. */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+}
+
+/* Light-DOM counterpart of <cta-button>'s .primary look, for cases that
+   need a real <button> (e.g. a form submit control) rather than a link —
+   <cta-button> renders an <a> and isn't appropriate for triggering native
+   form submission/validation. Same tokens as cta-button.js's .primary. */
+.btn {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3) var(--space-5);
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font: inherit;
+  /* Buttons are headings-font per the brandbook (Raleway), SemiBold 600 —
+     the weight it reserves for emphasis like CTAs and prices. */
+  font-family: var(--font-heading);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
