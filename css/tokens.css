@@ -177,6 +177,32 @@
   --header-height-estimate: 5.75rem;
 }
 
+/* Stav tepometru (js/components/heart-rate-meter.js). Registrace je tady,
+   a ne v komponentě, protože @property je vždy záležitost dokumentu —
+   uvnitř shadow rootu by se ignorovala.
+
+   Registrovat je potřeba proto, že obě hodnoty vstupují do calc() a mají
+   plynule přecházet; neregistrovaná custom property je pro prohlížeč jen
+   text, takže by v calc() selhala a nedala se animovat.
+
+   inherits: true je podstatné — hodnotu zapisuje JS na hostitele
+   <heart-rate-meter> a musí projít dovnitř jeho shadow rootu k prvkům,
+   které ji používají. S inherits: false by tam tiše nedorazila.
+
+   initial-value je zároveň podoba tepometru, když scroll vůbec neběží
+   (vypnutý JS, prefers-reduced-motion): kolečko střední velikosti
+   v barvě cílové zóny. */
+@property --hrm-progress {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.55;
+}
+@property --hrm-mix {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
 /* Single documented breakpoint — reuse this exact value (768px) in every
    @media query in this project instead of introducing new arbitrary ones.
 

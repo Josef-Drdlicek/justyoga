@@ -2,6 +2,120 @@
    Each <component> owns its own look via Shadow DOM — this file never
    restyles inside a component, only arranges things on the page. */
 
+/* ============================================================
+   SCROLL-STORY ZÓNY (homepage)
+   ============================================================
+   Každá zóna odpovídá jednomu tempu (viz js/data/zones.js) a tepometr
+   nad ní svítí odpovídající barvou. Barva se sem propisuje jediným
+   tokenem --zone-accent, takže přidání zóny je jeden řádek. */
+
+[data-hr-zone="calm"] { --zone-accent: var(--color-mint); }
+[data-hr-zone="bridge"] { --zone-accent: var(--color-zone-move); }
+[data-hr-zone="move"] { --zone-accent: var(--color-zone-move); }
+[data-hr-zone="burn"] { --zone-accent: var(--color-coral); }
+[data-hr-zone="cta"] { --zone-accent: var(--color-berry); }
+
+.zone {
+  /* svh, ne vh: mobilní vh se při skrytí adresního řádku mění, což by
+     vyvolalo přeměření zón a skok v tepu. A min-height vůbec proto, že
+     s prázdnými Aktualitami nebo FAQ by zóna zkolabovala a tep by přes ni
+     přeletěl, aniž by si ho někdo všiml. */
+  min-height: 60svh;
+  /* Zóny na sebe musí navazovat bez mezery, jinak by mezi nimi tep neměl
+     kam patřit — vertikální rytmus proto dělá vnitřní .section, ne margin
+     mezi sekcemi. */
+  display: flow-root;
+}
+
+.zone__body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Slogan od klientky. Stojí NAD nadpisem a není to nadpis — je to tagline,
+   proto <p>. Barva je ztmavená varianta odstínu zóny stejnou formulí,
+   jakou používají ikony lekcí: surová barva zóny má na off-white pozadí
+   kolem 2:1 a jako text by byla nečitelná. */
+.zone__slogan {
+  margin: 0 0 var(--space-2);
+  text-align: center;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: oklch(from var(--zone-accent) var(--type-icon-lightness) c h);
+}
+
+.zone__heading {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.zone__intro {
+  margin: 0 auto var(--space-6);
+  text-align: center;
+}
+
+/* --- most ---------------------------------------------------------------
+   Přechod z klidu do pohybu. Tónované pozadí ho odliší od produktových
+   zón kolem: není to nabídka, je to vysvětlení. */
+.zone--bridge {
+  background: color-mix(in srgb, var(--zone-accent) 10%, var(--color-bg));
+  display: flex;
+  align-items: center;
+}
+
+.zone__heading--bridge {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-3);
+}
+
+.zone__body-text {
+  max-width: 44rem;
+  margin: 0 auto;
+  text-align: center;
+  font-size: var(--font-size-lg);
+}
+
+/* Odkrytí textu mostu v okamžiku, kdy tep poprvé zrychlí. Třídu
+   .is-revealable přidává až JS (js/pages/home.js), takže bez JS je text
+   normálně vidět — kdyby opacity: 0 žila v CSS natvrdo, zmizel by úplně. */
+.zone.is-revealable .zone__heading--bridge,
+.zone.is-revealable .zone__body-text {
+  opacity: 0;
+  translate: 0 var(--space-4);
+  transition: opacity var(--transition-slow), translate var(--transition-slow);
+}
+
+.zone.is-revealable.is-revealed .zone__heading--bridge,
+.zone.is-revealable.is-revealed .zone__body-text {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* --- závěrečné CTA ---------------------------------------------------- */
+
+/* Vyšší než ostatní zóny, a to z měřeného důvodu: tep tady dojíždí ze 170
+   na ustálených 96, což je nejdelší změna na celé stránce. Když jsou FAQ
+   dočasně bez obsahu, zóna se zkrátí a doběh se zrychlí na 0,32 tepu za
+   pixel scrollu — na hranici toho, co ještě působí plynule. Vlastní
+   min-height drží plynulost i s prázdným obsahem. */
+.zone--cta {
+  min-height: 80svh;
+}
+
+.cta-final {
+  align-items: center;
+}
+
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
 .hero {
   position: relative;
   display: flex;

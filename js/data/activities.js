@@ -7,6 +7,10 @@
 //
 // Shape notes:
 //   name         – full name (ceník heading, alt text)
+//   zone         – do které tepové zóny scroll-story na homepage aktivita
+//                  patří (viz js/data/zones.js). Vazba jde odsud k zónám,
+//                  ne naopak — zones.js o aktivitách neví nic, takže nová
+//                  aktivita si zónu určí sama jedním řádkem.
 //   shortName    – optional, used where space is tight (schedule cards)
 //   logo         – { src, width, height }; rozměry jsou v datech proto, že
 //                  karta určuje výšku loga a šířku nechává na "auto", takže
@@ -23,6 +27,7 @@
 export const ACTIVITIES = [
   {
     id: "joga",
+    zone: "calm",
     name: "Jóga a světelná terapie",
     shortName: "Jóga",
     logo: { src: "assets/images/logo-just-yoga.png", width: 788, height: 482 },
@@ -50,6 +55,7 @@ export const ACTIVITIES = [
   },
   {
     id: "jumping",
+    zone: "burn",
     name: "Jumping",
     logo: { src: "assets/images/logo-jump.png", width: 788, height: 482 },
     headline: "Naberte čistou energii a vyskočte ze stereotypu!",
@@ -73,6 +79,7 @@ export const ACTIVITIES = [
   },
   {
     id: "tabata",
+    zone: "move",
     name: "Tabata, HIIT a kruhový trénink",
     shortName: "Tabata / HIIT",
     logo: { src: "assets/images/logo-tabata.png", width: 848, height: 482 },

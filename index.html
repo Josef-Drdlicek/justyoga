@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Just Yoga Boskovice – Jóga, Jumping, Tabata</title>
-  <meta name="description" content="Jóga se světelnou terapií, jumping, tabata, HIIT a kruhový trénink v Boskovicích. Otevřené lekce pro každou kondici, rezervace online." />
+  <meta name="description" content="Jóga se světelnou terapií, jumping na trampolínách, tabata, HIIT i kruhový trénink v Boskovicích. Lekce pro každou kondici i pro začátečníky." />
   <meta property="og:site_name" content="Just Yoga a pohybové studio Boskovice" />
   <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="assets/images/favicon-512.png" sizes="512x512" type="image/png" />
@@ -27,40 +27,98 @@
 <body>
   <site-header></site-header>
 
+  <!-- Homepage je scroll-story o třech tempech studia. Sekce s atributem
+       data-hr-zone jsou přímé děti <main> a vyplňují ho beze zbytku, takže
+       mezi zónami není mezera, ve které by tep "nebyl doma". Pořadí, tempa,
+       barvy i texty zón žijí v js/data/zones.js — tady je jen kostra. -->
   <main id="main" tabindex="-1">
-    <section class="hero">
-      <img class="hero__image" src="assets/images/lenka-hero.jpg" alt="Lenka Nahodilová při cvičení jógy" />
-      <div class="hero__scrim"></div>
-      <div class="hero__content">
-        <p class="hero__kicker">Just Yoga a pohybové studio Boskovice</p>
-        <h1>Pohyb, který vás nabije energií i klidem.</h1>
-        <p class="hero__tagline">
-          Jóga se světelnou terapií, jumping, tabata, HIIT i kruhový trénink –
-          otevřené lekce v Boskovicích pro každou kondici.
-        </p>
-        <cta-button href="rozvrh-cenik.html" label="Zobrazit rozvrh a ceník"></cta-button>
+    <section class="zone" data-hr-zone="calm">
+      <div class="hero">
+        <img class="hero__image" src="assets/images/lenka-hero.jpg" alt="Lenka Nahodilová při cvičení jógy" />
+        <div class="hero__scrim"></div>
+        <div class="hero__content">
+          <p class="hero__kicker">Just Yoga a pohybové studio Boskovice</p>
+          <h1>Jóga v Boskovicích pro zdravá záda – i lekce, které nakopnou tep</h1>
+          <p class="hero__tagline">
+            Jóga se světelnou terapií, jumping na trampolínách, tabata, HIIT
+            i kruhový trénink. Tři tempa, jedno studio – vyberte si to, co dnes
+            potřebujete. Přijít můžete i bez kondice a bez zkušeností.
+          </p>
+          <cta-button href="rozvrh-cenik.html" label="Zobrazit rozvrh a ceník"></cta-button>
+        </div>
+      </div>
+
+      <!-- Aktuality i časté otázky začínají skryté a odkrývá je
+           js/pages/home.js, jen když pro ně existuje obsah (news.js / faq.js) —
+           vyprázdnění dat tak nenechá na stránce osamocený nadpis. -->
+      <section class="section page-shell" data-news-section hidden>
+        <h3 class="section-heading">Aktuality</h3>
+        <news-board data-news-board></news-board>
+      </section>
+
+      <div class="section page-shell zone__body">
+        <p class="zone__slogan" data-zone-slogan></p>
+        <h2 class="zone__heading" data-zone-heading></h2>
+        <p class="zone__intro lede" data-zone-intro></p>
+        <div class="activities-grid" data-zone-grid></div>
       </div>
     </section>
 
-    <!-- Aktuality i časté otázky začínají skryté a odkrývá je
-         js/pages/home.js, jen když pro ně existuje obsah (news.js / faq.js) —
-         vyprázdnění dat tak nenechá na stránce osamocený nadpis. -->
-    <section class="section page-shell" data-news-section hidden>
-      <h2 class="section-heading">Aktuality</h2>
-      <news-board data-news-board></news-board>
+    <!-- Most. Tep tady poprvé zrychlí (75 → 100) a tenhle text vysvětlí,
+         proč se kolečko dalo do pohybu — proto stojí přesně mezi klidnou
+         a rozpohybovanou zónou, ne na konci stránky. -->
+    <section class="zone zone--bridge" data-hr-zone="bridge">
+      <div class="section page-shell zone__body">
+        <h2 class="zone__heading zone__heading--bridge" data-zone-heading></h2>
+        <p class="zone__body-text" data-zone-body></p>
+      </div>
     </section>
 
-    <section class="section page-shell">
-      <h2 class="section-heading">Naše lekce</h2>
-      <div class="activities-grid" data-activities-grid></div>
+    <section class="zone" data-hr-zone="move">
+      <div class="section page-shell zone__body">
+        <p class="zone__slogan" data-zone-slogan></p>
+        <h2 class="zone__heading" data-zone-heading></h2>
+        <p class="zone__intro lede" data-zone-intro></p>
+        <div class="activities-grid" data-zone-grid></div>
+      </div>
     </section>
 
-    <section class="section page-shell" data-faq-section hidden>
-      <h2 class="section-heading">Časté otázky</h2>
-      <faq-list data-faq-list></faq-list>
+    <section class="zone" data-hr-zone="burn">
+      <div class="section page-shell zone__body">
+        <p class="zone__slogan" data-zone-slogan></p>
+        <h2 class="zone__heading" data-zone-heading></h2>
+        <p class="zone__intro lede" data-zone-intro></p>
+        <div class="activities-grid" data-zone-grid></div>
+      </div>
+    </section>
+
+    <!-- Závěrečná zóna: tep se ustálí a stránka nabídne, co dělat dál.
+         FAQ je tady schválně — odpovídá na námitky těsně před rezervací
+         a zároveň dává doběhu tepu ze 170 dost prostoru, aby vypadal jako
+         zklidnění, ne jako porucha. -->
+    <section class="zone zone--cta" data-hr-zone="cta">
+      <section class="section page-shell" data-faq-section hidden>
+        <h3 class="section-heading">Časté otázky</h3>
+        <faq-list data-faq-list></faq-list>
+      </section>
+
+      <div class="section page-shell zone__body cta-final">
+        <h2 class="zone__heading" data-zone-heading></h2>
+        <p class="zone__intro lede" data-zone-intro></p>
+        <div class="cta-actions">
+          <cta-button href="rozvrh-cenik.html" label="Zobrazit rozvrh a rezervovat"></cta-button>
+          <cta-button data-cta-phone variant="accent"></cta-button>
+        </div>
+        <p class="section-note" data-cta-note></p>
+      </div>
     </section>
   </main>
 
   <site-footer></site-footer>
+
+  <!-- MUSÍ zůstat přímým potomkem <body>: position: fixed se zasekne uvnitř
+       předka s transform, filter nebo contain, což je reálné riziko, jakmile
+       tenhle web obalí WordPress motiv. Viz komentář v komponentě. -->
+  <heart-rate-meter></heart-rate-meter>
 </body>
 </html>
