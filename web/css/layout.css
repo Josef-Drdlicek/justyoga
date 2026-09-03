@@ -259,22 +259,75 @@
   margin-bottom: 0;
 }
 
-/* ==== Week =========================================================== */
+/* ==== Week ===========================================================
+   Readability was the complaint: the old rows put the time, the name and
+   the venue in three near-identical sizes and repeated the venue in tiny
+   muted type under every single lesson, so nine lessons read as a wall.
+
+   Now each row is one block with a clear hierarchy — time large and
+   tabular, name in the display face, everything else demoted to one meta
+   line — and a 4px rule down the left in the zone's colour, so "where are
+   the calm lessons" is answerable without reading a word. */
+
+.legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.legend__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.legend__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--zone-color, var(--color-border));
+}
+
+/* One place maps a zone id to its colour; the schedule rule, the legend
+   dot, the zone band and the meter all read it from here. */
+[data-zone="calm"] {
+  --zone-color: var(--color-zone-calm);
+}
+
+[data-zone="move"] {
+  --zone-color: var(--color-zone-move);
+}
+
+[data-zone="burn"] {
+  --zone-color: var(--color-zone-burn);
+}
+
+[data-zone="rest"] {
+  --zone-color: var(--color-berry);
+}
 
 .week {
   list-style: none;
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
 
 @media (min-width: 768px) {
   .week {
     grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-5);
   }
 }
 
 .week__day {
-  padding-top: var(--space-4);
+  padding-top: var(--space-3);
   border-top: 2px solid var(--color-text);
 }
 
@@ -289,45 +342,37 @@
   gap: var(--space-3);
 }
 
-.week__lesson {
+.lesson {
   display: grid;
-  gap: var(--space-1);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--color-hairline);
+  gap: 0.15rem;
+  padding: var(--space-3) var(--space-4);
+  border-left: 4px solid var(--zone-color, var(--color-border));
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--color-surface);
 }
 
-.week__lesson:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
-}
-
-/* Tabular figures keep the times in a column that lines up; proportional
+/* Tabular figures so the times line up down the column; proportional
    digits make a schedule look hand-typed. */
-.week__time {
-  font-size: var(--text-sm);
+.lesson__time {
+  font-size: var(--text-base);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: var(--tracking-normal);
 }
 
-.week__name {
+.lesson__name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+}
+
+.lesson__meta {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-}
-
-.week__icon svg,
-.venue__icon svg {
-  width: 1.125rem;
-  height: 1.125rem;
-  stroke: var(--color-accent);
-  fill: none;
-}
-
-.week__venue {
-  display: block;
+  flex-wrap: wrap;
+  gap: 0.35rem;
   font-size: var(--text-xs);
+  color: var(--color-text-muted);
 }
 
 /* ==== Activities ===================================================== */
@@ -337,22 +382,39 @@
   gap: var(--space-5);
 }
 
+/* Subgrid, so every row inside the three cards lines up: logos on one
+   baseline, names on one baseline, prices on one baseline. Without it each
+   card stacks its own content and the row reads as three unrelated boxes —
+   the taglines alone differ by 79px. The card is a 7-row track (logo, name,
+   headline, tagline, benefits, meta, cta) that inherits the parent's rows. */
 @media (min-width: 768px) {
   .activities {
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(7, auto);
+  }
+
+  .activity {
+    grid-row: span 7;
+    grid-template-rows: subgrid;
   }
 }
 
 .activity {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: var(--space-4);
+  align-content: start;
   padding: var(--space-6);
 }
 
+/* align-self, not width:auto. In a column flex/grid the cross axis is
+   horizontal, so the default stretch blew the logo out to the full card
+   width against its fixed height — measured ratio 6.18 against a natural
+   1.635, i.e. stretched to nearly four times its width. */
 .activity__logo {
   height: 3rem;
   width: auto;
+  align-self: start;
+  justify-self: start;
   margin-bottom: var(--space-2);
 }
 
@@ -569,6 +631,16 @@
 .venue__icon {
   display: block;
   margin-bottom: var(--space-3);
+}
+
+/* Inline SVGs carry no intrinsic size, so without this they render at the
+   viewport-relative default — the pins came out roughly 300px tall. Every
+   icon insertion point needs its own sizing rule. */
+.venue__icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke: var(--color-accent);
+  fill: none;
 }
 
 .venue__label {
@@ -988,4 +1060,241 @@
   border-left: 2px solid var(--color-coral);
   background: var(--color-bg-alt);
   font-size: var(--text-sm);
+}
+
+/* ==== Zones ==========================================================
+   Three bands the page climbs through. The zone's colour appears only as
+   a dot beside the eyebrow and as a hairline at the top of the band — the
+   band itself stays on the page palette. Filling three sections with three
+   different pastels is exactly what made the previous build read as a
+   colouring book; the colour's job here is to agree with the meter, not to
+   paint the room. */
+
+.zone {
+  border-top: 1px solid var(--color-hairline);
+}
+
+.zone__inner {
+  display: grid;
+  gap: clamp(2rem, 1rem + 3vw, 3.5rem);
+}
+
+@media (min-width: 768px) {
+  .zone__inner {
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: start;
+  }
+}
+
+.zone__head {
+  position: sticky;
+  top: 7rem;
+}
+
+@media (width < 768px) {
+  .zone__head {
+    position: static;
+  }
+}
+
+.zone__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.zone__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--zone-color);
+}
+
+.zone__heading {
+  margin-bottom: var(--space-3);
+}
+
+.zone__slogan {
+  margin-bottom: var(--space-4);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+  color: var(--color-accent);
+}
+
+.zone__text {
+  max-width: var(--measure-narrow);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+}
+
+.zone__cards {
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* ==== Bridge =========================================================
+   The client's explanation of why the meter started moving. It is one
+   paragraph and it is set like a pull quote, because that is its job on
+   the page — to be read, not skimmed past. */
+
+.bridge__text {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-style: italic;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: pretty;
+}
+
+/* ==== Rest zone (closing CTA) ======================================== */
+
+.zone--rest {
+  border-top: 0;
+  text-align: center;
+}
+
+.zone__rest-heading {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-3xl);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.zone__rest-text {
+  margin-bottom: var(--space-6);
+  color: color-mix(in srgb, var(--color-text-inverse) 82%, transparent);
+}
+
+.zone__rest-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+/* ==== Heart rate meter ===============================================
+   Fixed to the right edge, small, and quiet. The client asked for a circle
+   that pulses faster and changes colour as the page descends; the version
+   that fits this design is one thin ring, not a filled blob — a filled
+   circle at 170bpm in coral is a warning light, a ring reading its own
+   number is an instrument.
+
+   The pulse is a CSS animation whose duration is derived from the bpm the
+   script writes, so nothing is drawn per frame and scrolling stays cheap. */
+
+.hrm {
+  position: fixed;
+  right: clamp(0.75rem, 0.3rem + 1.4vw, 1.75rem);
+  top: 50%;
+  translate: 0 -50%;
+  z-index: var(--z-sticky);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  pointer-events: none;
+}
+
+.hrm__dial {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+}
+
+/* Two rings: a static one that holds the shape and keeps the number
+   legible, and one that pulses. Animating the static one would make the
+   number wobble. */
+.hrm__dial::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--zone-color, var(--color-zone-calm));
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+  backdrop-filter: blur(6px);
+  transition: border-color var(--transition-slow);
+}
+
+.hrm__ring {
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--zone-color, var(--color-zone-calm));
+  border-radius: 50%;
+  opacity: 0;
+  animation: hrm-beat calc(60s / var(--hrm-bpm, 75)) var(--ease-out) infinite;
+  transition: border-color var(--transition-slow);
+}
+
+@keyframes hrm-beat {
+  0% {
+    scale: 1;
+    opacity: 0.55;
+  }
+  70% {
+    scale: 1.45;
+    opacity: 0;
+  }
+  100% {
+    scale: 1.45;
+    opacity: 0;
+  }
+}
+
+.hrm__value {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.hrm__label {
+  margin: 0;
+  max-width: 5.5rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.3;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Reduced motion: the meter still reports the zone and the number, it just
+   stops beating. Removing it entirely would take away information. */
+@media (prefers-reduced-motion: reduce) {
+  .hrm__ring {
+    animation: none;
+    opacity: 0.35;
+  }
+}
+
+/* On a phone the ring would sit on top of the content it is describing, so
+   it drops to the bottom corner and shrinks. */
+@media (width < 768px) {
+  .hrm {
+    top: auto;
+    bottom: var(--space-4);
+    translate: 0;
+  }
+
+  .hrm__dial {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+  .hrm__value {
+    font-size: var(--text-sm);
+  }
+
+  .hrm__label {
+    display: none;
+  }
 }

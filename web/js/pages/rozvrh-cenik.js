@@ -3,13 +3,20 @@
 import { mount } from "../lib/dom.js";
 import { initReveal } from "../lib/reveal.js";
 import { mountChrome } from "../ui/chrome.js";
-import { renderWeek, renderBooking, renderPricing, renderFaq } from "../ui/sections.js";
+import {
+  renderWeek,
+  renderWeekLegend,
+  renderBooking,
+  renderPricing,
+  renderFaq,
+} from "../ui/sections.js";
 import { ACTIVITIES } from "../data/activities.js";
 import { FAQ } from "../data/faq.js";
 import { SITE_CONFIG } from "../data/site-config.js";
 
 mountChrome();
 
+mount("[data-week-legend]", renderWeekLegend);
 mount("[data-week]", renderWeek);
 mount("[data-booking]", () => renderBooking(ACTIVITIES));
 mount("[data-pricing]", () => renderPricing(ACTIVITIES, SITE_CONFIG.passValidityMonths));
