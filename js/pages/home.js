@@ -12,6 +12,8 @@ import {
   renderWeekLegend,
   renderFaq,
   renderVenues,
+  renderNews,
+  renderFollow,
   renderSteps,
   renderZone,
   renderBridge,
@@ -21,6 +23,7 @@ import {
 import { mountHeartRateMeter } from "../ui/heart-rate-meter.js";
 import { ACTIVITIES } from "../data/activities.js";
 import { FAQ } from "../data/faq.js";
+import { NEWS } from "../data/news.js";
 import { ZONES, REST_ZONE, BRIDGE_TEXT } from "../data/zones.js";
 
 mountChrome();
@@ -42,6 +45,14 @@ const restSlot = $("[data-zone-rest]");
 if (restSlot) restSlot.replaceWith(renderRestZone(REST_ZONE));
 
 mount("[data-steps]", () => renderSteps(FIRST_VISIT_STEPS));
+// Prázdné novinky nejsou rozbitá stránka — sekce se i s nadpisem skryje,
+// aby na webu nezůstal osamocený titulek „Co je u mě nového".
+if (NEWS.length > 0) {
+  document.getElementById("novinky").hidden = false;
+  mount("[data-news]", () => renderNews(NEWS));
+  mount("[data-follow]", renderFollow);
+}
+
 mount("[data-venues]", renderVenues);
 
 // The homepage shows the questions a first-time visitor asks; the full list

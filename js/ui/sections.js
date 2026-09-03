@@ -8,7 +8,13 @@ import { el, append } from "../lib/dom.js";
 import { SCHEDULE } from "../data/schedule.js";
 import { getActivityById } from "../data/activities.js";
 import { getVenueById, formatVenueAddress, venueNavigationUrl } from "../data/venues.js";
-import { ACTIVITY_TYPE_ICONS, PIN_ICON } from "../data/icons.js";
+import {
+  ACTIVITY_TYPE_ICONS,
+  PIN_ICON,
+  FACEBOOK_ICON,
+  INSTAGRAM_ICON,
+} from "../data/icons.js";
+import { SITE_CONFIG } from "../data/site-config.js";
 import { ZONES, zoneForActivity } from "../data/zones.js";
 
 /* --- Week strip ------------------------------------------------------
@@ -325,6 +331,83 @@ export function renderPricing(activities, passValidityMonths) {
               text: `Platí ${passValidityMonths} měsíců od zakoupení.`,
             }),
           ]),
+        ]
+      );
+    })
+  );
+}
+
+/* --- News ------------------------------------------------------------
+   Vlastní obsah ve vlastním vzhledu, ne vysypaný feed ze sítí — proč,
+   stojí v js/data/news.js. Karta se umí na konkrétní příspěvek odkázat,
+   a když odkaz nemá, prostě ho nevykreslí.
+
+   Tlačítka „sledovat" patří sem, do sekce novinek, a do patičky. Do
+   hlavní navigace ne: odkaz pryč z webu mezi šesti odkazy dovnitř webu
+   je nabídka, aby návštěvník odešel dřív, než najde rozvrh. */
+
+const SOURCES = {
+  instagram: { label: "Instagram", icon: INSTAGRAM_ICON, url: SITE_CONFIG.social.instagram },
+  facebook: { label: "Facebook", icon: FACEBOOK_ICON, url: SITE_CONFIG.social.facebook },
+};
+
+const czDate = new Intl.DateTimeFormat("cs-CZ", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+export function renderFollow() {
+  return el(
+    "div",
+    { class: "follow" },
+    Object.values(SOURCES).map((source) =>
+      el("a", {
+        class: "follow__link",
+        href: source.url,
+        target: "_blank",
+        rel: "noopener",
+        // Popisek nese název sítě, ne jen ikonu: samotná ikona je pro
+        // čtečku prázdné tlačítko a pro část lidí hádanka.
+        html: `${source.icon}<span>${source.label}</span>`,
+      })
+    )
+  );
+}
+
+export function renderNews(items) {
+  return el(
+    "div",
+    { class: "news" },
+    items.map((item, index) => {
+      const source = item.source ? SOURCES[item.source] : null;
+      const date = item.date ? new Date(item.date) : null;
+
+      return el(
+        "article",
+        { class: "card news__item", dataset: { reveal: "" }, style: `--reveal-index:${index}` },
+        [
+          el("div", { class: "news__meta" }, [
+            item.badge ? el("span", { class: "news__badge", text: item.badge }) : null,
+            date
+              ? el("time", {
+                  class: "news__date",
+                  datetime: item.date,
+                  text: czDate.format(date),
+                })
+              : null,
+          ]),
+          el("h3", { class: "news__title", text: item.title }),
+          el("p", { class: "news__text muted", text: item.text }),
+          source && item.url
+            ? el("a", {
+                class: "news__source",
+                href: item.url,
+                target: "_blank",
+                rel: "noopener",
+                html: `${source.icon}<span>Zobrazit na ${source.label}u</span>`,
+              })
+            : null,
         ]
       );
     })
