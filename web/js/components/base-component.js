@@ -76,6 +76,20 @@ export class BaseElement extends HTMLElement {
     this.render();
   }
 
+  // Komponenty, které dostávají data HTML ATRIBUTY, si jen vyjmenují které:
+  //   static observedAttributes = ["href", "label"];
+  // Překreslení pak zajistí tahle třída. Atributová cesta je záměrná
+  // dvojkolejnost vedle property setterů, ne nedůslednost: <cta-button>
+  // se staví uvnitř template stringů jiných komponent (activity-card,
+  // schedule-widget, pricing-cards) a do HTML stringu se JS property
+  // předat nedá. Strukturovaná data (pole, objekty) naopak atributem
+  // přenést nejdou, a ta proto jdou přes settery.
+  static observedAttributes = [];
+
+  attributeChangedCallback() {
+    if (this.isConnected) this.render();
+  }
+
   render() {
     if (SUPPORTS_ADOPTED) {
       this.shadowRoot.innerHTML = this.template();
