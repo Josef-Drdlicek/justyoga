@@ -47,6 +47,18 @@
   min-width: 0;
   width: 100%;
   padding: var(--space-6) var(--space-5);
+  /* Vlastní podklad pod textem, ne jen ztmavovací scrim přes celou fotku.
+     Důvod je měřený: hero fotka je pod textem téměř bílá (medián jasu
+     #e8e8e8 u kickeru, #f6f6f6 u tagline, nejsvětlejší pixely čistě
+     #ffffff), takže bílý text na ní propadal WCAG na všech třech řádcích
+     — kicker 1,64:1 (limit 4,5), H1 2,16:1 (limit 3,0), tagline 2,61:1.
+     Zesílení scrimu by muselo jít na alfu ~0,7 a ztmavilo by celou fotku,
+     tedy i tu světlou, vzdušnou náladu, kvůli které byla vybraná. Panel
+     to řeší lokálně: fotka zůstane světlá kolem textu.
+     Alfa 0,55 je spočítaná z nejhoršího případu (kicker potřebuje 0,48),
+     zbytek je rezerva. Při změně fotky nebo textu PŘEMĚŘIT. */
+  background: color-mix(in srgb, var(--color-text) 55%, transparent);
+  border-radius: var(--radius-2xl);
 }
 
 .hero__kicker {
@@ -54,7 +66,9 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgb(255 255 255 / 0.85);
+  /* Plná bílá, ne 85 % — na tmavém panelu už není důvod ji tlumit
+     a každé procento krytí je tady kontrast. */
+  color: var(--color-white);
   margin: 0 0 var(--space-3);
 }
 
@@ -309,6 +323,12 @@
 @media (width < 768px) {
   .hero {
     padding: var(--space-6) 0;
+  }
+
+  /* Panel pod hero textem sahá na mobilu od okraje k okraji, takže zaoblení
+     nemá co zaoblovat — jen by na krajích vyrobilo dva zvláštní zářezy. */
+  .hero__content {
+    border-radius: 0;
   }
 
   .activities-grid {
