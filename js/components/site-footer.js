@@ -1,6 +1,7 @@
 import { BaseElement } from "./base-component.js";
 import { SITE_CONFIG } from "../data/site-config.js";
 import { PIN_ICON, PHONE_ICON, MAIL_ICON, FACEBOOK_ICON, INSTAGRAM_ICON } from "../data/icons.js";
+import { getVenueById, formatVenueAddress } from "../data/venues.js";
 
 export class SiteFooter extends BaseElement {
   styles() {
@@ -74,7 +75,10 @@ export class SiteFooter extends BaseElement {
       <div class="inner">
         <p class="brand-name">${SITE_CONFIG.legalName}</p>
         <ul class="info">
-          <li><span class="icon">${PIN_ICON}</span>${SITE_CONFIG.address}</li>
+          <!-- Adresa studia. Kondiční lekce a jumping jsou na druhé adrese;
+               patička je na to moc těsná, takže obě místa vypisuje
+               <studio-venues> na kontaktu a v závěrečném CTA homepage. -->
+          <li><span class="icon">${PIN_ICON}</span>${formatVenueAddress(getVenueById("studio"))}</li>
           <li><span class="icon">${PHONE_ICON}</span><a href="${SITE_CONFIG.phoneHref}">${SITE_CONFIG.phone}</a></li>
           <li><span class="icon">${MAIL_ICON}</span><a href="${SITE_CONFIG.emailHref}">${SITE_CONFIG.email}</a></li>
         </ul>

@@ -1,5 +1,5 @@
 // Single source of truth for site-wide facts. Change values here only —
-// no component or page should hardcode the name, address, or phone number.
+// no component or page should hardcode the name or phone number.
 export const SITE_CONFIG = {
   siteName: "Just Yoga Boskovice",
   // Plný oficiální název studia — používá se tam, kde jde o identitu firmy
@@ -16,7 +16,9 @@ export const SITE_CONFIG = {
   // v CSS, takže jejich místo je známé předem.
   logoWidth: 2074,
   logoHeight: 751,
-  address: "Bílkova 91, 680 00 Boskovice",
+  // Adresy NEJSOU tady: studio cvičí na dvou místech, takže žijí
+  // rozložené na složky v js/data/venues.js (strukturovaná data
+  // i navigační odkazy potřebují ulici, PSČ a město zvlášť).
   phone: "723 466 926",
   phoneHref: "tel:+420723466926",
   email: "info@justyoga.cz",

@@ -35,7 +35,10 @@
     </p>
 
     <div class="section-stack">
-      <section>
+      <!-- Cíl odkazu "Zobrazit termíny" z ceníkových karet. Id musí být
+           tady, ve light DOM — id uvnitř Shadow DOM není přes URL fragment
+           dosažitelné. -->
+      <section id="rozvrh" class="anchor-target">
         <h2 class="section-heading">Rozvrh</h2>
         <schedule-widget data-schedule-widget></schedule-widget>
         <p class="section-note">Kapacita lekcí je omezená – rezervujte si místo včas.</p>
