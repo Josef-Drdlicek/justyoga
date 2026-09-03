@@ -1,8 +1,13 @@
 import { BaseElement } from "./base-component.js";
+import { FOCUS_RING } from "./styles.js";
 import { SITE_CONFIG } from "../data/site-config.js";
 import "./site-nav.js";
 
 export class SiteHeader extends BaseElement {
+  // Logo je odkaz na homepage, ale focus prstenec nemělo vůbec —
+  // vyšlo najevo až při zavádění sdíleného receptu.
+  static sheets = [FOCUS_RING];
+
   styles() {
     return `
       /* Sticky must sit on the host: inside the shadow root the .bar's

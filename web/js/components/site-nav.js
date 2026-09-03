@@ -1,10 +1,13 @@
 import { BaseElement } from "./base-component.js";
+import { FOCUS_RING } from "./styles.js";
 import { NAV_ITEMS } from "../data/nav.js";
 
 const OPEN_ICON = "☰";
 const CLOSE_ICON = "✕";
 
 export class SiteNav extends BaseElement {
+  static sheets = [FOCUS_RING];
+
   #isOpen = false;
 
   connectedCallback() {
@@ -77,10 +80,6 @@ export class SiteNav extends BaseElement {
         font-weight: 600;
         letter-spacing: 0.05em;
       }
-      .nav-toggle:focus-visible {
-        outline: var(--focus-ring-width) solid var(--focus-ring-color);
-        outline-offset: var(--focus-ring-offset);
-      }
       .nav-list {
         display: flex;
         gap: var(--space-5);
@@ -104,10 +103,6 @@ export class SiteNav extends BaseElement {
       .nav-list a.is-current {
         border-bottom-color: var(--color-accent);
         color: var(--color-accent);
-      }
-      .nav-list a:focus-visible {
-        outline: var(--focus-ring-width) solid var(--focus-ring-color);
-        outline-offset: var(--focus-ring-offset);
       }
 
       /* Single project breakpoint, see tokens.css comment */

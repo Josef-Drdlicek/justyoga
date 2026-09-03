@@ -1,4 +1,5 @@
 import { BaseElement } from "./base-component.js";
+import { ICON } from "./styles.js";
 import "./cta-button.js";
 import { PIN_ICON } from "../data/icons.js";
 import { formatVenueAddress } from "../data/venues.js";
@@ -13,6 +14,8 @@ import { formatVenueAddress } from "../data/venues.js";
 // Seznam míst se odvozuje z aktivit (viz js/pages/*.js), takže přidání
 // aktivity v novém místě přidá kartu samo.
 export class StudioVenues extends BaseElement {
+  static sheets = [ICON];
+
   #venues = [];
 
   set venues(value) {
@@ -48,8 +51,8 @@ export class StudioVenues extends BaseElement {
         gap: var(--space-2);
         margin: 0;
       }
-      .icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin-top: 0.1em; }
-      .icon svg { width: 100%; height: 100%; display: block; color: var(--color-primary); }
+      .icon { width: 1.25rem; height: 1.25rem; margin-top: 0.1em; }
+      .icon svg { color: var(--color-primary); }
       .address__text { display: flex; flex-direction: column; }
       .address__name { font-weight: 600; }
       .note {
