@@ -34,7 +34,9 @@ navazující prací a aktualizovat po jejím dokončení** (viz skill
 | `STATUS.md` | průběžný stavový log |
 
 `docs/04-ux-ui-audit.md` je živý seznam úkolů — před navazující prací
-zkontrolovat, co z něj je hotové.
+zkontrolovat, co z něj je hotové. ⚠️ Část položek se redesignem z 3. 9. 2026
+vyřešila jinak, než audit předpokládal (jiná struktura homepage), a část
+naopak stále platí (rezervační odkazy, reference, měření).
 
 ## Příkazy
 
@@ -59,34 +61,31 @@ Před ověřováním v prohlížeči vždy:
 for f in $(find web/js -name '*.js'); do node --input-type=module --check < "$f" || echo "CHYBA $f"; done
 ```
 
-Syntaktická chyba v jednom modulu shodí registraci **všech** komponent
-a v prohlížeči to vypadá jako nevykreslená stránka, ne jako chyba.
-⚠️ Nejčastější příčina: **zpětný apostrof v komentáři uvnitř `styles()`
-nebo `template()`** — celý blok je template literál a apostrof ho ukončí.
+Syntaktická chyba v jednom modulu shodí celý import graf stránky a v prohlížeči
+to vypadá jako nevykreslená stránka, ne jako chyba.
 
 ### Ověřování layoutu a vzhledu
 
-Není tu interaktivní prohlížeč, ale je headless Chrome. Dvě metody, každá
-na něco jiného:
+Není tu interaktivní prohlížeč, ale je headless Chrome
+(`/c/Program Files/Google/Chrome/Application/chrome.exe`).
 
 **1. Diagnostická stránka + `--dump-dom`** (`web/diag-*.html`, ignorované
 gitem). Stránka si v iframu nastaveném na přesnou šířku načte web, změří,
-co potřebuje, a výsledek vypíše do `<div id="out">` mezi značky `###`.
-Vhodné pro statická měření: rozměry, kontrasty, přetečení, ARIA.
+co potřebuje, a výsledek vypíše do `<div id="out">`. Vhodné pro statická
+měření: rozměry, kontrasty, přetečení, ARIA.
 
-⚠️ Screenshot na mobilní šířku přes `--window-size` je nespolehlivý
-(nerespektuje media queries správně) — jde to jen přes iframe s totožnou
-originou nastavený na přesnou šířku.
+⚠️ Screenshot na mobilní šířku přes `--window-size` je nespolehlivý —
+jde to jen přes iframe s totožnou originou nastavený na přesnou šířku,
+a okno musí být **širší** než iframe, jinak se obsah ořízne.
+
+⚠️ Výstup `<div id="out">` se z dumpu tahá parserem, ne `sed`em — `sed`
+najde dřív zdrojový kód skriptu než vykreslený text.
 
 **2. DevTools Protocol** (`cdp.mjs`, bez závislostí — Node 22+ má globální
-WebSocket). Spustí Chrome s remote debuggingem, naviguje a vyhodnotí
-testovací soubor **přímo v kontextu stránky**.
-
-⚠️ **Nutné pro cokoli, co závisí na `requestAnimationFrame`**: pod
-`--virtual-time-budget` rAF v iframu **vůbec nefiruje** (ověřeno). Tepometr
-na něm stojí, takže první metodou vypadá zamrzlý a test by prošel rozbitý.
-CDP navíc umí `Emulation.setDeviceMetricsOverride` (spolehlivá mobilní
-šířka) a `setEmulatedMedia` (`prefers-reduced-motion`).
+WebSocket). Nutné pro cokoli, co závisí na `requestAnimationFrame`: pod
+`--virtual-time-budget` rAF v iframu **vůbec nefiruje**. CDP navíc umí
+`Emulation.setDeviceMetricsOverride` (spolehlivá mobilní šířka)
+a `setEmulatedMedia` (`prefers-reduced-motion`).
 
 ### Měření barev
 
@@ -99,136 +98,147 @@ color(srgb 0.98 0.96 0.94)   color-mix()        0..1
 oklch(0.55 0.15 165)         oklch(from …)      jiná osa!
 ```
 
-Ruční parsování proto nestačí a u `oklch` dá naprostý nesmysl (0,55 se
-přečte jako složka R). Barvu vždy převést canvasem: `ctx.fillStyle = computed`
-a přečíst pixel — `fillStyle` přijme kterýkoli z těch zápisů.
+Ruční parsování proto nestačí a u `oklch` dá naprostý nesmysl. Barvu vždy
+převést canvasem: `ctx.fillStyle = computed` a přečíst pixel.
+
+⚠️ **Canvas ale zahodí alfu.** `color(srgb 1 1 1 / 0.7)` přečte jako čistě
+bílou a vrátí kontrast, který na stránce neplatí. Průhledný text se musí
+dopočítat kompozicí přes skutečné pozadí, ne změřit.
 
 ## Architektura (`web/`)
 
 ```
 web/
-  index.html            scroll-story homepage (pět tepových zón)
+  index.html            homepage
   rozvrh-cenik.html, o-mne.html, kontakt.html
-  lenka-web-styleguide.html   skrytá stránka se vzorníkem (noindex)
   robots.txt            Disallow: / — pro náhled, viz checklist nasazení
-  css/tokens.css        design tokeny (barvy, mezery, typografie, breakpoint)
-  css/fonts.css         12 @font-face, self-hostovaný Raleway + Manrope
-  css/base.css          reset a základní styly
-  css/layout.css        rozvržení stránek, rozdělené na pojmenované sekce
-  js/main.js            registrace chrome komponent (hlavička, patička, cta)
-  js/seo.js             strukturovaná data (@graph), skládá se z js/seo/*
-  js/seo/               opening-hours.js, offers.js
-  js/data/              veškerý obsah odděleně od zobrazení
-  js/components/        vanilla Web Components (Shadow DOM)
+  css/tokens.css        design tokeny (tónová řada, typografie, mezery, motion)
+  css/fonts.css         @font-face, self-hostovaný Fraunces + Manrope
+  css/base.css          reset, typografie, primitiva (btn, card, eyebrow, reveal)
+  css/layout.css        rozvržení po sekcích
+  js/lib/dom.js         el()/append()/fill()/mount() — stavba uzlů
+  js/lib/reveal.js      scroll reveal přes IntersectionObserver
+  js/ui/chrome.js       hlavička, navigace, patička
+  js/ui/sections.js     render funkce obsahových bloků
   js/pages/             napojení dat na konkrétní stránku
+  js/seo.js             strukturovaná data (@graph), skládá se z js/seo/*
+  js/data/              veškerý obsah odděleně od zobrazení
   assets/               fonty, obrázky, videa
 ```
 
-**Komponenty (12):** `site-header`, `site-nav`, `site-footer`, `cta-button`,
-`activity-card`, `schedule-widget`, `pricing-cards`, `news-board`, `faq-list`,
-`media-gallery`, `studio-venues`, `heart-rate-meter`.
-
-**Data (`js/data/`):** `activities.js`, `venues.js`, `zones.js`, `schedule.js`,
-`faq.js`, `news.js`, `gallery.js`, `nav.js`, `icons.js`, `site-config.js`.
+**Data (`js/data/`):** `activities.js`, `venues.js`, `schedule.js`, `faq.js`,
+`news.js`, `gallery.js`, `nav.js`, `icons.js`, `site-config.js`.
 
 ### Klíčové principy
 
 - **Data odděleně od zobrazení.** `js/data/*.js` je jediný zdroj pravdy pro
-  obsah. Komponenty a stránky obsah nikdy nehardcodují. Přidání položky do
+  obsah. Render funkce a stránky obsah nikdy nehardcodují. Přidání položky do
   menu = úprava `js/data/nav.js`, nic víc.
-- **`js/main.js` registruje jen chrome komponenty** (hlavička, patička,
-  `cta-button`) — ty jsou na každé stránce, takže se ten seznam nemění nikdy.
-  Komponenty specifické pro stránku registruje `js/pages/<stránka>.js`
-  statickým importem. Dynamický `import()` ne: vytvořil by waterfall
-  a odložil obsah nad ohybem o jeden round-trip.
-- **`js/pages/*.js`** je napojení dat na konkrétní stránku — vytváří instance
-  komponent a plní je daty.
-- **Web Components dědí `BaseElement`** (`js/components/base-component.js`).
+- **Žádné Web Components, žádný Shadow DOM.** Zrušeno 3. 9. 2026. V projektu
+  nebyl jediný `<slot>`, `::slotted` ani `::part`, takže se za izolaci nic
+  nekupovalo, ale platilo se pořád: 880 řádků CSS zavřených ve dvanácti
+  komponentách proti 985 v `css/`, takže polovina vzhledu byla pro globální
+  stylesheet nedosažitelná. **Neoživovat.**
+- **Komponenta = funkce, která vrací uzly.** `js/ui/*.js`. Žádná třída, žádný
+  životní cyklus, žádná registrace. Stránka je krátký seznam „sem dej tenhle
+  blok" (`mount("[data-week]", renderWeek)`).
+- **Nikdy neskládat obsah do HTML stringu.** `js/lib/dom.js` staví uzly a
+  nastavuje `textContent`. `html:` v `el()` se používá jen pro ikony z
+  `js/data/icons.js`, které píšeme my. Až obsah poteče z WordPressu, tohle je
+  jediná věc, která stojí mezi ním a XSS.
 - **Design tokeny** (`css/tokens.css`) jsou jediné místo pro barvy, mezery,
-  typografii a breakpoint. Hodnoty pocházejí z reálného brandbooku klientky
-  (`content/brandbook-lenka-web.json`, export z Figmy). Nic nehardcoduje
-  barvu, mezeru ani radius jinde — **a žádný literál v `transition`**: token
-  se při `prefers-reduced-motion` nuluje, zapsaná hodnota ne.
+  typografii, tvar a motion. Nic nehardcoduje barvu, mezeru ani radius jinde —
+  **a žádný literál v `transition`**: token se při `prefers-reduced-motion`
+  nuluje, zapsaná hodnota ne.
 - **Jediný breakpoint 768px, dvě nezaměnitelná znění.** `min-width: 768px`
   pro desktop a výš, `width < 768px` pro nižší. `max-width: 768px` se
   nepoužívá — přesahoval by s prvním a na šířce přesně 768px platily oba.
-- **Obsah je reálný**, stažený z justyoga.cz. Jediný neověřený údaj je
-  `capacity: 10` v `activities.js` — číslo z příkladu klientky, ne potvrzený
-  počet míst; ověřit před ostrým nasazením.
+- **Obsah je reálný**, stažený z justyoga.cz. Neověřené údaje jsou označené
+  (viz Pasti v datech).
 
-### `BaseElement`
+### Vizuální jazyk
 
-Centralizuje Shadow DOM boilerplate. Komponenta implementuje jen `styles()`
-a `template()`.
+Popsaný v komentářích v `tokens.css`; tohle je shrnutí, proč to tak je.
 
-- **Styly se adoptují jako `CSSStyleSheet`, nevkládají do `innerHTML`.**
-  Stylesheet se parsuje jednou pro třídu (ne pro instanci) a `render()` na
-  styly nesahá, takže přepis `innerHTML` nemůže shodit vzhled.
-- **Sdílené recepty** ze `js/components/styles.js` si komponenta vyžádá
-  `static sheets = [FOCUS_RING, ICON]`. Exportují se CSS **stringy**, ne
-  hotové sheety: z hotového sheetu se text zpátky nedostane a je potřeba pro
-  fallback ve starších WebView.
-- **`render()` je destruktivní** — přepíše celý shadow root. Je to správné
-  pro změnu dat (`set lessons`, `set activity`), ale **ne pro interakci**:
-  zahodí i právě fokusovaný prvek. Interakce proto mutuje existující uzly
-  (vzor `site-nav #setOpen`, `schedule-widget #select`).
-- **`$(sel)` a `$$(sel)`** jsou zkratky nad vlastním shadow rootem.
-- **`static observedAttributes`** stačí vyjmenovat, překreslení řeší
-  základní třída.
-
-### Datový kontrakt komponent
-
-Dvojkolejnost je záměrná a vyplývá z hranice HTML/JS, ne z nedůslednosti:
-
-- **HTML atributy** pro listové komponenty se skalárními hodnotami, které se
-  vyskytují ve statickém HTML nebo v `template()` jiné komponenty
-  (`<cta-button>`). Do HTML stringu se JS property předat nedá.
-- **JS property settery** pro komponenty přijímající strukturovaná data
-  (pole, objekty), která atributem přenést nejde — `schedule-widget.lessons`,
-  `pricing-cards.activities`, `activity-card.activity`, `news-board.items`,
-  `faq-list.items`, `media-gallery.photos/videos`, `studio-venues.venues`.
-
-### Ceník a rozvrh jsou záměrně DVĚ komponenty
-
-Mají různý interakční model (taby s panely vs. statický grid s legendou).
-Generický `<data-table>` byl zkoušen a **19. 7. 2026 smazán jako mrtvý kód** —
-neoživovat. Sdílí se stylesheet (`LESSON_TYPE` ve `styles.js`), ne komponenta.
+- **Tónová řada, ne sada akcentů.** Deset kroků jedné teplé rodiny
+  (`--ramp-50` … `--ramp-900`), od off-white po hodnotu textu z brandbooku.
+  Každý povrch i každá barva textu je krok téhle řady — proto stránka čte
+  jako jeden materiál. Brandbook sám označuje mint a žlutou za „complementary
+  **pops**"; jsou to 6px značky, ne výplně karet. Předchozí verze z nich
+  udělala tři stejně silné tinty a to byl hlavní zdroj dojmu „omalovánky".
+- **Kontrast písem nese celý web.** Fraunces (display patka) proti Manrope.
+  Nadpis se skládá ze **dvou řezů jedné patky** — kurziva 400 nese frázi,
+  roman 600 v berry ji dosadí (`.hero__title-main` + `.hero__title-accent`).
+  Tohle je ta konstrukce, kvůli které jeden nadpis unese stránku.
+  ⚠️ Fraunces je odchylka od brandbooku, který jmenuje Raleway. Důvod: jako
+  třetí humanistický sans vedle Manrope nenesl žádný kontrast a jeho řez 300
+  ve velkých velikostech byl nejsilnější signál „šablona z roku 2010".
+  **Potřebuje souhlas klientky.**
+- **Hloubka ze střídání pásů, ne ze stínů.** `.band--alt` a `.band--dark`
+  střídají pozadí sekcí; karty na nich jsou bílé. Brandbook říká
+  `"shadows": "none"` a je to záměr. Dva stínové tokeny existují jen pro dvě
+  věci, které skutečně opouštějí stránku (mobilní panel, karta při hoveru),
+  jsou tónované nejtmavší hodnotou značky, ne černou — **taky odchylka od
+  brandbooku, taky potřebuje souhlas.**
+- **Těsné radiusy (3–14 px) a žádná plně kulatá tlačítka.** Zaoblené pastelové
+  boxy byly druhá půlka toho „dětského" dojmu.
+- **Pohyb je málo a je levný.** Bloky se odkryjí jednou při vstupu do
+  viewportu a přestanou být sledované. Žádný parallax, žádné scroll-linked
+  transformy, žádné nekonečné smyčky. Referenční web feelgood-boskovice.cz má
+  jediný `@keyframes` a působí líp než předchozí verze tohohle webu — pohyb
+  ten rozdíl nedělá, typografie a barva ano.
 
 ### Invarianty přístupnosti
 
 Tohle jsou měřené hodnoty, ne odhady. Když se mění, **přeměřit**.
 
-- **`--color-text-muted` musí držet ≥ 4,5:1 na nejtemnějším pozadí, kde se
-  používá.** Nese reálný obsah — taglines lekcí, místa konání, ceny
-  permanentek, popisky formuláře, celou patičku. Dnes mix 30 % dává 4,98
-  proti kartě Tabata. Měří se proti sedmi plochám, ne jedné.
-- **Hero text má vlastní podklad, ne jen scrim.** Fotka je pod textem téměř
-  bílá (medián #e8e8e8), takže bílý text na ní propadal na všech třech
-  řádcích. Zesílení scrimu by muselo jít na alfu ~0,7 a zabilo by světlou
-  náladu fotky. Při změně fotky nebo textu přeměřit.
-- **Focus prstenec jen z `var(--focus-ring-*)`**, nikdy opsaný
+- **`--color-text-muted` je `--ramp-700` (#6b4245), ne 600.** Nese reálný
+  obsah — popisky lekcí, místa konání, ceny, popisky formuláře, patičku —
+  takže musí čistit AA (4,5:1) na **každé** ploše, kam může padnout:
+
+  ```
+  krok            bg     bg-alt  sunk    bílá
+  600 #8a5a57     5.53   5.11    4.39 ✗  5.71
+  700 #6b4245     8.17   7.56    6.48 ✓  8.43   <- zvolené
+  ```
+
+  600 vypadá měkčeji, ale padá na `--color-surface-sunk`. Token, který je
+  bezpečný jen na některých plochách, je past, do které tenhle projekt už
+  jednou spadl.
+- **Korálová `#e86667` má 3,12:1 a smí jen kreslit tvary** — linky, tečky,
+  značku aktivní položky v navigaci, číslice kroků (ty jsou ≥24 px, takže jim
+  stačí 3:1, a jsou `aria-hidden`). Nikdy jako text pod 24 px, nikdy jako
+  vyplněné tlačítko s bílým popiskem.
+- **Berry `#a9436b`** unese bílý popisek (5,67:1) i text na světlých plochách
+  (5,50 / 5,08). Je to interaktivní barva webu.
+- **Průhledný text na `.band--dark`:** bílá 70 % = 7,23:1, 82 % = 9,33:1.
+  Dopočítáno kompozicí, ne změřeno canvasem (ten alfu zahodí).
+- **Hero nemá scrim ani podkladový obdélník.** Text sedí na pozadí stránky
+  a fotka vedle něj, takže se nic nemusí ztmavovat. Předchozí verze měla pod
+  textem tónovaný zaoblený obdélník — nevracet.
+- **Focus prstenec jen z `:focus-visible` v `base.css`**, nikdy opsaný
   `outline: 2px solid`. Prvky uvnitř `overflow: hidden` nastaví
   `--focus-offset` na zápornou hodnotu.
-- **`schedule-widget`:** taby nesmí přepínat přes `render()` (zahodí
-  fokusovaný button) a všechny panely musí být v DOM, jinak `aria-controls`
-  ukazuje na neexistující id. Roving tabindex a obsluha šipek jdou vždy
-  spolu — bez šipek by se ke zbytku týdne klávesnicí nešlo dostat.
+- **`.js [data-reveal]`, ne `[data-reveal]`.** Skrytý výchozí stav je
+  podmíněný třídou, kterou nasazuje `reveal.js`. Bez toho by obsah zůstal
+  navždy neviditelný všude, kde observer nedoběhne — crawler, headless render,
+  chyba dřív v import grafu.
+- **FAQ je nativní `<details>`.** Klávesnice, čtečky i stav bez JS zadarmo.
+  Nenahrazovat ručním akordeonem.
 - **Každá stránka:** `<meta name="description">`, skip-link,
   `<main id="main" tabindex="-1">`.
 - **`<img>` s `width: auto`** potřebuje `width`/`height` atributy (loga).
-  Obrázky, které mají velikost z CSS (`aspect-ratio`, absolutní pozicování),
-  je nepotřebují — nic by neopravily.
-- **Tepometr:** grafika `aria-hidden`, text skutečný obsah, žádné `aria-live`
-  (hodnota se mění desítkykrát za sekundu). K číslu patří skrytá věta
-  „orientační tep při tomto typu lekce, ne váš vlastní" — bez ní může někdo
-  číst 170 jako změřený vlastní tep.
+  Obrázky, které mají velikost z CSS (`aspect-ratio`), je nepotřebují.
 
 ### Tón textů
 
 - **Vykání** na celém webu. Klientčiny slogany tykají, ale její vlastní text
-  „mostu" vyká a celý web vyká — slogany se převádějí do vykání.
+  vyká a celý web vyká — slogany se převádějí do vykání.
 - **První osoba jednotného čísla („já"), ne „my".** Studio vede jedna
   lektorka: „Napište mi", ne „Napište nám".
+- **Žádné emoji v CTA, žádná falešná urgence, žádné mluvení za návštěvníka.**
+  Tlačítko říká, co se stane po kliknutí („Zobrazit termíny", „Otevřít
+  rezervace"), ne co si návštěvník myslí („Chci začít 🧘").
 - Rozhodl webdesignér; klientka se na to nemá ptát.
 
 ### Pasti v datech
@@ -236,49 +246,62 @@ Tohle jsou měřené hodnoty, ne odhady. Když se mění, **přeměřit**.
 - **`schedule.js` používá typografickou pomlčku** (`–`, U+2013), ne
   spojovník. Split na `"-"` tiše vrátí celý řetězec a `undefined`.
 - **Adresy nejsou v `site-config.js`.** Studio cvičí na dvou místech, takže
-  žijí rozložené na složky ve `venues.js` — strukturovaná data i navigační
-  odkazy potřebují ulici, PSČ a město zvlášť. Jóga je na Bílkově, jumping
+  žijí rozložené na složky ve `venues.js`. Jóga je na Bílkově, jumping
   a kondiční lekce v posilovně u ZŠ Slovákova; **záměna adres stojí zákazníka
   lekci**, takže se to nesmí zjednodušovat na jednu adresu.
+- **`bookingUrl` nevede na termín.** Jóga i kondiční lekce míří na
+  `app.tymuj.cz/team-invitation`, tedy na pozvánku do týmu (registrační
+  obrazovka), jumping na kořen rezervačního systému. Tlačítko proto říká
+  „Otevřít rezervace" a přiznává odchod ze webu. **Je to nejdražší tření na
+  webu a s redesignem nesouvisí** — [ZJISTIT u klientky, jestli Tymuj umí
+  veřejný odkaz na kalendář nebo přímo na termín].
 - **Neznámý fakt se nevymýšlí.** Parkování, souřadnice, kapacita, lhůta pro
   odhlášení ani věková hranice nejsou známé. V datech jsou jako `null` nebo
   zakomentované s `[ZJISTIT u klientky]` a UI je prostě nevykreslí. Nesprávný
-  údaj o parkování je horší než chybějící — člověk podle něj jedná.
+  údaj o parkování je horší než chybějící — člověk podle něj jedná. Proto má
+  `FAQ` osm položek, ne čtrnáct: šest jich čeká na odpověď klientky.
+- **`capacity: 10`** je číslo z příkladu klientky, ne potvrzený počet míst.
+  Dnes se nikde nevykresluje; před oživením ověřit.
 
 ## Nasazení do WordPressu (checklist)
 
 1. **`web/robots.txt` obsahuje `Disallow: /`** pro náhled. Jako motiv skončí
    ve `wp-content/themes/…`, kde ho roboti nečtou (neškodí). Kdyby se `web/`
-   nasazovalo jako **kořen domény, MUSÍ se smazat** — jinak zablokuje
-   indexaci ostrého webu.
+   nasazovalo jako **kořen domény, MUSÍ se smazat**.
 2. **Doplnit `canonical` a `og:url`.** Schválně tam nejsou: finální slugy
    nejsou známé (živý web má `/rozvrh` a `/ceník` jako dvě stránky) a špatný
    canonical dokáže stránku vyřadit z indexu. Spolu s tím nastavit **301
-   přesměrování ze starých URL**, jinak se zahodí historická autorita.
+   přesměrování ze starých URL**.
 3. **`og:image` je absolutní URL** na `justyoga.cz/assets/images/…` — po
-   nasazení se cesta změní (motiv, nebo Media Library).
-4. **Interní odkazy mají `.html` přípony** a `site-nav` detekuje aktuální
-   stránku přes `pathname.split("/").pop()`. Pod pretty permalinky přestane
-   fungovat obojí — přemapovat.
+   nasazení se cesta změní.
+4. **Interní odkazy mají `.html` přípony** a `js/ui/chrome.js` detekuje
+   aktuální stránku přes `pathname.split("/").pop()`. Pod pretty permalinky
+   přestane fungovat obojí — přemapovat.
 5. **Kontaktní formulář napojit na Contact Form 7** (plugin je na produkci
    aktivní). Názvy polí už odpovídají reálnému formuláři, stačí nahradit
-   shortcodem.
-6. **`<heart-rate-meter>` musí zůstat přímým potomkem `<body>`.**
-   `position: fixed` se zasekne uvnitř předka s `transform`, `filter` nebo
-   `contain`, což WP motivy běžně mají.
-7. **Ověřit `capacity`** v `activities.js` a PSČ ve `venues.js`.
-8. **Sitemap** — na produkci je aktivní plugin XML Sitemaps; nedělat statický
+   shortcodem. Do té doby `js/pages/kontakt.js` odeslání zablokuje a řekne to
+   návštěvníkovi.
+6. **Gutenberg tabulky pro rozvrh a ceník.** Vzhled nesmí být navázaný na tvar,
+   který dnes generuje `activities.js` — parsovaný `<table>` z WP nebude mít
+   `venueId` ani `bookingUrl`. Nutné mapování a fallback.
+7. **Sitemap** — na produkci je aktivní plugin XML Sitemaps; nedělat statický
    soubor, byly by dvě konkurenční sitemapy.
 
-## Co se nemění bez souhlasu klientky
+## Co potřebuje souhlas klientky
 
-Verze 3 je klientkou schválený stav. **22. 7. 2026 byl pokus zavést celý
-UX audit v jedné dávce zamítnut a `web/` se vracelo přes `git checkout`.**
-Proto:
+Redesign z 3. 9. 2026 je **návrh, ne schválený stav**. Žije na větvi
+`redesign-2026`; poslední klientkou schválená verze je na `main`.
 
-- Vizuální změny **jen po jedné**, každá jako samostatný commit.
-- **Refaktor bez vizuálního dopadu a vizuální změna nikdy v jednom commitu.**
-- U vizuální změny udělat screenshot před i po.
+Tři body jdou nad rámec brandbooku a musí se s ní probrat:
+
+1. **Fraunces místo Raleway** jako písmo nadpisů.
+2. **Dva stínové tokeny** proti `"shadows": "none"`.
+3. **Mint a žlutá degradované na značky**, korálová jen na tvary.
+
+⚠️ **22. 7. 2026 byl pokus zavést celý UX audit v jedné dávce zamítnut
+a `web/` se vracelo přes `git checkout`.** Proto: dokud klientka redesign
+neschválí, nemíchat ho do `main` a další vizuální změny dělat po jedné,
+každou jako samostatný commit se screenshotem před a po.
 
 ## Skilly a workflow
 

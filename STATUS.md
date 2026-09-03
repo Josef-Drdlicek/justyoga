@@ -9,19 +9,76 @@ Stávající vzhled webu (šablona `fyoga`) je nevyhovující a nebude se upravo
 Aktuální fáze: **implementace a vizuální ladění** (proveditelnost i přístupy ověřeny, staví se reálný frontend — homepage, rozvrh/ceník; nasazení do WordPressu přijde na řadu později).
 
 ## Current status
-Homepage je od 3. 9. 2026 **scroll-story se třemi tepovými zónami** podle
-nápadu klientky (plovoucí „tepometr", který se scrollem zrychluje a mění
-barvu). Zbylé tři stránky mají stejný vizuální jazyk, ale strukturu beze
-změny. Projekt se přestěhoval do vlastního repa `Josef-Drdlicek/justyoga`
-s čistou historií; předchozí historie včetně tagu `v1-terracotta` zůstala
-v lokálním archivu `../lenka-web/`.
+Od 3. 9. 2026 běží na větvi **`redesign-2026`** kompletně přestavěný web.
+Není to iterace verze 4 — je to náhrada. Podnět: web působil lacině a jako
+15 let starý, což se po rozboru ukázalo jako měřitelné, ne dojmové.
 
-Web je po stránce obsahu i přístupnosti hotový. Před ostrým nasazením chybí
-jen fakta od klientky (parkování, kapacita, pravidla odhlašování, souřadnice,
-fotka studia) a kroky z checklistu v `CLAUDE.md` — canonical, 301
-přesměrování a napojení formuláře na Contact Form 7.
+Rozdíl proti `main`:
+- **Typografie:** Fraunces (display patka) proti Manrope; Raleway odchází.
+  Nadpis se skládá ze dvou řezů jedné patky. Všechny velikosti jsou `clamp()`,
+  přibyly tracking a leading tokeny.
+- **Barva:** deset kroků jedné teplé rodiny místo čtyř rovnocenných pastelů.
+  Hloubka ze střídání pásů, ne ze stínů.
+- **Architektura:** Shadow DOM a 12 Web Components zrušeny, nahrazeny render
+  funkcemi v `js/ui/` a jedním stylesheetem. Data v `js/data/` beze změny.
+- **Odchází:** scroll-story s tepovými zónami, tepometr, `zones.js`,
+  styleguide. Pro zadání „čistý a svěží" to byl nejhlasitější prvek stránky.
+- **Homepage** nově odpovídá na „kdy můžu přijít" nad ohybem a má sekci pro
+  první návštěvu.
+
+`main` drží poslední klientkou schválený stav a nesahá se na něj, dokud
+klientka redesign neuvidí.
+
+## Next steps
+1. **Ukázat klientce** a získat souhlas se třemi odchylkami od brandbooku:
+   Fraunces místo Raleway, dva stínové tokeny proti `"shadows": "none"`,
+   degradace mint/žluté na značky.
+2. **Rezervační odkazy** — nejdražší tření na webu, na redesignu nezávislé.
+   [ZJISTIT u klientky: umí Tymuj veřejný odkaz na kalendář nebo přímo na
+   termín? Totéž u chytre-rezervace.] Dnes vedou na pozvánku do týmu.
+3. **Fakta, která blokují nasazení:** parkování, kapacita, pravidla
+   odhlašování, souřadnice, věková hranice, přenosnost permanentky. Šest
+   otázek ve `faq.js` na ně čeká zakomentovaných.
+4. **Reference a fotky zevnitř** — sociální důkaz na webu není ani jednou.
+5. **Měření prokliků do rezervace.** Bez něj je jakékoli další CRO slepé.
+6. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
+### 2026-09-03 — REDESIGN: nový vizuální jazyk, ven ze Shadow DOM
+Na větvi `redesign-2026`, jeden commit, `main` nedotčený.
+
+**Proč.** Web působil lacině. Rozbor šesti specialistů (art direction, UX,
+copy, motion, front-end, CRO) proti třem referencím — jana-bayerova,
+feelgood-boskovice.cz a myawellbeing.com — pojmenoval příčiny jako měřitelné:
+dva humanistické bezpatkové fonty bez vzájemného kontrastu, pevná typografická
+škála bez `clamp()`, nulové tracking a leading tokeny, čtyři pastelové akcenty
+jako rovnocenné tinty karet, jediné pozadí pro celý web, `text-align: center`
+jako výchozí stav, a hover, který kvůli `--shadow-sm: none` posunul prvek
+o jeden pixel.
+
+**Klíčové zjištění.** `feelgood-boskovice.cz` má v celém CSS **jeden**
+`@keyframes` a dvě animace — prakticky stejně statický jako justyoga, a přesto
+působí líp. Pohyb ten rozdíl nedělá. Dělá ho display patka použitá 18× a
+desetikroková tónová řada jedné barevné rodiny místo sady akcentů. Motion se
+tím z „opravy" přesunul mezi „příjemné navíc".
+
+**Brandbook to podpořil.** Sám označuje mint a žlutou za „complementary
+**pops**" — předchozí verze z nich udělala tři stejně silné tinty karet.
+Tónová řada je tedy věrnější zadání než to, co bylo v kódu.
+
+**Měřeno, ne odhadnuto.** Tlumený text posunut z `ramp-600` na `700`, protože
+600 dává na nejtmavší ploše řady 4,39 (padá). 700 dává 6,48. Berry unese bílý
+popisek na 5,67, korálová má 3,12 a smí jen kreslit tvary. Bílá 70 % na plum
+= 7,23 (dopočítáno kompozicí — canvas alfu zahodí, to je nová past v
+`CLAUDE.md`). Na 390 px nic nepřetéká.
+
+**Smazáno:** 12 komponent, `BaseElement`, `styles.js`, `main.js`, `zones.js`,
+`heart-rate-meter.js`, styleguide, 12 souborů Raleway. Celkem 25 souborů.
+
+**Nová past nalezená při stavbě:** `[data-reveal]` se startovní `opacity: 0`
+by nechal obsah navždy neviditelný všude, kde IntersectionObserver nedoběhne.
+Skrytý stav je proto podmíněný třídou `.js`, kterou nasazuje `reveal.js`.
+
 ### 2026-09-03 — VERZE 4: nové repo, tepometr a scroll-story homepage
 Velká dávka: úklid repa, přesun na vlastní repozitář, oprava chyb
 a přístupnosti, výkon, hlavní nová feature a přepsaná dokumentace.
