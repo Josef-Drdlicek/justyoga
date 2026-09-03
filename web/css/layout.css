@@ -178,7 +178,10 @@
 
 @media (min-width: 768px) {
   .hero__inner {
-    grid-template-columns: 1fr 0.95fr;
+    /* Text dostává víc než fotka: s vyhrazeným pruhem pro ukazatel je
+       stránka užší a při dělení 1:0.95 se H1 lámal na čtyři řádky, což
+       z hlavního nadpisu udělá seznam. */
+    grid-template-columns: 1.25fr 0.75fr;
   }
 }
 
@@ -1176,125 +1179,295 @@
 }
 
 /* ==== Heart rate meter ===============================================
-   Fixed to the right edge, small, and quiet. The client asked for a circle
-   that pulses faster and changes colour as the page descends; the version
-   that fits this design is one thin ring, not a filled blob — a filled
-   circle at 170bpm in coral is a warning light, a ring reading its own
-   number is an instrument.
+   Malý přístrojový panel, ne odznáček. Sedí u pravého okraje, drží se
+   uprostřed výšky a po celou dobu prohlídky ukazuje čtyři hodnoty.
 
-   The pulse is a CSS animation whose duration is derived from the bpm the
-   script writes, so nothing is drawn per frame and scrolling stays cheap. */
+   Barva zóny se nikde nedostane pod text — nese ji prstenec budíku, tečka
+   u názvu zóny a pulz. Mint má 1,81 a broskvová 1,94, takže jako popisek
+   by byly nečitelné; jako 3px oblouk jsou přesně tím, čím mají být. */
+
+/* Vyhrazený pruh. Tohle je jediné místo na webu s druhým breakpointem
+   a není to breakpoint layoutu, ale odpověď na otázku „vejde se vedle
+   obsahu svislý panel?". Pod 1280 px se nevejde a panel se překlopí do
+   vodorovného proužku dole (viz níž).
+
+   26rem = šířka panelu + odstup od kraje + vzduch, a protože je kontejner
+   vycentrovaný, počítá se na obě strany. Bez toho panel na 1440 px
+   zasahoval 66 px do karet lekcí (změřeno na 36 prvcích). */
+@media (min-width: 1280px) {
+  .has-meter {
+    --container: min(76rem, 100vw - 26rem);
+    --container-wide: min(88rem, 100vw - 26rem);
+  }
+}
 
 .hrm {
   position: fixed;
-  right: clamp(0.75rem, 0.3rem + 1.4vw, 1.75rem);
+  right: clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem);
   top: 50%;
   translate: 0 -50%;
   z-index: var(--z-sticky);
-  display: grid;
-  justify-items: center;
-  gap: var(--space-2);
+  width: 10.5rem;
+  padding: var(--space-4);
   margin: 0;
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raise);
+  /* Nechytá kliknutí: je to ukazatel, ne ovládací prvek, a přes obsah
+     vedle sebe by jinak nešlo označit text. */
   pointer-events: none;
+}
+
+.hrm__zone {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.hrm__zone::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--zone-color, var(--color-zone-calm));
+  transition: background var(--transition-slow);
 }
 
 .hrm__dial {
   position: relative;
   display: grid;
   place-items: center;
-  width: 4.25rem;
-  height: 4.25rem;
+  width: 100%;
+  aspect-ratio: 1;
+  margin-bottom: var(--space-4);
 }
 
-/* Two rings: a static one that holds the shape and keeps the number
-   legible, and one that pulses. Animating the static one would make the
-   number wobble. */
-.hrm__dial::before {
-  content: "";
+.hrm__gauge {
   position: absolute;
   inset: 0;
-  border: 1.5px solid var(--zone-color, var(--color-zone-calm));
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
-  backdrop-filter: blur(6px);
-  transition: border-color var(--transition-slow);
+  width: 100%;
+  height: 100%;
+  /* Start nahoře, ne vpravo. */
+  rotate: -90deg;
 }
 
-.hrm__ring {
+.hrm__gauge-track,
+.hrm__gauge-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.hrm__gauge-track {
+  stroke: var(--color-hairline);
+}
+
+.hrm__gauge-fill {
+  stroke: var(--zone-color, var(--color-zone-calm));
+  transition: stroke-dashoffset var(--transition-slow), stroke var(--transition-slow);
+}
+
+/* Pulz je zvlášť od budíku: kdyby tepal samotný prstenec s hodnotou,
+   číslo uprostřed by se hýbalo s ním. */
+.hrm__pulse {
   position: absolute;
-  inset: 0;
-  border: 1.5px solid var(--zone-color, var(--color-zone-calm));
+  inset: 12%;
   border-radius: 50%;
+  background: var(--zone-color, var(--color-zone-calm));
   opacity: 0;
   animation: hrm-beat calc(60s / var(--hrm-bpm, 75)) var(--ease-out) infinite;
-  transition: border-color var(--transition-slow);
 }
 
 @keyframes hrm-beat {
   0% {
-    scale: 1;
-    opacity: 0.55;
+    scale: 0.72;
+    opacity: 0.28;
   }
   70% {
-    scale: 1.45;
+    scale: 1.08;
     opacity: 0;
   }
   100% {
-    scale: 1.45;
+    scale: 1.08;
     opacity: 0;
   }
 }
 
-.hrm__value {
+.hrm__reading {
   position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+}
+
+.hrm__bpm {
   font-family: var(--font-display);
-  font-size: var(--text-lg);
+  font-size: var(--text-3xl);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  color: var(--color-text);
+  letter-spacing: var(--tracking-tight);
 }
 
-.hrm__label {
-  margin: 0;
-  max-width: 5.5rem;
+.hrm__bpm-unit {
   font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: var(--tracking-wide);
-  line-height: 1.3;
-  text-align: center;
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
-/* Reduced motion: the meter still reports the zone and the number, it just
-   stops beating. Removing it entirely would take away information. */
+.hrm__readouts {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-hairline);
+  font-size: var(--text-xs);
+}
+
+.hrm__readouts dt {
+  color: var(--color-text-muted);
+}
+
+.hrm__readouts dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.hrm__disclaimer {
+  margin: var(--space-3) 0 0;
+  font-size: 0.625rem;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+}
+
+/* Reduced motion: panel dál hlásí zónu i všechna čísla, jen přestane tepat.
+   Odstranit ho celý by ubralo informaci, ne pohyb. */
 @media (prefers-reduced-motion: reduce) {
-  .hrm__ring {
+  .hrm__pulse {
     animation: none;
-    opacity: 0.35;
+    opacity: 0.16;
   }
 }
 
-/* On a phone the ring would sit on top of the content it is describing, so
-   it drops to the bottom corner and shrinks. */
-@media (width < 768px) {
+/* Kde se svislý panel nevejde vedle obsahu, překlopí se do vodorovného
+   proužku dole. Nezmizí z něj ani jedna hodnota — zmizí jen kruhový budík,
+   který v proužku nemá kam růst. Tep tedy zůstává jako číslo a pulz se
+   přesune na tečku u názvu zóny, aby nápad klientky fungoval i na
+   telefonu. */
+@media (width < 1280px) {
   .hrm {
     top: auto;
-    bottom: var(--space-4);
+    bottom: var(--space-3);
+    left: var(--space-3);
+    right: var(--space-3);
+    width: auto;
     translate: 0;
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+    padding: var(--space-3) var(--space-4);
   }
 
+  .hrm__zone {
+    margin: 0;
+  }
+
+  /* Budík se rozpadá na samotné číslo. */
   .hrm__dial {
-    width: 3.25rem;
-    height: 3.25rem;
+    width: auto;
+    aspect-ratio: auto;
+    margin: 0;
+    place-items: start;
   }
 
-  .hrm__value {
-    font-size: var(--text-sm);
-  }
-
-  .hrm__label {
+  .hrm__gauge,
+  .hrm__pulse {
     display: none;
+  }
+
+  .hrm__reading {
+    grid-auto-flow: column;
+    align-items: baseline;
+    justify-items: start;
+    gap: var(--space-2);
+  }
+
+  .hrm__bpm {
+    font-size: var(--text-xl);
+  }
+
+  /* Pulz přebírá tečka u zóny — jinak by se na telefonu z tepometru stal
+     jen statický výpis čísel. */
+  .hrm__zone::before {
+    animation: hrm-beat-dot calc(60s / var(--hrm-bpm, 75)) var(--ease-out) infinite;
+  }
+
+  .hrm__readouts {
+    justify-self: end;
+    grid-template-columns: repeat(3, auto);
+    gap: 0 var(--space-4);
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  /* Ve vodorovném proužku jde popisek pod hodnotu, ne vedle ní. */
+  .hrm__readouts dt {
+    grid-row: 2;
+    text-align: right;
+  }
+
+  .hrm__readouts dd {
+    grid-row: 1;
+  }
+
+  .hrm__disclaimer {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+}
+
+@keyframes hrm-beat-dot {
+  0% {
+    scale: 1;
+  }
+  12% {
+    scale: 1.6;
+  }
+  30% {
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hrm__zone::before {
+    animation: none;
+  }
+}
+
+/* Na úzkém telefonu se tři hodnoty vedle názvu zóny nevejdou — přesunou
+   se pod něj na vlastní řádek. */
+@media (width < 480px) {
+  .hrm {
+    grid-template-columns: auto 1fr;
+  }
+
+  .hrm__readouts {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
 }
