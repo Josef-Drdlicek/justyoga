@@ -1,8 +1,9 @@
 // Real content taken from the current justyoga.cz (ceník + rezervace-terminu
 // pages, checked 2026-07-07), texts rewritten 2026-08-27 from the client's own
-// marketing copy (viz `content/feedback-klientka-2026-08-14.md`). This is the
-// one place activity facts live — pricing table, schedule table and homepage
-// cards all read from here instead of repeating names/prices/links.
+// marketing copy (e-mail klientky ze 14. 8. 2026 — originál je v archivu
+// projektu, do repa nepatří). This is the one place activity facts live —
+// pricing table, schedule table and homepage cards all read from here
+// instead of repeating names/prices/links.
 //
 // Shape notes:
 //   name         – full name (ceník heading, alt text)
