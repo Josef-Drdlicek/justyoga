@@ -9,6 +9,7 @@ import { SCHEDULE } from "../data/schedule.js";
 import { getActivityById } from "../data/activities.js";
 import { getVenueById, formatVenueAddress, venueNavigationUrl } from "../data/venues.js";
 import { ACTIVITY_TYPE_ICONS, PIN_ICON } from "../data/icons.js";
+import { ZONES, zoneForActivity } from "../data/zones.js";
 
 /* --- Week strip ------------------------------------------------------
    The question every visitor arrives with is "when can I come?", and the
@@ -31,23 +32,37 @@ function groupByDay(rows) {
 function lessonRow(row) {
   const activity = getActivityById(row.activityId);
   const venue = getVenueById(activity.venueId);
+  const zone = zoneForActivity(activity.id);
 
-  return el("li", { class: "week__lesson" }, [
-    el("span", { class: "week__time", text: row.time }),
-    el("span", { class: "week__lesson-body" }, [
-      el("span", { class: "week__name" }, [
-        el("span", {
-          class: "week__icon",
-          "aria-hidden": "true",
-          html: ACTIVITY_TYPE_ICONS[activity.id] ?? "",
-        }),
-        el("span", { text: activity.shortName ?? activity.name }),
-      ]),
-      // Two venues, and mixing them up costs someone their lesson. The
-      // place is never implied here, it is always written out.
-      el("span", { class: "week__venue muted", text: venue.label }),
+  // Zone drives the 4px rule down the left of the row. Colour is the only
+  // thing that lets someone scan "where are the calm lessons" without
+  // reading a single word, and it is the same colour the meter takes in
+  // that zone, so the page tells one story.
+  return el("li", { class: "lesson", dataset: { zone: zone?.id ?? "" } }, [
+    el("span", { class: "lesson__time", text: row.time }),
+    el("span", { class: "lesson__name", text: activity.shortName ?? activity.name }),
+    // Two venues, and mixing them up costs someone their lesson, so the
+    // place is written out on every single row rather than implied.
+    el("span", { class: "lesson__meta" }, [
+      el("span", { text: `${activity.durationMinutes} min` }),
+      el("span", { class: "lesson__dot", "aria-hidden": "true", text: "·" }),
+      el("span", { text: venue.label }),
     ]),
   ]);
+}
+
+/** Legend, so the colour down the left of each row means something. */
+export function renderWeekLegend() {
+  return el(
+    "ul",
+    { class: "legend" },
+    ZONES.map((zone) =>
+      el("li", { class: "legend__item", dataset: { zone: zone.id } }, [
+        el("span", { class: "legend__dot", "aria-hidden": "true" }),
+        el("span", { text: zone.short }),
+      ])
+    )
+  );
 }
 
 export function renderWeek() {
@@ -120,6 +135,86 @@ export function renderActivities(activities) {
     "div",
     { class: "activities" },
     activities.map((activity, index) => renderActivityCard(activity, index))
+  );
+}
+
+/* --- Zones -----------------------------------------------------------
+   The client's own idea: the page climbs from calm to maximum and the
+   floating meter says where you are. Each zone is one band carrying the
+   lessons that belong to that tempo, so "what will I find here" reads
+   without a paragraph.
+
+   The section id is `zona-<id>` and the meter interpolates between those
+   elements — the two stay in step because both read js/data/zones.js. */
+
+export function renderZone(zone, activities) {
+  const own = activities.filter((activity) => zone.activityIds.includes(activity.id));
+
+  return el(
+    "section",
+    {
+      class: "section zone",
+      id: `zona-${zone.id}`,
+      dataset: { zone: zone.id },
+      "aria-labelledby": `zona-${zone.id}-title`,
+    },
+    [
+      el("div", { class: "shell zone__inner" }, [
+        el("header", { class: "zone__head", dataset: { reveal: "" } }, [
+          el("span", { class: "eyebrow zone__eyebrow" }, [
+            el("span", { class: "zone__dot", "aria-hidden": "true" }),
+            el("span", { text: zone.eyebrow }),
+          ]),
+          el("h2", { class: "zone__heading", id: `zona-${zone.id}-title`, text: zone.heading }),
+          el("p", { class: "zone__slogan", text: zone.slogan }),
+          el("p", { class: "zone__text muted", text: zone.text }),
+        ]),
+        el(
+          "div",
+          { class: "zone__cards" },
+          own.map((activity, index) => renderActivityCard(activity, index))
+        ),
+      ]),
+    ]
+  );
+}
+
+export function renderZones(zones, activities) {
+  return zones.map((zone) => renderZone(zone, activities));
+}
+
+/* The "bridge": the client asked for this text exactly where the meter
+   first speeds up, as the explanation of why it started moving. */
+export function renderBridge(text) {
+  return el("div", { class: "shell shell--narrow" }, [
+    el("p", { class: "bridge__text", text }),
+  ]);
+}
+
+/* Closing zone. No lessons of its own — it is where the meter settles. */
+export function renderRestZone(zone) {
+  return el(
+    "section",
+    {
+      class: "section band--dark zone zone--rest",
+      id: `zona-${zone.id}`,
+      dataset: { zone: zone.id },
+      "aria-labelledby": `zona-${zone.id}-title`,
+    },
+    [
+      el("div", { class: "shell shell--narrow zone__rest-inner" }, [
+        el("h2", { class: "zone__rest-heading", id: `zona-${zone.id}-title`, text: zone.heading }),
+        el("p", { class: "zone__rest-text", text: zone.text }),
+        el("div", { class: "zone__rest-actions" }, [
+          el("a", {
+            class: "btn btn--accent",
+            href: "rozvrh-cenik.html#rozvrh",
+            text: "Vybrat lekci v rozvrhu",
+          }),
+          el("a", { class: "btn btn--ghost", href: "#poprve", text: "Jdu poprvé" }),
+        ]),
+      ]),
+    ]
   );
 }
 

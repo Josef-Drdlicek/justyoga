@@ -97,6 +97,7 @@
             </p>
           </header>
 
+          <div data-week-legend></div>
           <div data-week></div>
 
           <p class="section__foot">
@@ -105,28 +106,23 @@
         </div>
       </section>
 
-      <!-- Aktivity -------------------------------------------------- -->
-      <section class="section" id="lekce" aria-labelledby="activities-title">
-        <div class="shell">
-          <header class="section__head" data-reveal>
-            <span class="eyebrow">Co u mě můžete cvičit</span>
-            <h2 id="activities-title">Tři tempa, jedno studio</h2>
-            <hr class="rule" />
-          </header>
+      <!-- Zóny -------------------------------------------------------
+           Nápad klientky: stránka stoupá od klidu k maximu a plovoucí
+           tepometr ukazuje, kde návštěvník právě je. Pořadí sekcí je
+           zároveň pořadí, ve kterém tepometr zrychluje, takže se sem
+           nesmí vsunout nic, co by ten oblouk přerušilo. -->
+      <div data-zone-calm></div>
 
-          <div data-activities></div>
-        </div>
+      <!-- „Most" — klientka ho chtěla přesně sem, do chvíle, kdy se
+           kolečko poprvé zrychlí, jako vysvětlení, proč se dalo do
+           pohybu. -->
+      <section class="section band--alt bridge" aria-label="Proč tři tempa">
+        <div data-bridge></div>
       </section>
 
-      <!-- Editorial ------------------------------------------------- -->
-      <section class="section band--dark editorial" aria-labelledby="editorial-title">
-        <div class="shell shell--narrow">
-          <h2 id="editorial-title" class="editorial__quote">
-            Nejde o to, jak hluboko se ohnete. Jde o to, že jste přišli.
-          </h2>
-          <p class="editorial__by">Lenka Nahodilová</p>
-        </div>
-      </section>
+      <div data-zone-move></div>
+      <div data-zone-burn></div>
+      <div data-zone-rest></div>
 
       <!-- Poprvé ---------------------------------------------------- -->
       <section class="section" id="poprve" aria-labelledby="first-title">
@@ -174,5 +170,9 @@
     </main>
 
     <div data-site-footer></div>
+
+    <!-- ⚠️ MUSÍ zůstat přímým potomkem <body>: position: fixed se zasekne
+         uvnitř předka s transform, filter nebo contain. -->
+    <div data-heart-rate-meter></div>
   </body>
 </html>

@@ -50,6 +50,7 @@
   --color-berry: #a9436b;
   --color-mint: #51d3a7;
   --color-yellow: #ffd47d;
+  --color-peach: #ffac86;
   --color-plum: #402b32;
 
   /* === Functional roles ===
@@ -89,6 +90,22 @@
   --color-accent-hover: color-mix(in srgb, var(--color-berry), #000 16%);
 
   --color-focus: var(--color-berry);
+
+  /* === Intensity ===
+     The three lesson types, ordered by how hard the heart works. These are
+     the brandbook's "pops" doing the one job they are good at: marking.
+     They never fill a surface — they are a 4px rule on a schedule row, a
+     dot in a legend, and the color the heart-rate meter takes in that zone.
+     Ordered calm → rhythm → maximum, which is also the order the page
+     scrolls through, so the schedule legend and the meter agree.
+
+     Contrast on the page background (they mark, they never carry text):
+       mint  #51d3a7  1.81
+       peach #ffac86  1.94
+       coral #e86667  3.12 */
+  --color-zone-calm: var(--color-mint);
+  --color-zone-move: var(--color-peach);
+  --color-zone-burn: var(--color-coral);
 
   /* === Typography ===
      Fraunces is the display face: a variable serif with a soft, slightly
