@@ -8,6 +8,11 @@
 // Shape notes:
 //   name         – full name (ceník heading, alt text)
 //   shortName    – optional, used where space is tight (schedule cards)
+//   logo         – { src, width, height }; rozměry jsou v datech proto, že
+//                  karta určuje výšku loga a šířku nechává na "auto", takže
+//                  bez nich by po dorazu obrázku poskočil obsah karty. Loga
+//                  se navíc liší poměrem stran (tabata je 848x482, ostatní
+//                  788x482), takže jednotná hodnota v CSS by je deformovala.
 //   logoSubtitle – optional, spells out what the logo image can't say
 //                  (the "JUST TABATA" logo predates HIIT/kruhový trénink)
 //   headline     – one-line hook above the descriptive tagline
@@ -20,7 +25,7 @@ export const ACTIVITIES = [
     id: "joga",
     name: "Jóga a světelná terapie",
     shortName: "Jóga",
-    logo: "assets/images/logo-just-yoga.png",
+    logo: { src: "assets/images/logo-just-yoga.png", width: 788, height: 482 },
     logoSubtitle: "+ světelná terapie",
     headline: "Najděte ztracenou rovnováhu a odhoďte každodenní stres.",
     tagline:
@@ -46,7 +51,7 @@ export const ACTIVITIES = [
   {
     id: "jumping",
     name: "Jumping",
-    logo: "assets/images/logo-jump.png",
+    logo: { src: "assets/images/logo-jump.png", width: 788, height: 482 },
     headline: "Naberte čistou energii a vyskočte ze stereotypu!",
     tagline:
       "Skákání na trampolínách je nejzábavnější způsob, jak spálit kalorie, " +
@@ -70,7 +75,7 @@ export const ACTIVITIES = [
     id: "tabata",
     name: "Tabata, HIIT a kruhový trénink",
     shortName: "Tabata / HIIT",
-    logo: "assets/images/logo-tabata.png",
+    logo: { src: "assets/images/logo-tabata.png", width: 848, height: 482 },
     logoSubtitle: "+ HIIT a kruhový trénink",
     headline: "Dejte si do těla bez ohledu na kondici – vlastní tempo je klíč!",
     tagline:
