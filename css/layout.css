@@ -1730,8 +1730,9 @@
   display: flex;
   flex-direction: column;
   width: min(23rem, calc(100vw - 2 * var(--space-4)));
-  max-height: min(78vh, 40rem);
-  max-height: min(78svh, 40rem);
+  /* Hodnotu dopočítá JS z místa nad spouštěčem (sizePanel). Zápis tady je
+     záchranná síť, kdyby skript neběžel. */
+  max-height: var(--assistant-panel-max, min(70svh, 34rem));
   padding: var(--space-4);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -1777,9 +1778,14 @@
 
 /* `min-height: 0` je to, co dovolí flexovému dítěti scrollovat — bez něj
    se vlákno roztáhne podle obsahu a strop panelu se ignoruje. */
+/* `flex: 0 3 auto` — roste podle obsahu, ale NEZABÍRÁ volné místo. S
+   `1 1 auto` si vlákno bralo celý zbytek panelu, takže mezi první větou
+   a nabídkami zela díra přes půl okna. Když je naopak obsahu moc, vlákno
+   se smršťuje třikrát rychleji než nabídky: nabídky jsou to, na co se
+   kliká, a mají mít přednost. min-height drží, aby se nesrazilo na nic. */
 .assistant__thread {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 0 3 auto;
+  min-height: 3.5rem;
   display: grid;
   align-content: start;
   gap: var(--space-3);
@@ -1819,14 +1825,27 @@
    a jinak by vytlačily vlákno úplně mimo panel. */
 .assistant__choices {
   flex: 0 1 auto;
-  min-height: 0;
+  min-height: 6rem;
   display: grid;
   gap: var(--space-2);
-  max-height: 45%;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-top: var(--space-3);
   border-top: 1px solid var(--color-hairline);
+}
+
+/* Stínítko na spodní hraně seznamu nabídek, když se do něj všechno
+   nevejde. Třídu nasazuje JS (markScrollable) — CSS přetečení nezjistí. */
+.assistant__choices.has-more {
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
+}
+
+.assistant__choices.has-more::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  display: block;
+  height: 1px;
 }
 
 .assistant__choice {
@@ -1884,7 +1903,7 @@
 
 /* ---- Bottom sheet (telefon) ---------------------------------------- */
 
-@media (width < 768px) {
+@media (width < 768px), (height < 560px) {
   /* Kontejner přestává být kotvou v rohu a roztáhne se přes celou plochu,
      aby v něm mohl sedět překryv i panel u spodní hrany. */
   .assistant[data-open="true"] {
