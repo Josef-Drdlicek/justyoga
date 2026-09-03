@@ -105,7 +105,10 @@ export function renderAssistant() {
     panel,
   ]);
 
-  const sheet = window.matchMedia("(width < 768px)");
+  /* Sheet nejen na úzké obrazovce, ale i na nízké: telefon na šířku má
+     760 px šířky a 360 px výšky, takže by spadl do desktopové větve
+     a plovoucí panel by z něj vylezl nahoře i dole. */
+  const sheet = window.matchMedia("(width < 768px), (height < 560px)");
 
   /** Vykreslí uzel: odpověď do vlákna, nabídky pod něj. */
   function goTo(id, chosenLabel) {
@@ -148,9 +151,36 @@ export function renderAssistant() {
       })
     );
 
+    markScrollable();
+
     const firstChoice = $(".assistant__choice", choices);
     if (firstChoice && root.dataset.open === "true") firstChoice.focus();
   }
+
+  /* Strop panelu se MĚŘÍ z místa, které nad spouštěčem zbývá — ne
+     z podílu výšky okna. Panel je ukotvený dole a roste nahoru, takže
+     `max-height: 78svh` ho nezastaví: na okně 1000×700 vylezl 15 px nad
+     horní hranu a s ním i zavírací křížek. */
+  function sizePanel() {
+    if (sheet.matches) {
+      root.style.removeProperty("--assistant-panel-max");
+      return;
+    }
+    const breathingRoom = 16;
+    const available = launcher.getBoundingClientRect().top - breathingRoom;
+    root.style.setProperty("--assistant-panel-max", `${Math.max(240, available)}px`);
+  }
+
+  /* Na nízkém okně se všechny nabídky nevejdou — na telefonu na šířku jsou
+     ze šesti vidět dvě. Seznam scrolluje, ale to nikdo nepozná, dokud to
+     nezkusí, takže se dole rozsvítí stínítko a zhasne na konci seznamu.
+     CSS samo o sobě přetečení nezjistí, proto to řeší JS. */
+  function markScrollable() {
+    const more = choices.scrollHeight - choices.clientHeight - choices.scrollTop > 4;
+    choices.classList.toggle("has-more", more);
+  }
+
+  choices.addEventListener("scroll", markScrollable, { passive: true });
 
   function focusables() {
     return [...panel.querySelectorAll("button, a[href]")].filter(
@@ -175,6 +205,9 @@ export function renderAssistant() {
     document.documentElement.classList.toggle("assistant-locked", modal);
 
     if (open) {
+      sizePanel();
+      // Po změně stropu se mění i to, co se vejde.
+      requestAnimationFrame(markScrollable);
       // Vlákno se pokaždé začíná znovu: půlka rozhovoru ze včerejška
       // otevřená na jiné stránce mate víc, než pomáhá.
       fill(thread, []);
@@ -220,6 +253,15 @@ export function renderAssistant() {
     if (root.dataset.open === "true") setOpen(true);
   });
 
+  // Změna velikosti okna mění, kolik místa nad spouštěčem zbývá.
+  window.addEventListener("resize", () => {
+    if (root.dataset.open !== "true") return;
+    sizePanel();
+    markScrollable();
+  }, { passive: true });
+
+  root.sizePanel = sizePanel;
+
   return root;
 }
 
@@ -243,7 +285,11 @@ function keepClearOfMeter(assistant) {
     assistant.style.setProperty("--assistant-lift", `${meter.offsetHeight + gap}px`);
   };
 
-  new ResizeObserver(sync).observe(meter);
+  new ResizeObserver(() => {
+    sync();
+    // Zvednutí posune spouštěč, a tím i místo, které panelu zbývá nahoře.
+    assistant.sizePanel?.();
+  }).observe(meter);
   strip.addEventListener("change", sync);
   sync();
 }
