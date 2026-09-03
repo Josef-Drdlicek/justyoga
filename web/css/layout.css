@@ -1714,6 +1714,13 @@
   background: var(--color-primary-hover);
 }
 
+/* Otevřený panel spouštěč nahrazuje, nestojí pod ním. Dvě věci, které
+   dělají totéž, vedle sebe jen matou — zavírá se křížkem, Escapem,
+   a na telefonu i klepnutím do překryvu. */
+.assistant[data-open="true"] .assistant__launcher {
+  display: none;
+}
+
 /* Tečka, ne ikona bubliny: bublina slibuje, že na druhé straně někdo je. */
 .assistant__launcher-dot {
   width: 0.5rem;
@@ -1725,6 +1732,16 @@
 /* Panel je sloupcový flex s vlastním stropem výšky: hlavička, nabídky
    a poznámka mají pevnou výšku, vlákno si vezme zbytek. Bez toho by
    dlouhá odpověď z FAQ vytáhla panel přes celou obrazovku. */
+/* `[hidden]` MUSÍ být přebito zpátky na `display: none`. Prohlížeč skrývá
+   skryté prvky pravidlem `[hidden] { display: none }` ve svém výchozím
+   stylu, jenže autorský `display: flex` níž ho přebije — a na stránce pak
+   visí prázdné okno, na které nikdo neklikl. Chyba se objevila ve chvíli,
+   kdy se z panelu stal flex kontejner, a testy ji minuly, protože se
+   ptaly na vlastnost `hidden`, ne na vykreslený `display`. */
+.assistant__panel[hidden] {
+  display: none;
+}
+
 .assistant__panel {
   order: -1; /* panel nad spouštěčem, ne pod ním */
   display: flex;
@@ -1916,12 +1933,6 @@
     position: absolute;
     inset: 0;
     background: color-mix(in srgb, var(--ramp-900) 45%, transparent);
-  }
-
-  /* Spouštěč pod otevřeným sheetem nemá co dělat — zavírá se křížkem
-     nebo klepnutím do překryvu. */
-  .assistant[data-open="true"] .assistant__launcher {
-    display: none;
   }
 
   .assistant[data-open="true"] .assistant__panel {

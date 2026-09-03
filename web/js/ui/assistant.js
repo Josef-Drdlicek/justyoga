@@ -166,8 +166,11 @@ export function renderAssistant() {
       root.style.removeProperty("--assistant-panel-max");
       return;
     }
+    // Měří se od spodní kotvy kontejneru, ne od spouštěče: ten je při
+    // otevřeném panelu `display: none` a jeho rámeček by byl nulový.
     const breathingRoom = 16;
-    const available = launcher.getBoundingClientRect().top - breathingRoom;
+    const bottom = parseFloat(window.getComputedStyle(root).bottom) || 0;
+    const available = window.innerHeight - bottom - breathingRoom;
     root.style.setProperty("--assistant-panel-max", `${Math.max(240, available)}px`);
   }
 
