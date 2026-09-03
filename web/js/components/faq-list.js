@@ -42,7 +42,7 @@ export class FaqList extends BaseElement {
       }
       summary::-webkit-details-marker { display: none; }
       summary:hover { color: var(--color-accent); }
-      summary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+      summary:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: calc(-1 * var(--focus-ring-offset)); }
       /* Chevron drawn from two borders rather than an SVG icon: it has to
          rotate on open, and a CSS-only mark keeps this component free of
          the shared icon set. */

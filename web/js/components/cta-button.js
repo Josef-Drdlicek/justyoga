@@ -32,9 +32,22 @@ export class CtaButton extends BaseElement {
            reserves for emphasis — CTAs, prices, statistics). */
         font-family: var(--font-heading);
         font-weight: 600;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        /* Doba přes token, ne literál: prefers-reduced-motion nuluje token,
+           ale zapsanou hodnotu 0.15s by neovlivnilo. Tohle bylo jedno ze
+           dvou míst v projektu, kde se design tokeny obcházely.
+           (Pozor: v komentářích uvnitř styles() nesmí být zpětné apostrofy —
+           tenhle blok je celý template literál a ukončily by ho.) */
+        transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+          background var(--transition-fast);
       }
       a:hover, a:focus-visible { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+      /* Vlastní prstenec. Samotný posun o 1 px focus neoznačí a --shadow-sm
+         je v plochém brandu nulový (none), takže hover efekt výše nebyl
+         pro klávesnici viditelný vůbec. */
+      a:focus-visible {
+        outline: var(--focus-ring-width) solid var(--focus-ring-color);
+        outline-offset: var(--focus-ring-offset);
+      }
       .primary { background: var(--color-primary); color: var(--color-primary-contrast); }
       .primary:hover, .primary:focus-visible { background: var(--color-primary-dark); }
       .accent { background: var(--color-accent); color: var(--color-primary-contrast); }
