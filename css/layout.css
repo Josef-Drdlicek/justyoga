@@ -116,6 +116,10 @@
   gap: var(--space-4);
 }
 
+/* ============================================================
+   HERO (homepage)
+   ============================================================ */
+
 .hero {
   position: relative;
   display: flex;
@@ -200,6 +204,10 @@
   margin: 0 0 var(--space-6);
 }
 
+/* ============================================================
+   SPOLEČNÉ STAVEBNÍ PRVKY (všechny stránky)
+   ============================================================ */
+
 .activities-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
@@ -239,10 +247,10 @@
   scroll-margin-top: var(--header-height-estimate);
 }
 
-.prose {
-  max-width: 40rem;
-  margin: 0 auto;
-}
+
+/* ============================================================
+   O MNĚ — bio a galerie
+   ============================================================ */
 
 /* "O mně" — bio text with two photos woven in. Mobile (default) stacks in
    DOM order: heading, portrait photo, text, wide photo. Desktop re-places
@@ -289,6 +297,10 @@
   margin-top: var(--space-8);
 }
 
+/* ============================================================
+   KONTAKT — karta s kontakty a formulář
+   ============================================================ */
+
 /* Kontakt page: contact-info card beside the message form. Contact info
    is the first DOM child, so it's simultaneously "top" of the mobile
    single-column stack and "left" of the desktop two-column grid — no
@@ -321,22 +333,6 @@
   gap: var(--space-3);
 }
 
-/* Two text lines (label + address) instead of one, so the icon aligns to
-   the top of the block rather than its vertical center. */
-.contact-list__address {
-  align-items: flex-start;
-}
-
-.contact-list__text {
-  display: flex;
-  flex-direction: column;
-}
-
-.contact-list__label {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-text-muted);
-}
 
 .contact-list .icon {
   flex-shrink: 0;
@@ -390,7 +386,12 @@
   outline-offset: 1px;
 }
 
-/* Single project breakpoint, see tokens.css comment */
+/* ============================================================
+   RESPONZIVNÍ PŘEPISY
+   Jediný breakpoint projektu (768px), dvě nezaměnitelná znění —
+   viz komentář v tokens.css.
+   ============================================================ */
+
 @media (min-width: 768px) {
   /* Source photo is landscape (2560x1707) but the desktop hero band is much
      wider/shorter than that — object-fit: cover then only shows a thin

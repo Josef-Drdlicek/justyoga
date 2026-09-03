@@ -8,13 +8,7 @@ export class CtaButton extends BaseElement {
   // pro klávesnici viditelný vůbec.
   static sheets = [FOCUS_RING];
 
-  static get observedAttributes() {
-    return ["href", "label", "variant"];
-  }
-
-  attributeChangedCallback() {
-    if (this.isConnected) this.render();
-  }
+  static observedAttributes = ["href", "label", "variant"];
 
   styles() {
     return `
