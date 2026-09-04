@@ -40,6 +40,14 @@
   gap: var(--space-4);
 }
 
+/* Dva popisky jedné položky, přepínané rozvržením menu. Ve vodorovném
+   řádku jde krátký, v panelu pod sebou plný — plný název by řádek utáhl
+   na 789 px a hlavička by přetékala do šířky všude pod 1440 px (změřeno).
+   Skrytý popisek je display:none, takže ho čtečka nepřečte dvakrát. */
+.nav__label--full {
+  display: none;
+}
+
 /* Předěl mezi nabídkou lekcí a stránkami webu. Vlasová linka, ne mezera:
    samotná mezera se v řádku ztratí a obě skupiny splynou v jeden seznam. */
 @media (min-width: 768px) {
@@ -158,6 +166,15 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0;
+  }
+
+  /* V panelu stojí položky pod sebou, takže se plný název vejde. */
+  .nav__label--full {
+    display: inline;
+  }
+
+  .nav__label--short {
+    display: none;
   }
 
   .nav__item + .nav__item {

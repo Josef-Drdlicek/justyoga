@@ -89,7 +89,6 @@ export const ACTIVITIES = [
   {
     id: "tabata",
     name: "Tabata, HIIT a kruhový trénink",
-    shortName: "Tabata / HIIT",
     logo: { src: "assets/images/logo-tabata.png", width: 848, height: 482 },
     logoSubtitle: "+ HIIT a kruhový trénink",
     headline: "Dejte si do těla bez ohledu na kondici – vlastní tempo je klíč!",
