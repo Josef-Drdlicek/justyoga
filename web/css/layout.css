@@ -1662,10 +1662,9 @@
 }
 
 /* ==== Průvodce =======================================================
-   Na desktopu plovoucí panel vlevo dole (vpravo sedí ukazatel tempa —
-   dva plovoucí prvky v jednom rohu se překrývají a jeden z nich zůstane
-   nepoužitelný). Na telefonu bottom sheet přes skoro celou výšku: okénko
-   v rohu se na 390 px nedá číst a většina návštěvníků chodí z mobilu.
+   Plovoucí panel vlevo dole (vpravo sedí ukazatel tempa — dva plovoucí
+   prvky v jednom rohu se překrývají a jeden z nich zůstane nepoužitelný).
+   Na malé obrazovce se nezobrazuje vůbec, viz konec sekce.
 
    Vzhled je vzhled webu: karta, hairline, náš font. Bubliny nejsou modré
    a nemají špičku — má to vypadat jako součást stránky, ne jako nalepený
@@ -1679,16 +1678,6 @@
   display: grid;
   justify-items: start;
   gap: var(--space-3);
-}
-
-/* Zámek scrollu pod otevřeným sheetem. Na html, ne na body: iOS Safari
-   jinak scroll řetězí dál na dokument. */
-.assistant-locked {
-  overflow: hidden;
-}
-
-.assistant__backdrop {
-  display: none;
 }
 
 .assistant__launcher {
@@ -1918,75 +1907,22 @@
   }
 }
 
-/* ---- Bottom sheet (telefon) ---------------------------------------- */
+/* ---- Malá obrazovka: průvodce se nezobrazuje ------------------------
+   Rozhodnuto 4. 9. 2026. Panel potřebuje vlákno, seznam nabídek a hlavičku
+   nad sebou; na telefonu se to vejde jen jako bottom sheet přes skoro celou
+   výšku, což je na rozcestník ze čtyř kliknutí neúměrné zabrání obrazovky.
+   Na telefonu vede stejnou práci hlavní navigace a CTA v obsahu.
+
+   Podmínka je ta samá, na které se dřív panel překlápěl do sheetu, včetně
+   nízkého okna: telefon na šířku má 844 px šířky a 390 px výšky, takže by
+   spadl do desktopové větve a plovoucí panel by vylezl nad horní hranu.
+
+   Skrývá se celý kontejner, ne jen spouštěč — `display: none` bere prvek
+   i z pořadí tabulátoru a ze stromu pro čtečky, takže na telefonu není na
+   co narazit. */
 
 @media (width < 768px), (height < 560px) {
-  /* Kontejner přestává být kotvou v rohu a roztáhne se přes celou plochu,
-     aby v něm mohl sedět překryv i panel u spodní hrany. */
-  .assistant[data-open="true"] {
-    inset: 0;
-    display: block;
-  }
-
-  .assistant[data-open="true"] .assistant__backdrop {
-    display: block;
-    position: absolute;
-    inset: 0;
-    background: color-mix(in srgb, var(--ramp-900) 45%, transparent);
-  }
-
-  .assistant[data-open="true"] .assistant__panel {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: auto;
-    /* svh, ne vh: na iOS se vh počítá k adresní liště a spodek sheetu
-       by skončil pod ohybem obrazovky. */
-    height: min(88vh, 44rem);
-    height: min(88svh, 44rem);
-    max-height: none;
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    border-bottom: 0;
-    padding: var(--space-4);
-    /* Domovský indikátor iPhonu jinak sedí na posledním tlačítku. */
-    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
-  }
-
-  /* Úchyt: jediný signál, že jde o plachtu vytaženou zdola. */
-  .assistant[data-open="true"] .assistant__panel::before {
-    content: "";
-    flex-shrink: 0;
-    align-self: center;
-    width: 2.25rem;
-    height: 4px;
-    margin-bottom: var(--space-4);
-    border-radius: var(--radius-pill);
-    background: var(--color-border);
-  }
-
-  .assistant[data-open="true"] .assistant__title {
-    font-size: var(--text-xl);
-  }
-
-  /* Ve sheetu je místa dost: text i terče můžou být větší. */
-  .assistant[data-open="true"] .assistant__bubble {
-    max-width: 100%;
-    font-size: var(--text-base);
-  }
-
-  .assistant[data-open="true"] .assistant__choice {
-    min-height: 3rem;
-    font-size: var(--text-base);
-  }
-
-  .assistant[data-open="true"] .assistant__note {
-    font-size: var(--text-xs);
-  }
-
-  /* Sheet zakrývá proužek ukazatele tempa; nechat ho pod překryvem
-     prosvítat by jen mátlo. */
-  .assistant-locked .hrm {
+  .assistant {
     display: none;
   }
 }

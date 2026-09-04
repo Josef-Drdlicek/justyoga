@@ -3,20 +3,18 @@
    Bez vstupního pole: návštěvník klikne na nabídku, průvodce odpoví, nabídne
    další krok. Proč zrovna takhle, stojí v js/data/assistant.js.
 
+   Jen na velké obrazovce. Na telefonu se průvodce vůbec nezobrazuje —
+   viz `.assistant` v css/layout.css. Panel je proto vždy nemodální:
+   nic nezakrývá, stránka pod ním zůstává použitelná, fokus se do něj
+   nezamyká a scroll stránky se nezamyká.
+
    Přístupnost — tohle je ta část, kterou chatovací widgety dělají špatně:
 
    - Spouštěč je `<button>` s `aria-expanded` a `aria-controls`. Panel je
-     `role="dialog"` s `aria-labelledby`, ale **není modální**: stránka pod
-     ním zůstává použitelná, takže se do něj fokus nezamyká.
+     `role="dialog"` s `aria-labelledby`, ale bez `aria-modal` — to by
+     čtečce lhalo, že zbytek stránky není k dispozici.
    - Po otevření jde fokus na první nabídku, po zavření zpátky na spouštěč.
      Escape zavírá odkudkoli zevnitř.
-   Na telefonu to není plovoucí bublina, ale **bottom sheet**: panel sedí
-   u spodní hrany, zabírá skoro celou výšku a má vlastní překryv. Malé
-   okénko v rohu se na 390 px nedá číst a většina návštěvníků chodí právě
-   z mobilu. V režimu sheetu se panel chová jako modální dialog — má
-   `aria-modal`, zamyká fokus i scroll stránky a překryv se dá zavřít
-   klepnutím. Na desktopu zůstává nemodální, protože tam nic nezakrývá.
-
    - Průběh konverzace je `aria-live="polite"`: přibývá po jednom bloku na
      kliknutí, což čtečka stihne přečíst. (Na rozdíl od tepometru, kde se
      hodnota mění desítkykrát za scroll a `aria-live` by mluvilo přes všechno.)
@@ -96,19 +94,10 @@ export function renderAssistant() {
     el("span", { text: "Poradím vám" }),
   ]);
 
-  // Překryv existuje jen kvůli režimu sheetu; na desktopu je schovaný.
-  const backdrop = el("div", { class: "assistant__backdrop", "data-assistant-backdrop": "" });
-
   const root = el("div", { class: "assistant", "data-assistant": "" }, [
-    backdrop,
     launcher,
     panel,
   ]);
-
-  /* Sheet nejen na úzké obrazovce, ale i na nízké: telefon na šířku má
-     760 px šířky a 360 px výšky, takže by spadl do desktopové větve
-     a plovoucí panel by z něj vylezl nahoře i dole. */
-  const sheet = window.matchMedia("(width < 768px), (height < 560px)");
 
   /** Vykreslí uzel: odpověď do vlákna, nabídky pod něj. */
   function goTo(id, chosenLabel) {
@@ -162,10 +151,6 @@ export function renderAssistant() {
      `max-height: 78svh` ho nezastaví: na okně 1000×700 vylezl 15 px nad
      horní hranu a s ním i zavírací křížek. */
   function sizePanel() {
-    if (sheet.matches) {
-      root.style.removeProperty("--assistant-panel-max");
-      return;
-    }
     // Měří se od spodní kotvy kontejneru, ne od spouštěče: ten je při
     // otevřeném panelu `display: none` a jeho rámeček by byl nulový.
     const breathingRoom = 16;
@@ -174,10 +159,10 @@ export function renderAssistant() {
     root.style.setProperty("--assistant-panel-max", `${Math.max(240, available)}px`);
   }
 
-  /* Na nízkém okně se všechny nabídky nevejdou — na telefonu na šířku jsou
-     ze šesti vidět dvě. Seznam scrolluje, ale to nikdo nepozná, dokud to
-     nezkusí, takže se dole rozsvítí stínítko a zhasne na konci seznamu.
-     CSS samo o sobě přetečení nezjistí, proto to řeší JS. */
+  /* Na nízkém okně se všechny nabídky nevejdou — z devíti uzlů FAQ jsou
+     vidět tři. Seznam scrolluje, ale to nikdo nepozná, dokud to nezkusí,
+     takže se dole rozsvítí stínítko a zhasne na konci seznamu. CSS samo
+     o sobě přetečení nezjistí, proto to řeší JS. */
   function markScrollable() {
     const more = choices.scrollHeight - choices.clientHeight - choices.scrollTop > 4;
     choices.classList.toggle("has-more", more);
@@ -185,27 +170,10 @@ export function renderAssistant() {
 
   choices.addEventListener("scroll", markScrollable, { passive: true });
 
-  function focusables() {
-    return [...panel.querySelectorAll("button, a[href]")].filter(
-      (node) => !node.hidden && node.offsetParent !== null
-    );
-  }
-
   function setOpen(open) {
-    const modal = open && sheet.matches;
-
     root.dataset.open = String(open);
     panel.hidden = !open;
     launcher.setAttribute("aria-expanded", String(open));
-
-    // Modální jen v režimu sheetu. Na desktopu panel nic nezakrývá, takže
-    // by `aria-modal` čtečce lhalo, že zbytek stránky není k dispozici.
-    if (modal) panel.setAttribute("aria-modal", "true");
-    else panel.removeAttribute("aria-modal");
-
-    // Zámek scrollu jen u sheetu — jinak by se stránka pod plovoucím
-    // panelem na desktopu bezdůvodně zasekla.
-    document.documentElement.classList.toggle("assistant-locked", modal);
 
     if (open) {
       sizePanel();
@@ -223,37 +191,10 @@ export function renderAssistant() {
 
   launcher.addEventListener("click", () => setOpen(root.dataset.open !== "true"));
   close.addEventListener("click", () => setOpen(false));
-  backdrop.addEventListener("click", () => setOpen(false));
 
   root.addEventListener("keydown", (event) => {
     if (root.dataset.open !== "true") return;
-
-    if (event.key === "Escape") {
-      setOpen(false);
-      return;
-    }
-
-    // Fokus se zamyká jen když je panel modální. Bez toho by tabulátor
-    // na telefonu odešel za překryv, do obsahu, na který se nedá kliknout.
-    if (event.key !== "Tab" || !sheet.matches) return;
-    const items = focusables();
-    if (items.length === 0) return;
-    const first = items[0];
-    const last = items[items.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  });
-
-  // Otočení telefonu nebo přechod přes 768 px mění režim — otevřený panel
-  // by jinak zůstal modální na desktopu nebo naopak.
-  sheet.addEventListener("change", () => {
-    if (root.dataset.open === "true") setOpen(true);
+    if (event.key === "Escape") setOpen(false);
   });
 
   // Změna velikosti okna mění, kolik místa nad spouštěčem zbývá.
@@ -268,11 +209,12 @@ export function renderAssistant() {
   return root;
 }
 
-/* Pod 1280 px se ukazatel tempa překlápí do vodorovného proužku u spodní
-   hrany, kde by si s průvodcem sedly na sebe. Zvednutí se proto MĚŘÍ, ne
-   hádá: napevno zapsaná hodnota (7,5rem) byla o 40 px menší než skutečná
-   výška proužku a na 390 px se překrývaly. ResizeObserver to drží i když
-   proužek zalomí popisky na jiný počet řádků. */
+/* Mezi 768 a 1280 px je průvodce vidět, ale ukazatel tempa je už
+   překlopený do vodorovného proužku u spodní hrany, kde by si s ním sedly
+   na sebe. Zvednutí se proto MĚŘÍ, ne hádá: napevno zapsaná hodnota
+   (7,5rem) byla o 40 px menší než skutečná výška proužku a překrývaly se.
+   ResizeObserver to drží i když proužek zalomí popisky na jiný počet
+   řádků. */
 function keepClearOfMeter(assistant) {
   const meter = $("[data-hrm]");
   if (!meter) return;
@@ -297,7 +239,9 @@ function keepClearOfMeter(assistant) {
   sync();
 }
 
-/** Vloží průvodce do slotu. Jedno volání na stránku, až po ukazateli. */
+/** Vloží průvodce do slotu. Jedno volání na stránku, až po ukazateli.
+ *  Na malé obrazovce ho skryje CSS — nemontuje se tu podmíněně, aby
+ *  hranice viditelnosti byla zapsaná na jediném místě. */
 export function mountAssistant() {
   const slot = $("[data-assistant-slot]");
   if (!slot) return;
