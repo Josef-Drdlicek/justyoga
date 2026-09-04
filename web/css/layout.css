@@ -4,7 +4,18 @@
    `min-width: 768px` for desktop and up, `width < 768px` for below.
    `max-width: 768px` is never used — it would overlap the first. */
 
-/* ==== Header ========================================================= */
+/* ==== Header =========================================================
+
+   ⚠️ Navigace má vlastní breakpoint 1180 px, ne 768 px jako zbytek webu.
+   Není to breakpoint layoutu, ale odpověď na otázku „vejde se sedm
+   položek vedle loga do jednoho řádku?". Klientka chce v menu plný název
+   „Tabata, HIIT a kruhový trénink" a s ním potřebuje řádek 1108 px
+   (změřeno: logo + seznam + tlačítko Rezervovat). Pod 1180 px menu drží
+   tlačítko. Stejná povaha výjimky jako 1280 px u ukazatele tempa.
+
+   Tím se zároveň spravila starší chyba: na 768–1023 px se vodorovné menu
+   zapínalo, ale do řádku se nevešlo ani se starými popisky, takže
+   hlavička přetékala do šířky. */
 
 .header {
   position: sticky;
@@ -40,17 +51,9 @@
   gap: var(--space-4);
 }
 
-/* Dva popisky jedné položky, přepínané rozvržením menu. Ve vodorovném
-   řádku jde krátký, v panelu pod sebou plný — plný název by řádek utáhl
-   na 789 px a hlavička by přetékala do šířky všude pod 1440 px (změřeno).
-   Skrytý popisek je display:none, takže ho čtečka nepřečte dvakrát. */
-.nav__label--full {
-  display: none;
-}
-
 /* Předěl mezi nabídkou lekcí a stránkami webu. Vlasová linka, ne mezera:
    samotná mezera se v řádku ztratí a obě skupiny splynou v jeden seznam. */
-@media (min-width: 768px) {
+@media (min-width: 1180px) {
   .nav__item--divide {
     margin-left: var(--space-1);
     padding-left: var(--space-4);
@@ -58,7 +61,7 @@
   }
 }
 
-@media (width < 768px) {
+@media (width < 1180px) {
   .nav__item--divide {
     border-top-width: 1px;
     border-top-color: var(--color-border);
@@ -70,7 +73,7 @@
   padding-block: var(--space-2);
   color: var(--color-text);
   font-size: var(--text-sm);
-  /* Bez tohohle se „Tabata a HIIT" i „Rozvrh a ceník" lámou na dva řádky
+  /* Bez tohohle se „Tabata, HIIT a kruhový trénink" láme na dva řádky
      a z vodorovného menu je dvouřádková mřížka. */
   white-space: nowrap;
   font-weight: 700;
@@ -101,7 +104,7 @@
   display: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1180px) {
   .nav__panel {
     display: flex;
     align-items: center;
@@ -109,7 +112,7 @@
   }
 }
 
-@media (width < 768px) {
+@media (width < 1180px) {
   .nav__toggle {
     display: flex;
     flex-direction: column;
@@ -166,15 +169,6 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-  }
-
-  /* V panelu stojí položky pod sebou, takže se plný název vejde. */
-  .nav__label--full {
-    display: inline;
-  }
-
-  .nav__label--short {
-    display: none;
   }
 
   .nav__item + .nav__item {
@@ -1237,17 +1231,33 @@
     --container: min(76rem, 100vw - 26rem);
     --container-wide: min(88rem, 100vw - 26rem);
   }
+
+  /* Hlavička z toho ustupování ven. Panel se drží uprostřed výšky okna,
+     takže se s lepivou hlavičkou nikdy nepotká — a zúžená hlavička brala
+     navigaci 416 px, které pro plný název položek potřebuje. */
+  .has-meter .header .shell--wide {
+    --container-wide: 88rem;
+  }
 }
 
 .hrm {
   position: fixed;
   right: clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem);
-  top: 50%;
-  translate: 0 -50%;
+  /* Střed se počítá z pásma POD hlavičkou, ne z celého okna. Prosté
+     `top: 50%` fungovalo, dokud hlavička končila 416 px před pravým
+     krajem — pak panel překrýval jen prázdné pozadí. Od chvíle, kdy
+     navigace zabírá celou šířku, by na nízkém okně (do ~560 px výšky)
+     sedl přes tlačítko Rezervovat. Dvě protilehlé hodnoty a `margin:
+     auto` panel vycentrují a zároveň mu zakážou vylézt nad hlavičku;
+     na běžně vysokém okně je posun proti půlce okna asi 36 px. */
+  top: calc(4.5rem + var(--space-3));
+  bottom: var(--space-3);
+  height: fit-content;
+  margin-block: auto;
   z-index: var(--z-sticky);
   width: 10.5rem;
   padding: var(--space-4);
-  margin: 0;
+  margin-inline: 0;
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-hairline);

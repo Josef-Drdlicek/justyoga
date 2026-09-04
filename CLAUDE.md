@@ -154,10 +154,18 @@ web/
   `min-width: 768px` pro desktop a výš, `width < 768px` pro nižší.
   `max-width: 768px` se nepoužívá — přesahoval by s prvním a na šířce
   přesně 768px platily oba.
-  Výjimka: **1280px u ukazatele tempa.** Není to breakpoint layoutu, ale
-  odpověď na otázku „vejde se vedle obsahu svislý panel?". Pod ním se
-  ukazatel překlopí do vodorovného proužku dole. Druhou výjimkou je 480px
-  uvnitř toho proužku. Jinam se breakpoint nepřidává.
+  Výjimky jsou tři a všechny odpovídají na otázku „vejde se to sem?",
+  ne na „jak má vypadat rozvržení":
+  - **1280px u ukazatele tempa** — „vejde se vedle obsahu svislý panel?".
+    Pod ním se ukazatel překlopí do vodorovného proužku dole.
+  - **480px uvnitř toho proužku.**
+  - **1180px u navigace** — „vejde se sedm položek vedle loga do řádku?".
+    Klientka chce v menu plný název „Tabata, HIIT a kruhový trénink"
+    a s ním potřebuje řádek 1108px (změřeno). Pod 1180px drží menu
+    tlačítko. Zavedeno 4. 9. 2026; spravilo to zároveň starší chybu, kdy
+    se na 768–1023px vodorovné menu zapínalo, ale do řádku se nevešlo.
+
+  Jinam se breakpoint nepřidává.
 - **Obsah je reálný**, stažený z justyoga.cz. Neověřené údaje jsou označené
   (viz Pasti v datech).
 

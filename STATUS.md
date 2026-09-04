@@ -63,6 +63,30 @@ Po připomínkách klientky (e-mail ze 4. 9. 2026) přibylo:
 - **Krok 01** a dvě odpovědi ve FAQ (začátečník, rezervace) podle jejího
   znění.
 
+### Menu říká plný název kondičních lekcí (4. 9. 2026)
+Klientka chce v menu „Tabata, HIIT a kruhový trénink", ne zkratku. Sedm
+položek s tímhle názvem potřebuje vedle loga řádek 1108 px (změřeno), což
+si vyžádalo dvě změny:
+
+- **Navigace má vlastní breakpoint 1180 px.** Pod ním drží menu tlačítko.
+  Třetí a poslední výjimka z pravidla „jediný breakpoint 768" — zapsaná
+  i v `CLAUDE.md`.
+- **Hlavička neustupuje ukazateli tempa.** `.has-meter` zužoval kontejner
+  o 26 rem na celé stránce; hlavička z toho vypadla, protože panel se drží
+  uprostřed výšky a nikdy se s ní nepotká. Vrátilo to navigaci 416 px.
+- **Ukazatel tempa se centruje v pásmu pod hlavičkou**, ne v celém okně.
+  Bez toho by na nízkém okně (do ~560 px výšky) sedl přes tlačítko
+  Rezervovat, protože navigace teď sahá až k pravému kraji.
+
+Spravila se tím i starší chyba: na 768–1023 px se vodorovné menu zapínalo,
+ale do řádku se nevešlo ani se starými popisky, takže hlavička přetékala
+do šířky.
+
+⚠️ Zbývá jediný nepokrytý případ: okno vyšší než 1280 px a nižší než
+~440 px (např. 1920×420). Ukazatel tempa je 404 px vysoký, takže se pod
+hlavičku nevejde. Navigace tam do jeho sloupce nesahá, takže nic
+nepřekrývá — jen panel přeteče z okna.
+
 ### Generátor letáků (`web/letak.html`)
 Interní nástroj pro klientku: vyplní formulář, vidí živý náhled v přesných
 rozměrech a vytiskne. PDF dělá tiskový dialog prohlížeče, takže tu není
