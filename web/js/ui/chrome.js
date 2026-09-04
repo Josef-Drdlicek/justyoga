@@ -120,6 +120,17 @@ export function renderHeader() {
     toggle.focus();
   });
 
+  /* Klepnutí mimo panel zavírá. Bez toho se z otevřeného menu na telefonu
+     nedá odejít jinak než výběrem odkazu: Escape tam není a křížek je
+     jediný terč, na který se dá klepnout. Poslouchá se `pointerdown`, ne
+     `click` — iOS Safari `click` z prvků bez kurzoru na dokument
+     nepropustí a zavírání by na iPhonu mlčelo. */
+  document.addEventListener("pointerdown", (event) => {
+    if (toggle.getAttribute("aria-expanded") !== "true") return;
+    if (nav.contains(event.target)) return;
+    setOpen(false);
+  });
+
   // Following a link inside the panel navigates; closing first keeps the
   // state clean for browsers that restore the page from bfcache.
   $$("a", panel).forEach((link) => link.addEventListener("click", () => setOpen(false)));
