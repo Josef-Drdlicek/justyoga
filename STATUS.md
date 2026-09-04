@@ -59,6 +59,48 @@ klientka redesign neuvidí.
 6. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
+### 2026-09-04 — průvodce zmizel z mobilu, menu se zavírá klepnutím mimo
+Dvě opravy z uživatelské zpětné vazby, každá samostatný commit na
+`redesign-2026`.
+
+**Průvodce („Poradím vám") se na malé obrazovce nezobrazuje vůbec.**
+Rozhodnutí uživatele: na telefonu je na rozcestník ze čtyř kliknutí příliš
+málo místa. Skrývá se celý kontejner (`display: none`), takže prvek
+zmizí i z pořadí tabulátoru a ze stromu pro čtečky — na telefonu není na
+co narazit. Podmínka je ta samá, na které se dřív panel překlápěl do
+bottom sheetu, **včetně nízkého okna**: `(width < 768px), (height < 560px)`.
+Bez druhé části by telefon na šířku (844×390) spadl do desktopové větve
+a plovoucí panel by vylezl nad horní hranu.
+
+Tím se celá sheetová větev stala mrtvým kódem, takže **je odstraněná** —
+CSS blok bottom sheetu, `.assistant-locked`, `.assistant__backdrop`, a v JS
+modální režim, zámek scrollu, zamykání fokusu a `aria-modal`. Panel je teď
+vždy nemodální, což odpovídá tomu, že nic nezakrývá. Dohromady −157 řádků.
+
+⚠️ **Trade-off, který uživatel zná a přijal:** podle vlastních poznámek
+projektu chodí většina návštěvníků z mobilu, takže průvodce teď obsluhuje
+menší část publika. Kdyby se to mělo vrátit, sheet je v historii
+u commitu `66b80e5`.
+
+**Mobilní menu se nedalo zavřít klepnutím mimo.** Zavíralo se jen křížkem,
+Escapem (na telefonu nedosažitelným) nebo výběrem odkazu — návštěvník
+z otevřeného menu neodešel, dokud si nevybral. Doplněn `pointerdown` na
+dokumentu, který zavře, když klepnutí padne mimo `<nav>`.
+`pointerdown`, ne `click`: iOS Safari `click` z prvků bez kurzoru na
+dokument nepropustí a zavírání by na iPhonu mlčelo.
+
+Naměřeno headless Chromem (diagnostická stránka v iframu):
+
+```
+průvodce  390×844 display=none   844×390 display=none
+          900×1000 display=grid  1440×900 display=grid
+panel     otevřen na 900/1440/1000×700, vždy uvnitř viewportu, fokus
+          na první nabídce
+menu 390  výchozí none → toggle block → klepnutí mimo none
+          → toggle znovu block → toggle none
+          → klepnutí DOVNITŘ panelu zůstává block
+```
+
 ### 2026-09-03 (2. dávka) — tepometr zpět, čitelný rozvrh, novinky, průvodce
 Devět commitů na `redesign-2026`, `main` netknutý.
 
