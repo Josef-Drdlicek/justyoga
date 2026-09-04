@@ -232,8 +232,19 @@
 
 .hero__lede {
   max-width: var(--measure-narrow);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-3);
   font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-muted);
+}
+
+/* Návod k ukazateli tempa. Je to poznámka pod hlavním odstavcem, ne druhá
+   perex — proto menší stupeň a stejná tlumená hodnota jako popisky, aby
+   nesoutěžila s tlačítky pod sebou. */
+.hero__note {
+  max-width: var(--measure-narrow);
+  margin-bottom: var(--space-6);
+  font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
   color: var(--color-text-muted);
 }
@@ -1160,21 +1171,6 @@
 .zone__cards {
   display: grid;
   gap: var(--space-5);
-}
-
-/* ==== Bridge =========================================================
-   The client's explanation of why the meter started moving. It is one
-   paragraph and it is set like a pull quote, because that is its job on
-   the page — to be read, not skimmed past. */
-
-.bridge__text {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-style: italic;
-  line-height: var(--leading-snug);
-  letter-spacing: var(--tracking-tight);
-  text-wrap: pretty;
 }
 
 /* ==== Rest zone (closing CTA) ======================================== */

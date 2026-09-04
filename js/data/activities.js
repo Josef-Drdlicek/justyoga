@@ -43,18 +43,21 @@ export const ACTIVITIES = [
     logoSubtitle: "+ světelná terapie",
     headline: "Najděte ztracenou rovnováhu a odhoďte každodenní stres.",
     tagline:
-      "Lekce jógy propojí váš dech s vědomým pohybem. Protáhnete ztuhlé tělo, " +
-      "posílíte hluboké svaly a odejdete s čistou hlavou. Na závěr relaxace nad " +
-      "vámi rozsvítím infrapanely s blízkým červeným světlem, které prohřeje tělo " +
-      "do hloubky a uvolní unavená záda.",
+      "Dovolte si vypnout, uvolnit se a nechte nervový systém přepnout z výkonu " +
+      "do klidu. V závěru praxe vás čeká novinka ve studiu: červená světelná " +
+      "terapie ve vedené závěrečné relaxaci pod červeným a blízkým infračerveným " +
+      "světlem. Teplé, tlumené spektrum vytváří pocit bezpečí, dobije baterky vám " +
+      "i buňkám, podpoří hluboké zklidnění a pomůže tělu přepnout do „nočního " +
+      "režimu“. Mysl se utiší, tělo regeneruje, nervový systém se harmonizuje. " +
+      "Naplní vás pocit lehkosti a radosti. Nechte se hýčkat.",
     benefits: [
       "Protažení ztuhlého těla a posílení hlubokých svalů",
       "Světelná terapie při závěrečné relaxaci",
       "Klidná hlava a nová energie do dalších dní",
     ],
     durationMinutes: 75,
-    pricePerLesson: 210,
-    passPrice: 1900,
+    pricePerLesson: 230,
+    passPrice: 2100,
     passLessons: 10,
     capacity: 10,
     venueId: "studio",
