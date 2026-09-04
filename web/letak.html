@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Generátor letáků – interní nástroj</title>
+    <!-- Interní nástroj: z indexu ven. robots.txt drží Disallow: / pro celý
+         náhled, tohle platí i po nasazení, až se Disallow zruší. -->
+    <meta name="robots" content="noindex, nofollow" />
+
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" />
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/letak.css" />
+
+    <!-- @page se mění s formátem, viz setPageSize() v js/pages/letak.js -->
+    <style data-page-size>
+      @page { size: A4 portrait; margin: 0; }
+    </style>
+
+    <script type="module" src="js/pages/letak.js"></script>
+  </head>
+
+  <body class="letak-page">
+    <!-- Brána ----------------------------------------------------------
+         ⚠️ Není to zabezpečení, jen zámek proti omylu. Vysvětlení a cesta
+         ke skutečné ochraně jsou v komentáři v js/lib/gate.js. -->
+    <div class="gate" data-gate>
+      <form class="gate__card" data-gate-form>
+        <img
+          class="gate__logo"
+          src="assets/images/logo-just-yoga-wide.png"
+          alt="Just Yoga"
+          width="2074"
+          height="751"
+        />
+        <h1 class="gate__title">Generátor letáků</h1>
+        <p class="gate__lede">Interní nástroj. Zadejte prosím heslo.</p>
+        <label class="gate__field">
+          <span>Heslo</span>
+          <input type="password" name="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit" class="btn btn--primary btn--block">Odemknout</button>
+        <p class="gate__status" data-gate-status role="status"></p>
+      </form>
+    </div>
+
+    <!-- Nástroj --------------------------------------------------------- -->
+    <div class="tool" data-app hidden tabindex="-1">
+      <header class="tool__bar">
+        <h1 class="tool__title">Generátor letáků</h1>
+        <div class="tool__actions">
+          <button type="button" class="btn btn--ghost" data-lock>Zamknout</button>
+          <button type="button" class="btn btn--primary" data-print>Vytisknout / uložit PDF</button>
+        </div>
+      </header>
+
+      <div class="tool__body">
+        <form class="tool__form" data-flyer-form>
+          <fieldset class="fieldset">
+            <legend>Formát a předloha</legend>
+
+            <div class="radios">
+              <label><input type="radio" name="format" value="a4" checked /><span>A4</span></label>
+              <label><input type="radio" name="format" value="a5" /><span>A5</span></label>
+            </div>
+
+            <label class="field">
+              <span>Předvyplnit lekcí z rozvrhu</span>
+              <select name="preset">
+                <option value="">Vlastní leták</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend>Text</legend>
+
+            <label class="field">
+              <span>Nadkuk (malý řádek nahoře)</span>
+              <input type="text" name="eyebrow" value="Boskovice" />
+            </label>
+
+            <label class="field">
+              <span>Nadpis – první řádek (kurziva)</span>
+              <input type="text" name="titleMain" value="Pohyb, který si" />
+            </label>
+
+            <label class="field">
+              <span>Nadpis – druhý řádek (zvýrazněný)</span>
+              <input type="text" name="titleAccent" value="dávkujete sami" />
+            </label>
+
+            <label class="field">
+              <span>Perex</span>
+              <textarea name="lede" rows="3">
+Jóga se světelnou terapií, jumping na trampolínách, tabata, HIIT a kruhový trénink v Boskovicích. Tempo si určujete sami.</textarea
+              >
+            </label>
+
+            <label class="field">
+              <span>Odrážky (jedna na řádek)</span>
+              <textarea name="bullets" rows="4">
+U každého cviku ukážu lehčí i těžší variantu
+Malá skupina, na každého si udělám čas
+Podložky a pomůcky máte na místě</textarea
+              >
+            </label>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend>Údaje</legend>
+
+            <label class="field">
+              <span>Kdy</span>
+              <input type="text" name="when" value="" />
+            </label>
+
+            <label class="field">
+              <span>Kde</span>
+              <input type="text" name="where" value="" />
+            </label>
+
+            <label class="field">
+              <span>Cena</span>
+              <input type="text" name="price" value="" />
+            </label>
+
+            <label class="field">
+              <span>Poznámka dole (volitelné)</span>
+              <input type="text" name="footnote" value="" />
+            </label>
+
+            <label class="check">
+              <input type="checkbox" name="showContact" checked />
+              <span>Vytisknout kontaktní patičku</span>
+            </label>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend>Fotka</legend>
+            <div class="picker" data-image-choices></div>
+            <label class="field">
+              <span>Nebo vlastní soubor</span>
+              <input type="file" accept="image/*" data-image-upload />
+            </label>
+          </fieldset>
+        </form>
+
+        <div class="preview" data-preview>
+          <p class="preview__hint">
+            Náhled je zmenšený, tiskne se v plné velikosti. V tiskovém dialogu
+            zvolte „Uložit jako PDF“ a vypněte záhlaví a zápatí prohlížeče.
+          </p>
+          <div class="stage" data-stage></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
