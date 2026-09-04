@@ -189,14 +189,6 @@ export function renderZones(zones, activities) {
   return zones.map((zone) => renderZone(zone, activities));
 }
 
-/* The "bridge": the client asked for this text exactly where the meter
-   first speeds up, as the explanation of why it started moving. */
-export function renderBridge(text) {
-  return el("div", { class: "shell shell--narrow" }, [
-    el("p", { class: "bridge__text", text }),
-  ]);
-}
-
 /* Closing zone. No lessons of its own — it is where the meter settles. */
 export function renderRestZone(zone) {
   return el(
@@ -495,7 +487,7 @@ export function renderVideos(videos) {
 export const FIRST_VISIT_STEPS = [
   {
     title: "Vyberte si lekci",
-    text: "V rozvrhu najdete, co se kdy cvičí. Když si nejste jistí, začněte jógou nebo kruhovým tréninkem — u obou si tempo určujete sami.",
+    text: "V rozvrhu najdete, co se kdy a kde cvičí. Tempo si určujete sami.",
   },
   {
     title: "Rezervujte si místo",

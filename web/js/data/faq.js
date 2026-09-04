@@ -17,8 +17,9 @@ export const FAQ = [
       "Zvládnete. Jóga pro začátečníky u mě nezačíná dokonalou pozicí, ale tím, " +
       "že vám u každého cviku i ásany ukážu snazší i pokročilejší variantu. " +
       "Každou lekci přizpůsobuji tomu, kdo na ni zrovna přijde, a tempo si " +
-      "určujete vždy vy sami – necvičíte proti nikomu jinému. Na jumping ani " +
-      "na kruhový trénink nemusíte přijít v kondici, přijdete si ji vybudovat.",
+      "určujete vždy vy sami – necvičíte proti nikomu jinému. Na jumping, HIIT, " +
+      "tabatu ani na kruhový trénink nemusíte přijít v kondici, přijdete si ji " +
+      "vybudovat.",
   },
   {
     question: "Bolí mě záda ze sezení. Můžu na jógu?",
@@ -52,9 +53,8 @@ export const FAQ = [
     question: "Jak si rezervuji lekci?",
     answer:
       "U každé lekce v rozvrhu je tlačítko do rezervačního systému – vyberete si " +
-      "termín a rezervujete místo online. Potvrzení vám přijde hned po rezervaci. " +
-      "Rezervujte si místo raději dřív, kapacita lekcí je omezená a lekce bývají " +
-      "plné.",
+      "termín a rezervujete místo. Rezervujte si místo raději dřív, kapacita " +
+      "lekcí je omezená a lekce bývají plné.",
   },
   {
     question: "Co když se nakonec nemůžu dostavit?",

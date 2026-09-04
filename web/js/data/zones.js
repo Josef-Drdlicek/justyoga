@@ -103,14 +103,6 @@ export const REST_ZONE = {
   text: "Vyberte si tempo, které dnes potřebujete.",
 };
 
-/* „Most" — vysvětlení, proč se tepometr vlastně dal do pohybu. Klientka ho
-   chtěla přesně sem: hned za klidovou zónou, ve chvíli, kdy se kolečko
-   poprvé zrychlí. */
-export const BRIDGE_TEXT =
-  "Většina studií má jen jedno tempo. Já věřím, že tělo potřebuje klid " +
-  "i výkon — jen ne vždycky ve stejný den. Zpomalte dech na józe, nebo " +
-  "zvyšte tepovku na jumpingu a HIITu. Najděte svůj balanc v jakémkoli rytmu.";
-
 /** Do které zóny lekce patří. Vazba je jen tady, aktivity o zónách nevědí. */
 export function zoneForActivity(activityId) {
   return ZONES.find((zone) => zone.activityIds.includes(activityId)) ?? null;

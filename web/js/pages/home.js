@@ -16,7 +16,6 @@ import {
   renderFollow,
   renderSteps,
   renderZone,
-  renderBridge,
   renderRestZone,
   FIRST_VISIT_STEPS,
 } from "../ui/sections.js";
@@ -25,7 +24,7 @@ import { mountAssistant } from "../ui/assistant.js";
 import { ACTIVITIES } from "../data/activities.js";
 import { FAQ } from "../data/faq.js";
 import { NEWS } from "../data/news.js";
-import { ZONES, REST_ZONE, BRIDGE_TEXT } from "../data/zones.js";
+import { ZONES, REST_ZONE } from "../data/zones.js";
 
 mountChrome();
 
@@ -39,8 +38,6 @@ for (const zone of ZONES) {
   const slot = $(`[data-zone-${zone.id}]`);
   if (slot) slot.replaceWith(renderZone(zone, ACTIVITIES));
 }
-
-mount("[data-bridge]", () => renderBridge(BRIDGE_TEXT));
 
 const restSlot = $("[data-zone-rest]");
 if (restSlot) restSlot.replaceWith(renderRestZone(REST_ZONE));
