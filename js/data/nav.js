@@ -16,12 +16,24 @@
    „Rozvrh", ne „Rozvrh a ceník": se sedmi položkami se delší popisek do
    řádku nevešel (změřeno) a cílová stránka má obojí v nadpisu.
 
+   `shortLabel` je z toho samého důvodu. Plný název „Tabata, HIIT
+   a kruhový trénink" chce klientka vidět v menu, ale ve vodorovném řádku
+   utáhne seznam na 789 px a hlavička začne přetékat do šířky všude pod
+   1440 px (změřeno na 768 / 900 / 1024 / 1280). V rozbaleném panelu na
+   telefonu, kde položky stojí pod sebou, se plný název vejde bez potíží,
+   takže tam jde plný a v řádku zkrácený — viz .nav__label v layout.css.
+
    Odkazy na Instagram a Facebook v menu NEJSOU. Odkaz ven mezi sedmi
    odkazy dovnitř webu je nabídka, aby návštěvník odešel dřív, než najde
    rozvrh. Sítě žijí v sekci Novinky, na kontaktu a v patičce. */
 export const NAV_ITEMS = [
   { label: "Jóga", href: "index.html#joga", group: "lessons" },
-  { label: "Tabata a HIIT", href: "index.html#tabata", group: "lessons" },
+  {
+    label: "Tabata, HIIT a kruhový trénink",
+    shortLabel: "Tabata a HIIT",
+    href: "index.html#tabata",
+    group: "lessons",
+  },
   { label: "Jumping", href: "index.html#jumping", group: "lessons" },
   { label: "Rozvrh", href: "rozvrh-cenik.html", group: "pages" },
   { label: "Novinky", href: "index.html#novinky", group: "pages" },

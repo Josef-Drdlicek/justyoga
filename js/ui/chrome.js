@@ -34,15 +34,29 @@ function navLink(item, here) {
   // porovnával jen soubor, byly by na homepage aktuální všechny tři
   // odkazy na lekce naráz, protože všechny míří na index.html.
   const isCurrent = !item.href.includes("#") && normalisePath(item.href) === here;
+  // Položka s `shortLabel` nese oba popisky a přepíná je CSS podle toho,
+  // jestli menu stojí ve vodorovném řádku, nebo pod sebou v panelu.
+  // Čtečka i tak přečte jen jeden: ten skrytý je `display: none`.
+  const label = item.shortLabel
+    ? [
+        el("span", { class: "nav__label nav__label--full", text: item.label }),
+        el("span", { class: "nav__label nav__label--short", text: item.shortLabel }),
+      ]
+    : item.label;
+
   return el("li", { class: "nav__item" }, [
-    el("a", {
-      class: "nav__link" + (isCurrent ? " is-current" : ""),
-      href: item.href,
-      text: item.label,
-      // aria-current marks the page for screen readers; the class only
-      // paints it. Both, or a sighted-only cue is all anyone gets.
-      "aria-current": isCurrent ? "page" : null,
-    }),
+    el(
+      "a",
+      {
+        class: "nav__link" + (isCurrent ? " is-current" : ""),
+        href: item.href,
+        text: typeof label === "string" ? label : null,
+        // aria-current marks the page for screen readers; the class only
+        // paints it. Both, or a sighted-only cue is all anyone gets.
+        "aria-current": isCurrent ? "page" : null,
+      },
+      typeof label === "string" ? [] : label
+    ),
   ]);
 }
 
