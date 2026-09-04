@@ -41,22 +41,79 @@ Po první dávce přibylo:
 - **Menu má sedm položek** ve dvou skupinách: nabídka lekcí (kotvy na
   homepage) a stránky webu.
 
+Po připomínkách klientky (e-mail ze 4. 9. 2026) přibylo:
+- **Nový úvodní odstavec.** Text „Většina studií má jen jedno tempo…"
+  se přesunul z „mostu" do hera a rozšířil se o tabatu a kruhový trénink.
+  Původní perex („Vedu jógu se světelnou terapií…") klientka škrtla.
+- **Most zrušen.** Sekce mezi klidovou zónou a zónou rytmu držela právě ten
+  jeden odstavec; po přesunu do hera by se text na stránce opakoval dvakrát.
+  Odešel s ní `BRIDGE_TEXT`, `renderBridge()` i `.bridge__text`.
+  ⚠️ Klientka o zrušení nepsala, plyne to z přesunu — **nechat potvrdit.**
+- **Návod k ukazateli tempa** jako `.hero__note` pod perexem. Klientka psala
+  „pásek dole", ale nad 1280 px je to svislý panel u pravého okraje, ne
+  pásek — formulace je proto nezávislá na rozvržení („Ukazatel tempa…").
+- **Text jógy** přepsaný podle jejího znění (světelná terapie ve vedené
+  závěrečné relaxaci). Emoji a verzálky vypuštěny, „Vám" na „vám", opraveno
+  „pomuže télu".
+- **Časy v rozvrhu** podle nového znění: pondělí 17:00–18:00 jumping
+  a 18:30–19:30 tabata, středa 16:45–18:00 jóga, 17:00–18:00 jumping,
+  18:30–19:30 tabata. Úterý a čtvrtek beze změny.
+- **Cena jógy** 230 Kč za lekci, permanentka 2100 Kč (bylo 210 / 1900).
+  Jumping a kondiční lekce klientka nekomentovala, zůstávají.
+- **Krok 01** a dvě odpovědi ve FAQ (začátečník, rezervace) podle jejího
+  znění.
+
+### Generátor letáků (`web/letak.html`)
+Interní nástroj pro klientku: vyplní formulář, vidí živý náhled v přesných
+rozměrech a vytiskne. PDF dělá tiskový dialog prohlížeče, takže tu není
+žádná knihovna a text v PDF zůstává vektorový (jsPDF by kvůli české
+diakritice musel embedovat font).
+
+- **Formát A4 i A5**, jeden násobitel `--s` drží obě velikosti v poměru.
+  `@page` se přepisuje z JS — nejde nastavit třídou.
+- **Předvyplnění z `js/data/`**: výběr lekce natáhne nadpis, perex,
+  odrážky, časy z rozvrhu, adresu z `venues.js` a cenu. Leták tak nemůže
+  uvést jiný čas ani cenu než web.
+- **Fotka** z galerie webu nebo vlastní soubor (FileReader, zůstává
+  v prohlížeči, nikam se neodesílá — nástroj nemá server).
+- **Ověřeno přes CDP**: A4 = 210×297 mm, A5 = 148×210 mm, tisk dá
+  jednostránkové PDF, konzole bez chyb.
+
+⚠️ **Brána heslem NENÍ zabezpečení.** Stránka se stáhne dřív, než se
+kdokoli zeptá na heslo — kdo otevře zdroj, obsah uvidí. Heslo je uložené
+jako PBKDF2-SHA256 otisk (250 000 iterací), takže se rychle nezlomí, ale
+skutečná ochrana patří na server: basic auth (`.htpasswd` / `auth_basic`)
+nebo Cloudflare Access před cestou `/letak`. Viz komentář v
+`js/lib/gate.js`. Výchozí heslo: **justyoga2026** — před předáním změnit.
+
+⚠️ **Stránka není v `nav.js` a má `noindex, nofollow`.** Při nasazení ji
+nepřidávat do menu ani do sitemapy.
+
 `main` drží poslední klientkou schválený stav a nesahá se na něj, dokud
 klientka redesign neuvidí.
 
 ## Next steps
+0. **Potvrdit zrušení „mostu"** — viz výš. Je to jediná změna ze 4. 9.,
+   kterou klientka nezadala přímo.
 1. **Ukázat klientce** a získat souhlas se třemi odchylkami od brandbooku:
    Fraunces místo Raleway, dva stínové tokeny proti `"shadows": "none"`,
    degradace mint/žluté na značky.
 2. **Rezervační odkazy** — nejdražší tření na webu, na redesignu nezávislé.
    [ZJISTIT u klientky: umí Tymuj veřejný odkaz na kalendář nebo přímo na
    termín? Totéž u chytre-rezervace.] Dnes vedou na pozvánku do týmu.
-3. **Fakta, která blokují nasazení:** parkování, kapacita, pravidla
+3. **Hosting bez WordPressu** (rozhodnuto 4. 9. 2026) — checklist nasazení
+   v `CLAUDE.md` je psaný na WordPress a je tím z velké části neplatný:
+   Gutenberg tabulky pro rozvrh a ceník, Contact Form 7, plugin pro
+   sitemapu i tažení novinek přes WP cron padají. Nahradit rozhodnutím,
+   kam web půjde, a hlavně **čím se nahradí kontaktní formulář** (statický
+   web nemá kam poslat POST) a **jak bude klientka editovat ceník**, což
+   byla klíčová podmínka zadání.
+4. **Fakta, která blokují nasazení:** parkování, kapacita, pravidla
    odhlašování, souřadnice, věková hranice, přenosnost permanentky. Šest
    otázek ve `faq.js` na ně čeká zakomentovaných.
-4. **Reference a fotky zevnitř** — sociální důkaz na webu není ani jednou.
-5. **Měření prokliků do rezervace.** Bez něj je jakékoli další CRO slepé.
-6. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
+5. **Reference a fotky zevnitř** — sociální důkaz na webu není ani jednou.
+6. **Měření prokliků do rezervace.** Bez něj je jakékoli další CRO slepé.
+7. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
 ### 2026-09-04 — průvodce zmizel z mobilu, menu se zavírá klepnutím mimo
