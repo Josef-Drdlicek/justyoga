@@ -82,10 +82,11 @@ Spravila se tím i starší chyba: na 768–1023 px se vodorovné menu zapínalo
 ale do řádku se nevešlo ani se starými popisky, takže hlavička přetékala
 do šířky.
 
-⚠️ Zbývá jediný nepokrytý případ: okno vyšší než 1280 px a nižší než
-~440 px (např. 1920×420). Ukazatel tempa je 404 px vysoký, takže se pod
-hlavičku nevejde. Navigace tam do jeho sloupce nesahá, takže nic
-nepřekrývá — jen panel přeteče z okna.
+⚠️ Zbývá jediný nepokrytý případ: okno širší než 1280 px a nižší než
+~545 px (např. 1920×520). Panel ukazatele je 445 px vysoký (od 7. 9. 2026,
+kdy do něj přišel popisný text; dřív 404 px), takže se pod hlavičku
+nevejde a zasáhne do jejího pásma. Navigace do jeho sloupce nesahá, takže
+nic nepřekrývá — jen panel přeteče z okna. Breakpoint kvůli tomu nepřibyl.
 
 ### Generátor letáků (`web/letak.html`)
 Interní nástroj pro klientku: vyplní formulář, vidí živý náhled v přesných
@@ -113,33 +114,129 @@ nebo Cloudflare Access před cestou `/letak`. Viz komentář v
 ⚠️ **Stránka není v `nav.js` a má `noindex, nofollow`.** Při nasazení ji
 nepřidávat do menu ani do sitemapy.
 
+### Připomínky klientky ze 7. 9. 2026 (7 dávek)
+Sedm samostatných commitů, každý jedna připomínka — pořadí podle toho, jak
+je poslala.
+
+- **Dech v ukazateli tempa byl nesmysl.** Klientka: „6 dechů za minutu je
+  taky blbost." Má pravdu; 6/min je pránájámové číslo, které mimo vedené
+  dechové cvičení čte jako chyba přístroje, a 35/min bylo nad běžným
+  maximem. Nově jóga 10, restart 16, rytmus 24, maximum 30 — referencí je
+  klidová frekvence dospělého 12–18/min.
+- **Popis ukazatele je u tepu, ne v hero.** Stál v hero na homepage, tedy
+  na jedné stránce ze čtyř. Text je teď v panelu (`.hrm__note`) a nese
+  v jednom odstavci obojí: co ukazatel dělá i to, že to nejsou hodnoty
+  návštěvníka. Stránka bez zón dostane jen disclaimer.
+- **Mobilní proužek ukazatele byl rozbitý.** Klientčina formulace („zabírá
+  celou obrazovku a nejde web proklikávat") byla přesná v tom, co bolí.
+  Změřeno: 162 px, tedy 19 % obrazovky na 390×844 a 25 % na 360×640, a nic
+  mu pod 1280 px nerezervovalo místo — ležel trvale na patičce i na
+  posledním obsahu každé stránky. Jeho tlačítko na celou šířku bylo navíc
+  jediný prvek, který v proužku chytal klepnutí (zbytek má
+  `pointer-events: none`), takže na obsahu ležela neviditelná past.
+
+  Dnes: **121 px na 390 px (13 %)** a 84 px od 500 px nahoru, patička si
+  vyhradí jeho změřenou výšku (`--meter-strip`, ResizeObserver stejně jako
+  u průvodce), kotvy mají `scroll-padding-bottom`. Tlačítko se pod 1280 px
+  nezobrazuje; stejnou cestu nese CTA v každé sekci zóny i „Rezervovat"
+  v hlavičce. Na stránce bez zón (kontakt, o mně), kde se hodnoty nemají
+  podle čeho měnit, se proužek na mobilu neukáže vůbec.
+- **Vlasové linky mezi položkami lekcí v menu.** „Tabata, HIIT a kruhový
+  trénink" je vedle „Jóga" a „Jumping" tak dlouhý popisek, že se z těch
+  tří slil jeden pruh textu. Ze skupiny lekcí je tím segmentovaný
+  přepínač; stránky webu zůstávají plynulým seznamem, takže se ta dvě
+  pásma pořád liší. Vlastní třída `--split`, protože ve svislém panelu na
+  telefonu má oddělovač už každý řádek. **Vyžádalo si to posun
+  breakpointu navigace ze 1180 na 1220 px** — linky přidaly 40 px a na
+  1180 px pak hlavička přetékala o 17 px (změřeno).
+- **Rozvrh má pátek 17:00–18:15, jóga pro začátečníky.** Kurz, na
+  objednání, dá se přidat i do právě běžícího. Řádek si přebíjí jen název
+  (`label`) a přidává štítek (`badge`), délku, cenu i místo dál bere
+  z `activities.js`. Štítek je berry, ne korálová — nese text pod 24 px.
+  Věta pod rozvrhem říká, že se do rozjetého kurzu dá přidat; samotné
+  „kurz" si část lidí přeloží jako „už mi ujel".
+  **`.week` už nemá napevno čtyři sloupce** — `auto-fit` odpovídá na
+  „kolik dnů se sem vejde" bez dalšího breakpointu. Pět dnů se vejde do
+  řádku od ~1024 px; mezi 1280 a ~1400 px, kde svislý panel ukazatele
+  bere obsahu 26 rem, pátek spadne na druhý řádek.
+- **Novinky se řadí od nejnovější.** Pořadí řeší `renderNews`, ne pořadí
+  položek v datech — je to pravidlo sekce, takže se na něj nedá zapomenout
+  ani při ručním přidání položky, ani až obsah poteče z redakčního
+  systému. Položka bez data jde na konec.
+- **FAQ: dvě odpovědi jejími slovy.** „Kde lekce probíhají" se láme na dvě
+  věty (jedna dlouhá věta se dvěma místy a pěti názvy lekcí se nedala
+  přečíst na jeden nádech, a přitom záměna adres stojí zákazníka lekci).
+  „Co si mám vzít s sebou" má nové pořadí a přidaný ručník.
+- **O mně: kratší úvod.** V titulku jen „Jmenuji se Lenka", z perexu
+  odešla věta o skládání lekcí. Titulek zůstává dvoudílný (kurziva
+  Fraunces + roman v berry), zlom padl mezi „Jmenuji se" a „Lenka" — jinak
+  by na téhle stránce zmizela konstrukce, na které vzhled stojí. Vypuštěný
+  slib nezmizel z webu: nesou ho FAQ a blok „Podle vaší kondice, ne podle
+  skupiny" hned pod titulkem.
+
+⚠️ **Jedna připomínka není zapracovaná: „upravit v rozvrhu ty ':' tam
+podle češtiny."** Není jasné, co chce — časy jsou dnes `17:00–18:15`
+(dvojtečka, typografická pomlčka). Buď chce tradiční české `17.00–18.15`,
+nebo jí vadí něco jiného. Ptát se; přepsat formát naslepo znamená sáhnout
+na každý řádek rozvrhu a možná špatně.
+
 `main` drží poslední klientkou schválený stav a nesahá se na něj, dokud
 klientka redesign neuvidí.
 
 ## Next steps
-0. **Potvrdit zrušení „mostu"** — viz výš. Je to jediná změna ze 4. 9.,
+0. **Zeptat se klientky na formát časů v rozvrhu** — připomínka „upravit
+   v rozvrhu ty ':' tam podle češtiny" ze 7. 9. 2026 je jediná, která
+   zůstala nezapracovaná, protože není jasné, co chce. Dnes je
+   `17:00–18:15`.
+1. **Potvrdit zrušení „mostu"** — viz výš. Je to jediná změna ze 4. 9.,
    kterou klientka nezadala přímo.
-1. **Ukázat klientce** a získat souhlas se třemi odchylkami od brandbooku:
+2. **Ukázat klientce** a získat souhlas se třemi odchylkami od brandbooku:
    Fraunces místo Raleway, dva stínové tokeny proti `"shadows": "none"`,
    degradace mint/žluté na značky.
-2. **Rezervační odkazy** — nejdražší tření na webu, na redesignu nezávislé.
+3. **Rezervační odkazy** — nejdražší tření na webu, na redesignu nezávislé.
    [ZJISTIT u klientky: umí Tymuj veřejný odkaz na kalendář nebo přímo na
    termín? Totéž u chytre-rezervace.] Dnes vedou na pozvánku do týmu.
-3. **Hosting bez WordPressu** (rozhodnuto 4. 9. 2026) — checklist nasazení
+4. **Hosting bez WordPressu** (rozhodnuto 4. 9. 2026) — checklist nasazení
    v `CLAUDE.md` je psaný na WordPress a je tím z velké části neplatný:
    Gutenberg tabulky pro rozvrh a ceník, Contact Form 7, plugin pro
    sitemapu i tažení novinek přes WP cron padají. Nahradit rozhodnutím,
    kam web půjde, a hlavně **čím se nahradí kontaktní formulář** (statický
    web nemá kam poslat POST) a **jak bude klientka editovat ceník**, což
    byla klíčová podmínka zadání.
-4. **Fakta, která blokují nasazení:** parkování, kapacita, pravidla
+5. **Fakta, která blokují nasazení:** parkování, kapacita, pravidla
    odhlašování, souřadnice, věková hranice, přenosnost permanentky. Šest
    otázek ve `faq.js` na ně čeká zakomentovaných.
-5. **Reference a fotky zevnitř** — sociální důkaz na webu není ani jednou.
-6. **Měření prokliků do rezervace.** Bez něj je jakékoli další CRO slepé.
-7. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
+6. **Reference a fotky zevnitř** — sociální důkaz na webu není ani jednou.
+7. **Měření prokliků do rezervace.** Bez něj je jakékoli další CRO slepé.
+8. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
+### 2026-09-07 — připomínky klientky: ukazatel tempa, menu, rozvrh, texty
+Sedm samostatných commitů na `redesign-2026`, každý jedna připomínka
+z e-mailu klientky ze 7. 9. 2026. Podrobně v „Current status" výš; tady
+jen to, co stálo víc práce, než se čekalo:
+
+- **Mobilní proužek ukazatele byl skutečně rozbitý.** Měřením 162 px
+  výšky (19 % obrazovky na 390×844, 25 % na 360×640) a hlavně nulová
+  rezervace místa pod 1280 px — proužek ležel trvale na patičce
+  a posledním obsahu každé stránky. Klientčino „nejde web proklikávat"
+  mířilo na tlačítko v proužku: bylo na celou šířku a jako jediný prvek
+  chytalo klepnutí, takže na obsahu ležela neviditelná past. Dnes 121 px
+  a patička si vyhradí změřenou výšku.
+- **Linky v menu si vyžádaly posun breakpointu na 1220 px.** Přidaly
+  40 px a na 1180 px hlavička přetékala o 17 px do šířky. Zapsáno i do
+  `CLAUDE.md` s varováním „sáhnutí do menu = přeměřit".
+- **Pátý den v rozvrhu odhalil napevno zapsané čtyři sloupce.**
+  `repeat(4, 1fr)` fungovalo přesně tak dlouho, dokud se cvičilo čtyři
+  dny. Nahrazeno `auto-fit`, aby další den nevyžadoval další breakpoint.
+
+Ověřeno headless Chromem: čtyři stránky × šířky 360/390/412/500/768/1024/
+1220/1280/1440/1600 px, žádná chyba v konzoli, žádné přetečení do šířky,
+rozvrh 10 lekcí, novinky v pořadí 2026-09-01 → 2026-08-20.
+
+⚠️ Nezapracováno: „upravit v rozvrhu ty ':' tam podle češtiny" — není
+jasné, co chce. Viz Next steps 0.
+
 ### 2026-09-04 — průvodce zmizel z mobilu, menu se zavírá klepnutím mimo
 Dvě opravy z uživatelské zpětné vazby, každá samostatný commit na
 `redesign-2026`.
