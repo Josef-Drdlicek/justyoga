@@ -35,19 +35,22 @@ export const FAQ = [
   },
   {
     question: "Kde lekce probíhají? Jsou na dvou místech?",
+    // Dvě věty, ne jedna se středníkem — úprava podle klientky ze 7. 9. 2026.
     answer:
       "Ano, a před první lekcí se to vyplatí ověřit. Jóga se světelnou terapií " +
-      "je v mém studiu, jumping, tabata, HIIT i kruhový trénink v posilovně " +
-      "u základní školy o několik minut dál. Obě adresy najdete na stránce " +
-      "Kontakt v sekci Kde cvičíme, včetně tlačítka pro navigaci, a místo je " +
-      "vždy uvedené i u každé lekce v rozvrhu a v rezervačním systému.",
+      "je v mém studiu. Jumping, tabata, HIIT i kruhový trénink jsou " +
+      "v posilovně u základní školy o několik minut dál. Obě adresy najdete " +
+      "na stránce Kontakt v sekci Kde cvičíme, včetně tlačítka pro navigaci, " +
+      "a místo je vždy uvedené i u každé lekce v rozvrhu a v rezervačním " +
+      "systému.",
   },
   {
     question: "Co si mám vzít s sebou?",
+    // Pořadí i obsah podle klientky ze 7. 9. 2026 — ručník je nový.
     answer:
-      "Pohodlné sportovní oblečení, láhev s vodou a na jumping, tabatu i kruhový " +
-      "trénink čistou sportovní obuv. Podložky na jógu a všechny pomůcky máte na " +
-      "místě zdarma připravené.",
+      "Pohodlné sportovní oblečení, na jumping i kruhový trénink čistou " +
+      "sportovní obuv, láhev s vodou a ručník. Podložky na jógu a všechny " +
+      "pomůcky máte na místě zdarma připravené.",
   },
   {
     question: "Jak si rezervuji lekci?",
