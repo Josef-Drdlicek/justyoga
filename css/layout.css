@@ -1,8 +1,34 @@
 /* Page layout, section by section.
 
-   One breakpoint, two spellings that cannot both be true at 768px:
-   `min-width: 768px` for desktop and up, `width < 768px` for below.
-   `max-width: 768px` is never used — it would overlap the first. */
+   ⚠️ JEDINÝ POVOLENÝ ZÁPIS MEDIA QUERY JE `min-width`.
+
+   Ne `max-width`, ne `width < N`. Není to kosmetika, je to invariant,
+   který drží web na telefonu:
+
+   1. **Mobile-first.** Základní pravidlo (bez media query) je vždy
+      podoba pro telefon; `min-width` na širší obrazovce přidává. Když
+      pak jakýkoli dotaz selže — nepodporovaná syntaxe, cizí stylesheet
+      v šabloně, chyba při úpravě — telefon dostane MENŠÍ tvar, ne
+      větší. Opačně napsaná komponenta selže katastrofálně: ukazatel
+      tempa byl do 7. 9. 2026 desktop-first a na telefonu, který
+      `width < N` neumí, na obsah dosedl svislý panel 168×436 px, který
+      nešlo zavřít, a menu přeteklo z 375 px na 876 px (změřeno).
+   2. **`width < N` má propast v podpoře.** Je to Media Queries Level 4
+      range syntax: Safari na iOS až od 16.4, Samsung Internet až od 20,
+      globálně 94,8 %. Prohlížeč, který ji nezná, zahodí CELÝ blok.
+      U webu jóga studia, který se otevírá i ve staré aplikaci nebo na
+      starším telefonu, je každý dvacátý návštěvník moc.
+   3. **`max-width` se nepoužívá** z původního důvodu: `max-width: 768px`
+      a `min-width: 768px` platí oba na šířce přesně 768 px. Obchází se
+      to sice `max-width: 767.98px`, ale mobile-first tu otázku ruší —
+      dolní hranice není potřeba vůbec.
+
+   Šířky, které web zná, a co je za nimi za otázku (další nepřidávat):
+
+     768 px  vejde se obsah do víc sloupců?
+     480 px  vejdou se tři hodnoty vedle sebe do proužku ukazatele?
+    1220 px  vejde se sedm položek menu vedle loga do řádku?
+    1280 px  vejde se vedle obsahu svislý panel ukazatele? */
 
 /* ==== Header =========================================================
 
@@ -50,40 +76,36 @@
   width: auto;
 }
 
+/* Základ je svislý panel na telefonu; vodorovný řádek přidává blok pro
+   1220 px níž. Viz invariant na začátku souboru. */
 .nav__list {
   list-style: none;
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
 }
 
-/* Předěl mezi nabídkou lekcí a stránkami webu (`--divide`) a předěly mezi
-   jednotlivými lekcemi (`--split`). Vlasová linka, ne mezera: samotná
-   mezera se v řádku ztratí a položky splynou v jeden pruh textu — což se
-   dělo přesně u „Tabata, HIIT a kruhový trénink" mezi „Jóga" a „Jumping"
-   (připomínka klientky ze 7. 9. 2026). */
-@media (min-width: 1220px) {
-  .nav__item--divide,
-  .nav__item--split {
-    margin-left: var(--space-1);
-    padding-left: var(--space-4);
-    border-left: 1px solid var(--color-border);
-  }
+.nav__item + .nav__item {
+  border-top: 1px solid var(--color-hairline);
 }
 
-/* Ve svislém panelu jen předěl mezi skupinami. Linky mezi lekcemi tam
-   nepatří: oddělovač má každý řádek už z `.nav__item + .nav__item`,
-   takže by se jen rozmazalo, kde končí lekce a začínají stránky. */
-@media (width < 1220px) {
-  .nav__item--divide {
-    border-top-width: 1px;
-    border-top-color: var(--color-border);
-  }
+/* Silnější předěl mezi nabídkou lekcí a stránkami webu. Selektor MUSÍ mít
+   sousedský kombinátor: `.nav__item--divide` samo má specificitu (0,1,0)
+   a pravidlo `.nav__item + .nav__item` výš (0,2,0) by ho přebilo. Přesně
+   to se dělo do 7. 9. 2026 — předěl v panelu tiše nefungoval a všech
+   sedm řádků mělo stejnou 8% vlasovou linku (změřeno).
+
+   Linky mezi jednotlivými lekcemi (`--split`) v panelu nejsou: oddělovač
+   tam má každý řádek už z pravidla výš, takže by se jen rozmazalo, kde
+   končí lekce a začínají stránky. */
+.nav__item + .nav__item--divide {
+  border-top-color: var(--color-border);
 }
 
 .nav__link {
   display: block;
-  padding-block: var(--space-2);
+  padding-block: var(--space-3);
   color: var(--color-text);
   font-size: var(--text-sm);
   /* Bez tohohle se „Tabata, HIIT a kruhový trénink" láme na dva řádky
@@ -103,8 +125,10 @@
   content: "";
   position: absolute;
   left: 0;
-  right: 0;
   bottom: 0;
+  /* V panelu krátká značka u levého okraje; ve vodorovném řádku se
+     roztáhne pod celý popisek (viz blok pro 1220 px). */
+  width: 1.25rem;
   height: 2px;
   background: var(--color-coral);
 }
@@ -114,92 +138,120 @@
 }
 
 .nav__toggle {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
 }
 
+.nav__toggle-bar {
+  display: block;
+  width: 1.125rem;
+  height: 1.5px;
+  margin-inline: auto;
+  background: var(--color-text);
+  transition: translate var(--transition-fast), rotate var(--transition-fast);
+}
+
+.is-nav-open .nav__toggle-bar:first-child {
+  translate: 0 3.25px;
+  rotate: 45deg;
+}
+
+.is-nav-open .nav__toggle-bar:last-child {
+  translate: 0 -3.25px;
+  rotate: -45deg;
+}
+
+.nav__panel {
+  display: none;
+  position: absolute;
+  left: var(--container-pad);
+  right: var(--container-pad);
+  top: calc(100% + var(--space-2));
+  padding: var(--space-5);
+  background: var(--color-surface);
+  /* The flat brand has no shadow to lean on, so a panel that genuinely
+     floats over content needs a visible edge to read as an overlay. */
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+}
+
+.is-nav-open .nav__panel {
+  display: block;
+}
+
+.nav__cta {
+  margin-top: var(--space-4);
+  width: 100%;
+}
+
+/* Vodorovný řádek. Sedm položek s plným názvem „Tabata, HIIT a kruhový
+   trénink" a s linkami mezi lekcemi potřebuje vedle loga 1175 px, takže
+   se do řádku vejdou od 1220 px (změřeno, viz komentář v hlavičce sekce).
+
+   Pět pravidel tu ruší dekoraci plovoucího panelu (pozice, odsazení,
+   pozadí, obrys, stín). Je to cena mobile-first zápisu u komponenty,
+   jejíž MENŠÍ tvar je ten ozdobený, a platí se schválně: opačné pořadí
+   by na telefonu bez podpory dotazu roztáhlo menu na 876 px. */
 @media (min-width: 1220px) {
-  .nav__panel {
+  .nav__toggle {
+    display: none;
+  }
+
+  .nav__panel,
+  /* I když v panelu zůstala třída is-nav-open po zvětšení okna. */
+  .is-nav-open .nav__panel {
     display: flex;
     align-items: center;
     gap: var(--space-6);
-  }
-}
-
-@media (width < 1220px) {
-  .nav__toggle {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 2.75rem;
-    height: 2.75rem;
+    position: static;
     padding: 0;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .nav__toggle-bar {
-    display: block;
-    width: 1.125rem;
-    height: 1.5px;
-    margin-inline: auto;
-    background: var(--color-text);
-    transition: translate var(--transition-fast), rotate var(--transition-fast);
-  }
-
-  .is-nav-open .nav__toggle-bar:first-child {
-    translate: 0 3.25px;
-    rotate: 45deg;
-  }
-
-  .is-nav-open .nav__toggle-bar:last-child {
-    translate: 0 -3.25px;
-    rotate: -45deg;
-  }
-
-  .nav__panel {
-    display: none;
-    position: absolute;
-    left: var(--container-pad);
-    right: var(--container-pad);
-    top: calc(100% + var(--space-2));
-    padding: var(--space-5);
-    background: var(--color-surface);
-    /* The flat brand has no shadow to lean on, so a panel that genuinely
-       floats over content needs a visible edge to read as an overlay. */
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-overlay);
-  }
-
-  .is-nav-open .nav__panel {
-    display: block;
+    background: none;
+    border: 0;
+    box-shadow: none;
   }
 
   .nav__list {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
   }
 
   .nav__item + .nav__item {
-    border-top: 1px solid var(--color-hairline);
+    border-top: 0;
+  }
+
+  /* Vlasová linka, ne mezera: samotná mezera se v řádku ztratí a položky
+     splynou v jeden pruh textu — což se dělo přesně u „Tabata, HIIT
+     a kruhový trénink" mezi „Jóga" a „Jumping" (klientka 7. 9. 2026). */
+  .nav__item--divide,
+  .nav__item--split {
+    margin-left: var(--space-1);
+    padding-left: var(--space-4);
+    border-left: 1px solid var(--color-border);
   }
 
   .nav__link {
-    padding-block: var(--space-3);
+    padding-block: var(--space-2);
   }
 
   .nav__link.is-current::after {
-    right: auto;
-    width: 1.25rem;
+    width: auto;
+    right: 0;
   }
 
   .nav__cta {
-    margin-top: var(--space-4);
-    width: 100%;
+    margin-top: 0;
+    width: auto;
   }
 }
 
@@ -280,16 +332,19 @@
    the headline and both buttons in the first screen. */
 .hero__image {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  /* Na telefonu na šířku (4/3): fotka na výšku by nad textem zabrala
+     celou obrazovku. Vedle textu v desktopovém rozvržení naopak stojí
+     na výšku, aby vyplnila sloupec — viz blok pro 768 px. */
+  aspect-ratio: 4 / 3;
   max-height: min(68vh, 32rem);
   object-fit: cover;
   object-position: 50% 30%;
   border-radius: var(--radius-xl);
 }
 
-@media (width < 768px) {
+@media (min-width: 768px) {
   .hero__image {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 4 / 5;
   }
 }
 
@@ -767,8 +822,14 @@
 
 /* ==== Footer ========================================================= */
 
+/* Odsazení zdola nese normální hodnotu PLUS místo pro proužek ukazatele
+   (`--meter-clear`, měří ho reserveBottomSpace() v
+   js/ui/heart-rate-meter.js). Bez proužku, nad 1280 px i bez skriptu je
+   proměnná nenastavená a `0px` ve fallbacku vrátí normální patičku —
+   proto tu není media query. Viz komentář u `.has-meter` v sekci
+   ukazatele. */
 .footer {
-  padding-block: var(--space-section) var(--space-6);
+  padding-block: var(--space-section) calc(var(--space-6) + var(--meter-clear, 0px));
 }
 
 .footer__grid {
@@ -1181,14 +1242,12 @@
   }
 }
 
-.zone__head {
-  position: sticky;
-  top: 7rem;
-}
-
-@media (width < 768px) {
+/* Lepivá hlavička zóny má smysl jen tam, kde stojí ve vlastním sloupci
+   vedle karet. Na telefonu jsou pod sebou, takže by se lepila přes ně. */
+@media (min-width: 768px) {
   .zone__head {
-    position: static;
+    position: sticky;
+    top: 7rem;
   }
 }
 
@@ -1256,53 +1315,47 @@
 }
 
 /* ==== Heart rate meter ===============================================
-   Malý přístrojový panel, ne odznáček. Sedí u pravého okraje, drží se
-   uprostřed výšky a po celou dobu prohlídky ukazuje čtyři hodnoty.
+   Malý přístrojový panel, ne odznáček. Po celou dobu prohlídky ukazuje
+   čtyři hodnoty — na telefonu jako vodorovný proužek u spodní hrany, od
+   1280 px jako svislý panel u pravého okraje uprostřed výšky.
+
+   ⚠️ ZÁKLAD JE PROUŽEK, panel PŘIDÁVÁ blok pro 1280 px. Pořadí je
+   bezpečnostní prvek — viz invariant na začátku souboru.
 
    Barva zóny se nikde nedostane pod text — nese ji prstenec budíku, tečka
    u názvu zóny a pulz. Mint má 1,81 a broskvová 1,94, takže jako popisek
    by byly nečitelné; jako 3px oblouk jsou přesně tím, čím mají být. */
 
-/* Vyhrazený pruh. Tohle je jediné místo na webu s druhým breakpointem
-   a není to breakpoint layoutu, ale odpověď na otázku „vejde se vedle
-   obsahu svislý panel?". Pod 1280 px se nevejde a panel se překlopí do
-   vodorovného proužku dole (viz níž).
+/* ── Základ: vodorovný proužek u spodní hrany ──────────────────────
+   Tohle je podoba pro telefon a je to ZÁKLAD, ne výjimka. Svislý panel
+   vedle obsahu přidává až blok pro 1280 px níž.
 
-   26rem = šířka panelu + odstup od kraje + vzduch, a protože je kontejner
-   vycentrovaný, počítá se na obě strany. Bez toho panel na 1440 px
-   zasahoval 66 px do karet lekcí (změřeno na 36 prvcích). */
-@media (min-width: 1280px) {
-  .has-meter {
-    --container: min(76rem, 100vw - 26rem);
-    --container-wide: min(88rem, 100vw - 26rem);
-  }
+   Pořadí je tady bezpečnostní prvek, ne vkus. Do 7. 9. 2026 to bylo
+   naopak — základ byl panel a proužek žil uvnitř `@media (width <
+   1280px)`. Na prohlížeči, který ten zápis neumí (Safari na iOS do
+   16.4, Samsung Internet do 20), telefon dostal panel 168×436 px
+   plovoucí přes obsah, který nešlo zavřít. Takhle napsané to v nejhorším
+   případě nechá proužek i na desktopu — nepříjemné, ale použitelné.
 
-  /* Hlavička z toho ustupování ven. Panel se drží uprostřed výšky okna,
-     takže se s lepivou hlavičkou nikdy nepotká — a zúžená hlavička brala
-     navigaci 416 px, které pro plný název položek potřebuje. */
-  .has-meter .header .shell--wide {
-    --container-wide: 88rem;
-  }
-}
+   ⚠️ VÝŠKA PROUŽKU JE FUNKCE, NE DETAIL. Leží přes obsah po celou dobu
+   prohlídky, takže každý řádek navíc je řádek webu, který návštěvník
+   nevidí. Změřeno 7. 9. 2026: 121 px na 390×844 (13 % obrazovky).
+   Když se sem přidá řádek, PŘEMĚŘIT.
 
+   Sdílené vlastnosti obou podob (pozadí, obrys, stín, z-index,
+   pointer-events) jsou tady, ne v obou blocích zvlášť. */
 .hrm {
   position: fixed;
-  right: clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem);
-  /* Střed se počítá z pásma POD hlavičkou, ne z celého okna. Prosté
-     `top: 50%` fungovalo, dokud hlavička končila 416 px před pravým
-     krajem — pak panel překrýval jen prázdné pozadí. Od chvíle, kdy
-     navigace zabírá celou šířku, by na nízkém okně (do ~560 px výšky)
-     sedl přes tlačítko Rezervovat. Dvě protilehlé hodnoty a `margin:
-     auto` panel vycentrují a zároveň mu zakážou vylézt nad hlavičku;
-     na běžně vysokém okně je posun proti půlce okna asi 36 px. */
-  top: calc(4.5rem + var(--space-3));
+  top: auto;
   bottom: var(--space-3);
-  height: fit-content;
-  margin-block: auto;
+  left: var(--space-3);
+  right: var(--space-3);
   z-index: var(--z-sticky);
-  width: 10.5rem;
-  padding: var(--space-4);
-  margin-inline: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-3) var(--space-4);
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-hairline);
@@ -1313,11 +1366,13 @@
   pointer-events: none;
 }
 
+/* ---- Části ukazatele: základ je proužek --------------------------- */
+
 .hrm__zone {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin: 0 0 var(--space-3);
+  margin: 0;
   font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: var(--tracking-wider);
@@ -1325,6 +1380,9 @@
   color: var(--color-text);
 }
 
+/* V proužku tepe tečka u názvu zóny — kruhový budík tam nemá kam růst,
+   takže bez tohohle by z tepometru byl na telefonu statický výpis čísel.
+   V panelu tepe budík a tečka se zastaví (viz blok pro 1280 px). */
 .hrm__zone::before {
   content: "";
   width: 0.5rem;
@@ -1333,18 +1391,20 @@
   border-radius: 50%;
   background: var(--zone-color, var(--color-zone-calm));
   transition: background var(--transition-slow);
+  animation: hrm-beat-dot calc(60s / var(--hrm-bpm, 75)) var(--ease-out) infinite;
 }
 
+/* V proužku se budík rozpadá na samotné číslo. */
 .hrm__dial {
   position: relative;
   display: grid;
-  place-items: center;
-  width: 100%;
-  aspect-ratio: 1;
-  margin-bottom: var(--space-4);
+  place-items: start;
+  width: auto;
+  margin: 0;
 }
 
 .hrm__gauge {
+  display: none;
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1372,6 +1432,7 @@
 /* Pulz je zvlášť od budíku: kdyby tepal samotný prstenec s hodnotou,
    číslo uprostřed by se hýbalo s ním. */
 .hrm__pulse {
+  display: none;
   position: absolute;
   inset: 12%;
   border-radius: 50%;
@@ -1395,16 +1456,31 @@
   }
 }
 
+@keyframes hrm-beat-dot {
+  0% {
+    scale: 1;
+  }
+  12% {
+    scale: 1.6;
+  }
+  30% {
+    scale: 1;
+  }
+}
+
+/* V proužku stojí jednotka vedle čísla, v panelu pod ním. */
 .hrm__reading {
   position: relative;
   display: grid;
-  justify-items: center;
-  gap: 0.1rem;
+  grid-auto-flow: column;
+  align-items: baseline;
+  justify-items: start;
+  gap: var(--space-2);
 }
 
 .hrm__bpm {
   font-family: var(--font-display);
-  font-size: var(--text-3xl);
+  font-size: var(--text-xl);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -1419,206 +1495,219 @@
   color: var(--color-text-muted);
 }
 
+/* Tři hodnoty vedle sebe, popisek pod hodnotou. Na úzkém telefonu se
+   vedle názvu zóny a tepu nevejdou (změřeno: potřebují 316 px, na 360px
+   telefonu je uvnitř proužku 287 px), takže mají vlastní řádek; od 480 px
+   se přesunou na konec prvního (viz blok pro 480 px). */
 .hrm__readouts {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-2) var(--space-3);
+  grid-template-columns: repeat(3, auto);
+  grid-column: 1 / -1;
+  justify-self: start;
+  gap: 0 var(--space-4);
   margin: 0;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-hairline);
   font-size: var(--text-xs);
 }
 
 .hrm__readouts dt {
+  grid-row: 2;
+  text-align: right;
   color: var(--color-text-muted);
 }
 
 .hrm__readouts dd {
+  grid-row: 1;
   margin: 0;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
-/* Jediná část panelu, která chytá kliknutí — zbytek je průhledný, aby se
-   pod ním dal označit text. */
+/* V proužku tlačítko NENÍ, a je to záměr. Na celou šířku to byl jediný
+   prvek, který v proužku chytal klepnutí (zbytek má pointer-events:
+   none), takže ležel na obsahu jako neviditelná past — připomínka
+   klientky ze 7. 9. 2026 („nejde web proklikávat"). Stejnou cestu
+   k rezervaci nese CTA v každé sekci zóny i „Rezervovat" v hlavičce.
+   V panelu je to naopak jediná část, která kliknutí chytá. */
 .hrm__cta {
-  margin-top: var(--space-4);
-  width: 100%;
+  display: none;
   padding: 0.7em 0.8em;
   font-size: var(--text-xs);
   pointer-events: auto;
 }
 
 .hrm__note {
-  margin: var(--space-3) 0 0;
+  grid-column: 1 / -1;
+  margin: 0;
   font-size: 0.625rem;
   line-height: 1.35;
   color: var(--color-text-muted);
 }
 
-/* Reduced motion: panel dál hlásí zónu i všechna čísla, jen přestane tepat.
-   Odstranit ho celý by ubralo informaci, ne pohyb. */
+/* Ukazatel, který se nemá podle čeho měnit (stránka bez zón, tedy kontakt
+   a o mně), se v podobě proužku nezobrazí. Proužek leží přes obsah a bez
+   zastávek i bez tlačítka by to bylo ~100 px obrazovky za statický výpis.
+   V podobě panelu zůstává — tam stojí ve vyhrazeném pruhu a nic nestíní. */
+.hrm[data-static] {
+  display: none;
+}
+
+/* Rezervace místa pod proužkem. Fixní prvek u spodní hrany leží přes
+   obsah z principu, ale na KONCI stránky se to nechá spravit: patička si
+   přidá odsazení o změřenou výšku proužku (`--meter-clear`, počítá ji
+   reserveBottomSpace() v js/ui/heart-rate-meter.js), takže se pod ním nic
+   neschová. Odsazení dostane patička, ne <body> — pod tmavým pásem by se
+   jinak objevil pruh světlého pozadí stránky.
+
+   Bez media query schválně: hodnotu drží skript, který ji nad 1280 px
+   i na stránce bez proužku prostě nenastaví, a `0px` ve fallbacku pak
+   znamená „nic nerezervuj". Bez skriptu není ani ukazatel (vkládá ho JS),
+   takže se nemá co rezervovat. scroll-padding-bottom drží kotvy nad
+   proužkem, jinak by #rozvrh doskočil pod něj. */
+.has-meter {
+  scroll-padding-bottom: var(--meter-clear, 0px);
+}
+
+/* Reduced motion: ukazatel dál hlásí zónu i všechna čísla, jen přestane
+   tepat. Odstranit ho celý by ubralo informaci, ne pohyb. */
 @media (prefers-reduced-motion: reduce) {
+  .hrm__zone::before {
+    animation: none;
+  }
+
   .hrm__pulse {
     animation: none;
     opacity: 0.16;
   }
 }
 
-/* Kde se svislý panel nevejde vedle obsahu, překlopí se do vodorovného
-   proužku dole. Zmizí z něj kruhový budík (v proužku nemá kam růst)
-   a tlačítko; tep zůstává jako číslo a pulz se přesune na tečku u názvu
-   zóny, aby nápad klientky fungoval i na telefonu.
-
-   ⚠️ VÝŠKA JE TU FUNKCE, NE DETAIL. Proužek leží přes obsah po celou
-   dobu prohlídky, takže každý řádek navíc je řádek webu, který návštěvník
-   nevidí. Do 4. 9. 2026 byl proužek 162 px vysoký, tedy 19 % obrazovky
-   na 390×844 a 25 % na 360×640, a nic mu dole nerezervovalo místo —
-   připomínka klientky ze 7. 9. 2026 („na mobilu zabírá obrazovku
-   a nejde web proklikávat"). Když se sem přidá řádek, PŘEMĚŘIT.
-
-   Tlačítko je pod 1280 px schválně skryté. Na celou šířku proužku to byl
-   jediný prvek, který chytal klepnutí (zbytek má pointer-events: none),
-   takže ležel na obsahu jako neviditelná past — a stejnou cestu k rezervaci
-   nese CTA v každé sekci zóny i „Rezervovat" v hlavičce. */
-@media (width < 1280px) {
+/* Od 480 px se tři hodnoty vejdou vedle názvu zóny a tepu do jednoho
+   řádku. Radši o řádek vyšší proužek než proužek, který přetéká do
+   šířky — proto je stav pod 480 px ten základní. */
+@media (min-width: 480px) {
   .hrm {
-    top: auto;
-    bottom: var(--space-3);
-    left: var(--space-3);
-    right: var(--space-3);
-    width: auto;
-    translate: 0;
-    display: grid;
     grid-template-columns: auto auto 1fr;
-    align-items: center;
-    gap: var(--space-1) var(--space-4);
-    padding: var(--space-3) var(--space-4);
   }
 
-  .hrm__cta {
-    display: none;
+  .hrm__readouts {
+    grid-column: auto;
+    justify-self: end;
+  }
+}
+
+/* ── Od 1280 px: z proužku je svislý panel vedle obsahu ─────────────
+   Jediná otázka tohohle breakpointu je „vejde se vedle obsahu svislý
+   panel?". Odpověď má tři části a všechny jsou tady, aby to číslo
+   nestálo na třech místech: vyhrazený pruh v kontejneru, hlavička, která
+   z toho ustupování vystupuje, a samotná podoba panelu.
+
+   26rem = šířka panelu + odstup od kraje + vzduch, a protože je kontejner
+   vycentrovaný, počítá se na obě strany. Bez toho panel na 1440 px
+   zasahoval 66 px do karet lekcí (změřeno na 36 prvcích).
+
+   ⚠️ Panel je vysoký ~445 px. Pod ~545 px výšky okna zasáhne do pásma
+   hlavičky. Reálné okno na 1280 px šířky tak nízké nebývá, breakpoint
+   kvůli tomu nepřibyl. */
+@media (min-width: 1280px) {
+  .has-meter {
+    --container: min(76rem, 100vw - 26rem);
+    --container-wide: min(88rem, 100vw - 26rem);
+  }
+
+  /* Hlavička z toho ustupování ven. Panel se drží uprostřed výšky okna,
+     takže se s lepivou hlavičkou nikdy nepotká — a zúžená hlavička brala
+     navigaci 416 px, které pro plný název položek potřebuje. */
+  .has-meter .header .shell--wide {
+    --container-wide: 88rem;
+  }
+
+  /* `[data-static]` je tu ve výběru schválně: ukazatel bez zastávek se
+     skrývá jen v podobě proužku, v panelu má zůstat. Bez toho by ho
+     základní pravidlo (0,2,0) přebilo. */
+  .hrm,
+  .hrm[data-static] {
+    display: block;
+    /* Střed se počítá z pásma POD hlavičkou, ne z celého okna. Prosté
+       `top: 50%` fungovalo, dokud hlavička končila 416 px před pravým
+       krajem — pak panel překrýval jen prázdné pozadí. Od chvíle, kdy
+       navigace zabírá celou šířku, by na nízkém okně (do ~560 px výšky)
+       sedl přes tlačítko Rezervovat. Dvě protilehlé hodnoty a `margin:
+       auto` panel vycentrují a zároveň mu zakážou vylézt nad hlavičku;
+       na běžně vysokém okně je posun proti půlce okna asi 36 px. */
+    top: calc(4.5rem + var(--space-3));
+    left: auto;
+    right: clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem);
+    height: fit-content;
+    margin-block: auto;
+    width: 10.5rem;
+    padding: var(--space-4);
   }
 
   .hrm__zone {
-    margin: 0;
+    margin: 0 0 var(--space-3);
   }
 
-  /* Budík se rozpadá na samotné číslo. */
+  /* Tep přebírá budík, takže tečka se zastaví. */
+  .hrm__zone::before {
+    animation: none;
+  }
+
   .hrm__dial {
-    width: auto;
-    aspect-ratio: auto;
-    margin: 0;
-    place-items: start;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 1;
+    margin-bottom: var(--space-4);
   }
 
   .hrm__gauge,
   .hrm__pulse {
-    display: none;
+    display: block;
   }
 
   .hrm__reading {
-    grid-auto-flow: column;
-    align-items: baseline;
-    justify-items: start;
-    gap: var(--space-2);
+    grid-auto-flow: row;
+    align-items: normal;
+    justify-items: center;
+    gap: 0.1rem;
   }
 
   .hrm__bpm {
-    font-size: var(--text-xl);
-  }
-
-  /* Pulz přebírá tečka u zóny — jinak by se na telefonu z tepometru stal
-     jen statický výpis čísel. */
-  .hrm__zone::before {
-    animation: hrm-beat-dot calc(60s / var(--hrm-bpm, 75)) var(--ease-out) infinite;
+    font-size: var(--text-3xl);
   }
 
   .hrm__readouts {
-    justify-self: end;
-    grid-template-columns: repeat(3, auto);
-    gap: 0 var(--space-4);
-    padding-top: 0;
-    border-top: 0;
+    grid-template-columns: 1fr auto;
+    /* Zpátky na výchozí: v proužku se hodnoty tlačí k pravému konci
+       řádku, v panelu mají celou jeho šířku. */
+    justify-self: auto;
+    gap: var(--space-2) var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-hairline);
   }
 
-  /* Ve vodorovném proužku jde popisek pod hodnotu, ne vedle ní. */
   .hrm__readouts dt {
-    grid-row: 2;
-    text-align: right;
+    grid-row: auto;
+    text-align: start;
   }
 
   .hrm__readouts dd {
-    grid-row: 1;
+    grid-row: auto;
+  }
+
+  /* `inline-flex` je hodnota z `.btn` v base.css — jediné místo, kde se
+     opakuje, a proto tu stojí s odkazem. */
+  .hrm__cta {
+    display: inline-flex;
+    margin-top: var(--space-4);
+    width: 100%;
   }
 
   .hrm__note {
-    grid-column: 1 / -1;
-    margin: 0;
+    grid-column: auto;
+    margin: var(--space-3) 0 0;
   }
 }
 
-/* Rezervace místa pod proužkem. Fixní prvek u spodní hrany leží přes obsah
-   z principu, ale na KONCI stránky se to nechá spravit: patička si přidá
-   odsazení o změřenou výšku proužku, takže se pod ním nic neschová.
-   Odsazení dostane patička, ne <body> — pod tmavým pásem by se jinak
-   objevil pruh světlého pozadí stránky.
-
-   Hodnotu `--meter-strip` měří reserveStripSpace() v
-   js/ui/heart-rate-meter.js; 9rem tady je záchranná síť, kdyby skript
-   neběžel. scroll-padding-bottom drží kotvy nad proužkem, jinak by
-   #rozvrh doskočil pod něj. */
-@media (width < 1280px) {
-  /* Ukazatel, který se nemá podle čeho měnit (stránka bez zón), se na
-     mobilu nezobrazí. Proužek tam leží přes obsah a bez zastávek i bez
-     tlačítka by to bylo ~100 px obrazovky za statický výpis. Na desktopu
-     zůstává — tam stojí ve vyhrazeném pruhu a nic nestíní. */
-  .hrm[data-static] {
-    display: none;
-  }
-
-  .has-meter {
-    scroll-padding-bottom: calc(var(--meter-strip, 9rem) + var(--space-4));
-  }
-
-  .has-meter .footer {
-    padding-bottom: calc(var(--meter-strip, 9rem) + 2 * var(--space-3));
-  }
-}
-
-@keyframes hrm-beat-dot {
-  0% {
-    scale: 1;
-  }
-  12% {
-    scale: 1.6;
-  }
-  30% {
-    scale: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hrm__zone::before {
-    animation: none;
-  }
-}
-
-/* Na úzkém telefonu se tři hodnoty vedle názvu zóny nevejdou (změřeno:
-   potřebují 316 px, na 360px telefonu je uvnitř proužku 287 px), takže se
-   přesunou pod něj na vlastní řádek. Radši o řádek vyšší proužek než
-   proužek, který přetéká do šířky. */
-@media (width < 480px) {
-  .hrm {
-    grid-template-columns: auto 1fr;
-  }
-
-  .hrm__readouts {
-    grid-column: 1 / -1;
-    justify-self: start;
-  }
-}
 
 /* ==== Follow (odkazy na sítě) ========================================
    Ikona a název sítě, ne samotná ikona: pro čtečku je holá ikona prázdné
@@ -1769,12 +1858,21 @@
    a nemají špičku — má to vypadat jako součást stránky, ne jako nalepený
    widget. */
 
+/* Základ je SKRYTÝ průvodce, zvednutý nad proužek ukazatele. Ukazuje se
+   až tam, kde se panel vejde — viz blok pro 768 px níž. Obrácené pořadí
+   (základ viditelný, skrytí v dotazu) by na telefonu, který ten dotaz
+   neumí, nalepilo přes obsah druhý plovoucí prvek vedle ukazatele.
+
+   `--assistant-lift` měří keepClearOfMeter() v js/ui/assistant.js
+   z reálné výšky proužku; nad 1280 px, kde je z proužku svislý panel
+   u pravého okraje, ji skript nenastaví a `0px` ve fallbacku znamená
+   „nic nezvedej". Proto tu není žádná media query. */
 .assistant {
   position: fixed;
   left: clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem);
-  bottom: clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem);
+  bottom: calc(clamp(0.75rem, 0.2rem + 1.6vw, 1.75rem) + var(--assistant-lift, 0px));
   z-index: var(--z-overlay);
-  display: grid;
+  display: none;
   justify-items: start;
   gap: var(--space-3);
 }
@@ -1997,31 +2095,22 @@
   color: var(--color-text-muted);
 }
 
-/* --assistant-lift dopočítá JS z reálné výšky proužku ukazatele (viz
-   keepClearOfMeter v js/ui/assistant.js). Hodnota tady je jen záchranná
-   síť pro případ, že by skript neběžel. */
-@media (width < 1280px) {
+/* ---- Kde se průvodce ukazuje ----------------------------------------
+   Rozhodnuto 4. 9. 2026: na telefonu vůbec. Panel potřebuje vlákno,
+   seznam nabídek a hlavičku nad sebou; na telefonu se to vejde jen jako
+   bottom sheet přes skoro celou výšku, což je na rozcestník ze čtyř
+   kliknutí neúměrné zabrání obrazovky. Stejnou práci tam vede hlavní
+   navigace a CTA v obsahu.
+
+   Musí být splněné OBĚ podmínky, proto `and`. Nízké okno je v tom kvůli
+   telefonu na šířku: ten má 844 px šířky a 390 px výšky, takže by prošel
+   šířkou a plovoucí panel by vylezl nad horní hranu.
+
+   Skrývá se celý kontejner, ne jen spouštěč — základní `display: none`
+   bere prvek i z pořadí tabulátoru a ze stromu pro čtečky, takže na
+   telefonu není na co narazit. */
+@media (min-width: 768px) and (min-height: 560px) {
   .assistant {
-    bottom: calc(var(--space-3) + var(--assistant-lift, 9rem));
-  }
-}
-
-/* ---- Malá obrazovka: průvodce se nezobrazuje ------------------------
-   Rozhodnuto 4. 9. 2026. Panel potřebuje vlákno, seznam nabídek a hlavičku
-   nad sebou; na telefonu se to vejde jen jako bottom sheet přes skoro celou
-   výšku, což je na rozcestník ze čtyř kliknutí neúměrné zabrání obrazovky.
-   Na telefonu vede stejnou práci hlavní navigace a CTA v obsahu.
-
-   Podmínka je ta samá, na které se dřív panel překlápěl do sheetu, včetně
-   nízkého okna: telefon na šířku má 844 px šířky a 390 px výšky, takže by
-   spadl do desktopové větve a plovoucí panel by vylezl nad horní hranu.
-
-   Skrývá se celý kontejner, ne jen spouštěč — `display: none` bere prvek
-   i z pořadí tabulátoru a ze stromu pro čtečky, takže na telefonu není na
-   co narazit. */
-
-@media (width < 768px), (height < 560px) {
-  .assistant {
-    display: none;
+    display: grid;
   }
 }

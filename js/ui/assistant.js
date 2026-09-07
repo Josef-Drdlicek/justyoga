@@ -209,20 +209,25 @@ export function renderAssistant() {
   return root;
 }
 
-/* Mezi 768 a 1280 px je průvodce vidět, ale ukazatel tempa je už
-   překlopený do vodorovného proužku u spodní hrany, kde by si s ním sedly
-   na sebe. Zvednutí se proto MĚŘÍ, ne hádá: napevno zapsaná hodnota
-   (7,5rem) byla o 40 px menší než skutečná výška proužku a překrývaly se.
+/* Mezi 768 a 1280 px je průvodce vidět, ale ukazatel tempa je ještě
+   vodorovný proužek u spodní hrany, kde by si s ním sedly na sebe.
+   Zvednutí se proto MĚŘÍ, ne hádá: napevno zapsaná hodnota (7,5rem) byla
+   o 40 px menší než skutečná výška proužku a překrývaly se.
    ResizeObserver to drží i když proužek zalomí popisky na jiný počet
-   řádků. */
+   řádků.
+
+   Dotaz je `min-width`, ne `width < N`: range syntax neumí Safari na iOS
+   do 16.4 ani Samsung Internet do 20 a CSS by kvůli tomu zahodilo celý
+   blok — viz invariant na začátku css/layout.css. Tady by to sice
+   `matchMedia` zvládl, ale zápis se nesmí rozejít s tím v CSS. */
 function keepClearOfMeter(assistant) {
   const meter = $("[data-hrm]");
   if (!meter) return;
 
-  const strip = window.matchMedia("(width < 1280px)");
+  const panel = window.matchMedia("(min-width: 1280px)");
 
   const sync = () => {
-    if (!strip.matches) {
+    if (panel.matches) {
       assistant.style.removeProperty("--assistant-lift");
       return;
     }
@@ -235,7 +240,7 @@ function keepClearOfMeter(assistant) {
     // Zvednutí posune spouštěč, a tím i místo, které panelu zbývá nahoře.
     assistant.sizePanel?.();
   }).observe(meter);
-  strip.addEventListener("change", sync);
+  panel.addEventListener("change", sync);
   sync();
 }
 
