@@ -101,6 +101,22 @@
                   <span>Zpráva (volitelné)</span>
                   <textarea name="your-message" rows="5"></textarea>
                 </label>
+                <!-- Past na roboty (`botcheck` od Web3Forms). Robot, který
+                     slepě vyplní všechna pole, ji zaškrtne a služba zprávu
+                     zahodí. Bez ní padá spam přímo do osobní schránky
+                     klientky. Skrytí je schválně inline, ne třídou: kdyby
+                     se nenačetl stylesheet, třída by past odhalila a člověk
+                     by ji zaškrtl — a jeho zpráva by tiše zmizela.
+                     `tabindex` a `aria-hidden` ji drží mimo dosah
+                     klávesnice i čtečky. -->
+                <input
+                  type="checkbox"
+                  name="botcheck"
+                  tabindex="-1"
+                  aria-hidden="true"
+                  autocomplete="off"
+                  style="display: none"
+                />
                 <button type="submit" class="btn btn--primary btn--block">Odeslat</button>
                 <p class="contact__status" data-form-status role="status"></p>
               </form>
