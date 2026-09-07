@@ -16,6 +16,11 @@
    není `aria-live`: hodnoty se mění desítkykrát za scroll a čtečka by
    mluvila přes všechno ostatní.
 
+   ⚠️ Pod 1280 px je z panelu vodorovný proužek u spodní hrany. Ten je
+   z principu přes obsah, takže platí dvě pravidla: musí být co nejnižší
+   (proto na mobilu nemá budík ani tlačítko) a musí si dole vyhradit
+   místo, aby na konci stránky nic nezakrýval — viz reserveStripSpace().
+
    Tři věci, které z toho dělají přístroj a ne hračku:
 
    1. Hodnoty se interpolují mezi zónami podle scrollu, neskáčou po
@@ -38,6 +43,13 @@ const GAUGE_MAX = 180;
 
 /** Které hodnoty se interpolují. */
 export const METRICS = ["bpm", "hrZone", "breaths", "effort"];
+
+/* Disclaimer platí vždy. Věta o změně jen tam, kde se ukazatel opravdu
+   mění — stránka bez zón (kontakt, o mně) by jinak tvrdila něco, co se
+   na ní nedá vyzkoušet. */
+const DISCLAIMER = "Orientační hodnoty pro tento typ lekce, ne vaše měření.";
+const SCROLL_HINT =
+  "Mění se podle toho, kde na stránce jste — od klidné jógy k tréninkům.";
 
 /**
  * Čistá část výpočtu, oddělená od DOMu, aby se dala otestovat bez
@@ -160,12 +172,20 @@ export function renderHeartRateMeter() {
       href: first.cta.href,
       text: first.cta.label,
     }),
-    // Viditelně, ne jen pro čtečky: čtyři čísla v kroužku vypadají jako
-    // měření a někdo by 165 mohl číst jako svůj vlastní tep.
-    el("p", {
-      class: "hrm__disclaimer",
-      text: "Orientační hodnoty pro tento typ lekce, ne vaše měření.",
-    }),
+    /* Dvě věty v jednom odstavci, obě povinné:
+
+       1. CO to je. Klientka (7. 9. 2026) chtěla popis „někde u toho, kde
+          je ten tep" — dřív stál v hero na homepage, což je jediná
+          stránka ze čtyř a jediná obrazovka z dvaceti, kde ho někdo
+          uvidí. Panel jezdí po celém webu, takže vysvětlení patří do něj.
+       2. Že to NENÍ měření návštěvníka. Viditelně, ne jen pro čtečky:
+          čtyři čísla v kroužku vypadají jako přístroj a někdo by 165
+          mohl číst jako svůj vlastní tep.
+
+       Jeden odstavec, ne dva: dva bloky drobného textu pod sebou v panelu
+       širokém 168 px čtou jako patička, a na mobilním proužku by si vzaly
+       řádek každý. */
+    el("p", { class: "hrm__note", text: `${SCROLL_HINT} ${DISCLAIMER}` }),
   ]);
 }
 
@@ -202,6 +222,33 @@ function applyZone(meter, zone) {
   }
 }
 
+/* Pod 1280 px je z panelu proužek přilepený ke spodní hraně, a ten místo
+   pro sebe nikdo nedržel: ležel na patičce a na posledním obsahu stránky
+   trvale, na každé stránce. Připomínka klientky ze 7. 9. 2026 („na mobilu
+   zabírá obrazovku a nejde web proklikávat") mířila přesně sem.
+
+   Výška se MĚŘÍ, ne hádá — proužek zalomí popisky na jiný počet řádků
+   podle šířky a podle toho, jak dlouhý název zóny právě drží. Stejný
+   postup jako keepClearOfMeter() v js/ui/assistant.js; hodnota jde do
+   `--meter-strip` na <html> a CSS z ní dělá odsazení patičky
+   a scroll-padding pro kotvy. */
+function reserveStripSpace(meter) {
+  const root = document.documentElement;
+  const strip = window.matchMedia("(width < 1280px)");
+
+  const sync = () => {
+    if (!strip.matches) {
+      root.style.removeProperty("--meter-strip");
+      return;
+    }
+    root.style.setProperty("--meter-strip", `${meter.offsetHeight}px`);
+  };
+
+  new ResizeObserver(sync).observe(meter);
+  strip.addEventListener("change", sync);
+  sync();
+}
+
 /** Střed prvku vůči viewportu, 0 = střed obrazovky. */
 function centerOffset(node) {
   const rect = node.getBoundingClientRect();
@@ -220,6 +267,8 @@ export function initHeartRateMeter() {
   // a nezávisí na podpoře selektoru.
   document.documentElement.classList.add("has-meter");
 
+  reserveStripSpace(meter);
+
   const bpmNodeEarly = $("[data-hrm-bpm]", meter);
 
   // Zastávky, mezi kterými se interpoluje. Zastávku umí nabídnout cokoli
@@ -231,12 +280,20 @@ export function initHeartRateMeter() {
     .map((node) => ({ zone: byId.get(node.dataset.zoneStop), node }))
     .filter((stop) => stop.zone);
 
-  // Stránka bez zastávek ukazatel nemaže — jen ho nechá v klidovém stavu.
-  // Je to pořád platná informace („tohle studio jede od 75 do 165") a pořád
-  // to nese výzvu k akci; mizející prvek mezi stránkami působí jako chyba.
+  /* Stránka bez zastávek (kontakt, o mně) ukazatel nemaže — na desktopu
+     ho nechá v klidovém stavu. Je to pořád platná informace („tohle
+     studio jede od 75 do 165"), pořád to nese výzvu k akci a stojí to
+     ve vyhrazeném pruhu vedle obsahu, takže nic nestíní.
+
+     Na mobilu je to jiný obchod: proužek tam leží PŘES obsah, tlačítko
+     v něm není a hodnoty se nemají podle čeho měnit, takže by si vzal
+     ~100 px obrazovky za nic. `data-static` ho tam schová (viz CSS)
+     a ResizeObserver v reserveStripSpace() pak srovná rezervaci na nulu. */
   if (stops.length === 0) {
     applyZone(meter, REST_ZONE);
     bpmNodeEarly.textContent = String(REST_ZONE.bpm);
+    meter.dataset.static = "true";
+    $(".hrm__note", meter).textContent = DISCLAIMER;
     return;
   }
 
