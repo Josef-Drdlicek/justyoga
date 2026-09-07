@@ -217,6 +217,42 @@ klientka redesign neuvidí.
 7. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
+### 2026-09-07 (3. dávka) — vyřešeno: ukazatel na iPhonu běží
+Potvrzeno na iPhonu 14 se Safari: **po publikaci nové verze a vymazání
+dat webových stránek v Safari je ukazatel v pořádku.**
+
+⚠️ **Co to spravilo, se nedá s jistotou říct, a je důležité to nepřepsat
+na hezčí historku.** Chyba byla vidět na verzi, která na náhledu ležela
+před publikací. Nevím, jestli šlo o kód, který ještě nebyl nahraný, nebo
+o **zastaralou cache Safari** — iOS Safari drží stylesheet z GitHub Pages
+tvrdě. Mobile-first refaktor (2. dávka) tedy **nejspíš nebyl oprava
+tohohle symptomu**: iPhone 14 má iOS ≥ 16.4, takže range syntax umí
+a mobilní pravidla se mu aplikovala.
+
+Poučení do příště: **než se u hlášení „na mobilu je to rozbité" začne
+hledat v kódu, ověřit, jakou verzi ten telefon vůbec vidí.** Postup je
+Nastavení → Safari → Rozšířená → Data webových stránek → smazat doménu.
+Dvě hodiny analýzy šly na chybu, kterou v aktuálním kódu nešlo naměřit.
+
+Nálezy z toho hledání ale platí a jsou opravené na vlastní pěst, bez
+ohledu na tenhle symptom:
+- **Proužek byl 162 px a nic mu nerezervovalo místo** (1. dávka).
+- **Tlačítko v proužku na celou šířku** bylo jediný prvek, který chytal
+  klepnutí, a ležel na obsahu jako neviditelná past (1. dávka).
+- **Desktop-first ukazatel a navigace** — na prohlížeči bez range
+  syntaxe (Safari na iOS do 16.4, Samsung Internet do 20, globálně
+  94,8 %) dosedl na telefon panel 168×436 px a menu přeteklo na 876 px
+  (2. dávka).
+- **`backdrop-filter` bez `-webkit-` prefixu** — na iOS se rozostření
+  hlavičky ani ukazatele vůbec nepoužilo (3. dávka).
+- **`.nav__item--divide` v mobilním panelu tiše nefungoval** kvůli
+  specificitě (2. dávka).
+
+Diagnostická stránka `web/mobil-diagnostika.html`, postavená pro měření
+na tom telefonu, je po vyřešení **smazaná**. V historii zůstává
+(commit `fe49cf9`), takže se dá vrátit, kdyby se podobné hlášení
+opakovalo.
+
 ### 2026-09-07 (2. dávka) — mobile-first: `width < N` odchází z celého webu
 Ukazatel tempa na mobilu hlásili jako „přes celou obrazovku" i po tom, co
 měření říkalo 121 px. Analýza vysvětlila rozpor: **na části prohlížečů se
