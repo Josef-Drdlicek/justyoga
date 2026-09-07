@@ -13,7 +13,7 @@ import { $, $$, el, fill, mount } from "../lib/dom.js";
 import { isUnlocked, lock, unlock } from "../lib/gate.js";
 import { renderFlyer } from "../ui/flyer.js";
 import { ACTIVITIES } from "../data/activities.js";
-import { SCHEDULE } from "../data/schedule.js";
+import { SCHEDULE, formatLessonTime } from "../data/schedule.js";
 import { GALLERY_PHOTOS } from "../data/gallery.js";
 import { getVenueById, formatVenueLine } from "../data/venues.js";
 
@@ -40,14 +40,16 @@ const DAY_SHORT = {
 const czk = new Intl.NumberFormat("cs-CZ");
 
 /* Kdy se lekce cvičí, na jeden řádek. Časy se sdružují po dnech —
-   „Út 16:55–18:10 a 18:30–19:45" místo dvakrát vypsaného úterý. Na letáku
-   je jeden řádek na tenhle údaj a nesdružený výpis se do něj nevejde. */
+   „Út 16.55–18.10 a 18.30–19.45" místo dvakrát vypsaného úterý. Na letáku
+   je jeden řádek na tenhle údaj a nesdružený výpis se do něj nevejde.
+   Zápis s tečkou je stejný jako v rozvrhu na webu — leták a web nesmí
+   psát čas dvěma způsoby. */
 function scheduleLine(activityId) {
   const byDay = new Map();
   for (const slot of SCHEDULE) {
     if (slot.activityId !== activityId) continue;
     if (!byDay.has(slot.day)) byDay.set(slot.day, []);
-    byDay.get(slot.day).push(slot.time);
+    byDay.get(slot.day).push(formatLessonTime(slot.time));
   }
   return [...byDay]
     .map(([day, times]) => `${DAY_SHORT[day] ?? day} ${times.join(" a ")}`)

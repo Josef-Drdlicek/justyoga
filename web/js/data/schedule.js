@@ -5,7 +5,11 @@
 //
 // Tvar řádku:
 //   day        – název dne, musí být v DAY_ORDER v js/ui/sections.js
-//   time       – ⚠️ TYPOGRAFICKÁ POMLČKA (–, U+2013), ne spojovník
+//   time       – ⚠️ TYPOGRAFICKÁ POMLČKA (–, U+2013), ne spojovník.
+//                Zapisuje se STROJOVĚ, s dvojtečkou ("17:00–18:15"), aby
+//                se z něj daly vzít hodnoty pro strukturovaná data
+//                (schema.org chce ISO 8601, tedy 17:00). Návštěvník ho
+//                vidí česky s tečkou — viz formatLessonTime() níž.
 //   activityId – odkaz do activities.js; odtud jde název, délka i místo
 //   label      – nepovinné; přebije název z activities.js pro tenhle jeden
 //                termín. Použité u pátečního kurzu, který je jóga, ale ne
@@ -32,6 +36,21 @@ export const SCHEDULE = [
     badge: "Na objednání",
   },
 ];
+
+/* Čas pro čtení, ne pro stroj. Klientka ze 7. 9. 2026 chce v rozvrhu
+   tradiční český zápis s tečkou („17.00–18.15"), ne s dvojtečkou.
+
+   Převádí se při vykreslení, data zůstávají s dvojtečkou. Důvod: stejné
+   pole čte i js/seo/opening-hours.js a schema.org chce ISO 8601, kde je
+   dvojtečka povinná — kdyby se tečka zapsala do dat, musel by se převod
+   dělat opačně a chyba v něm by tiše rozbila firemní panel na Googlu,
+   kde ji nikdo neuvidí. Chyba v zobrazení je naopak vidět na první
+   pohled.
+
+   Nahrazuje se jen dvojtečka; pomlčka a všechno ostatní zůstává. */
+export function formatLessonTime(time) {
+  return time.replaceAll(":", ".");
+}
 
 /* Poznámka pod rozvrhem. Štítek „Kurz · na objednání" na řádku říká, že se
    termín chová jinak, ale ne co s tím má návštěvník dělat — a „kurz" si

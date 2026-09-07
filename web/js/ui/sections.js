@@ -5,7 +5,7 @@
    of "put this block here". */
 
 import { el, append } from "../lib/dom.js";
-import { SCHEDULE, SCHEDULE_NOTE } from "../data/schedule.js";
+import { SCHEDULE, SCHEDULE_NOTE, formatLessonTime } from "../data/schedule.js";
 import { getActivityById } from "../data/activities.js";
 import { getVenueById, formatVenueAddress, venueNavigationUrl } from "../data/venues.js";
 import {
@@ -45,7 +45,7 @@ function lessonRow(row) {
   // reading a single word, and it is the same colour the meter takes in
   // that zone, so the page tells one story.
   return el("li", { class: "lesson", dataset: { zone: zone?.id ?? "" } }, [
-    el("span", { class: "lesson__time", text: row.time }),
+    el("span", { class: "lesson__time", text: formatLessonTime(row.time) }),
     // `row.label` přebíjí název z activities.js: páteční termín je jóga,
     // ale kurz pro začátečníky, ne otevřená lekce jako ostatní jógové řádky.
     el("span", { class: "lesson__name", text: row.label ?? activity.shortName ?? activity.name }),
