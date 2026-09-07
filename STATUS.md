@@ -190,8 +190,16 @@ do 20 (globálně 94,8 %) a zahodí celý blok, takže desktop-first
 komponenta na takovém telefonu dosedne na obsah v plné velikosti.
 Podrobně v `CLAUDE.md` a v komentáři na začátku `web/css/layout.css`.
 
-`main` drží poslední klientkou schválený stav a nesahá se na něj, dokud
-klientka redesign neuvidí.
+**7. 9. 2026 klientka redesign schválila** a `main` byl fast-forwardnut na
+`redesign-2026`. Obě větve tedy drží totéž. Pravidlo „na `main` se nesahá,
+dokud klientka redesign neuvidí" tím skončilo — bylo v platnosti od
+3. 9. 2026.
+
+⚠️ Souhlas se vztahuje na tu podobu webu, jak leží v repu, tedy **včetně
+tří odchylek od brandbooku** (Fraunces místo Raleway, dva stínové tokeny
+proti `"shadows": "none"`, mint a žlutá degradované na značky).
+`content/brandbook-lenka-web.json` ale zůstal nezměněný, takže se s kódem
+v těchhle třech bodech rozchází.
 
 ## Next steps
 0. **Potvrdit zrušení „mostu"** — viz výš. Je to jediná změna ze 4. 9.,
@@ -217,6 +225,40 @@ klientka redesign neuvidí.
 7. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
+### 2026-09-07 (4. dávka) — redesign schválen, publikováno na Cloudflare, spravený kontakt
+
+**Klientka redesign schválila.** `main` fast-forwardnut na `redesign-2026`
+(`537286a..6562aa5`), obě větve drží totéž. Pravidlo „nemíchat redesign do
+`main`" tím skončilo.
+
+**Kontaktní e-mail byl špatný.** `info@justyoga.cz` klientka nemá v provozu
+— žádná pošta na té doméně neběží. Správná adresa je
+`justlenicka@gmail.com`. Žije jen v `site-config.js`, takže jedna změna
+projela patičkou, kontaktem, letákem i strukturovanými daty.
+
+**Formulář odesílal do prázdna, teď má kam.** Dosud `kontakt.js` odeslání
+jen blokoval. Přibyl token `SITE_CONFIG.formEndpoint`: když je nastavený,
+formulář POSTuje `FormData` na tu adresu, blokuje dvojklik a hlásí výsledek;
+když je `null`, chová se jako dřív a přizná návštěvníkovi, že nefunguje.
+Statický web nemá server, takže odeslání musí obsloužit externí služba.
+**Endpoint je pořád `null`** — čeká na `access_key` z Web3Forms (zdarma
+250 zpráv/měsíc, funguje na jakémkoli hostingu). Do té doby formulář
+posílá lidi na mail a telefon.
+
+**Publikováno na Cloudflare Workers** —
+<https://just-yoga.drdlicek-josef.workers.dev/>, konfigurace
+`wrangler.jsonc` v kořeni repa. Půl hodiny se hledalo, proč tam po pushi
+běží stará verze: **projekt vznikl přímým uploadem a s gitem propojený
+není** (`Source: Upload`). Nasazuje se tedy ručně přes
+`npx wrangler@4 deploy`. Detaily a druhá past (307 z `.html`) jsou
+v sekci „Kde je web publikovaný".
+
+**GitHub Pages srovnán** na stejný obsah (`579457d..aedb187`).
+
+⚠️ Ani jedna z těch dvou adres není ostrý web — `justyoga.cz` pořád běží na
+starém WordPressu. Přehození domény je samostatné rozhodnutí a čeká na něj
+`robots.txt`, `canonical`, `og:url` a 301 ze starých URL.
+
 ### 2026-09-07 (3. dávka) — vyřešeno: ukazatel na iPhonu běží
 Potvrzeno na iPhonu 14 se Safari: **po publikaci nové verze a vymazání
 dat webových stránek v Safari je ukazatel v pořádku.**
@@ -747,13 +789,34 @@ o parkování nebo lhůtě je horší než chybějící, protože podle něj čl
   wp-adminu je potřeba, aby klientka přístupové údaje poskytla znovu;
   z bezpečnostních důvodů se nikde neukládají.
 
-## Náhled pro klientku (GitHub Pages)
+## Kde je web publikovaný
 
-Web je publikovaný na **<https://josef-drdlicek.github.io/justyoga/>** —
-tohle je odkaz, který dostává klientka. Není to ostrý web, justyoga.cz
-zůstává beze změny. `web/robots.txt` s `Disallow: /` brání indexaci náhledu.
+Dvě adresy, obě zdarma, obě náhled — `justyoga.cz` pořád beží na starém
+WordPressu a nikam se nepřesměrovalo.
 
-Aktualizace náhledu (běží z větve `gh-pages`, obsah je podstrom `web/`):
+**1. Cloudflare Workers** — <https://just-yoga.drdlicek-josef.workers.dev/>
+
+Konfigurace je `wrangler.jsonc` v kořeni repa (publikuje se podsložka
+`web/`, žádný build krok). Nasazení:
+
+```
+npx wrangler@4 deploy
+```
+
+⚠️ **Nasazuje se ručně a s gitem to propojené NENÍ.** Projekt vznikl
+7. 9. 2026 přímým uploadem (`Source: Upload` ve `wrangler versions list`),
+takže si pushe na `main` nevšimne a nikdy nevšimne. Půl hodiny se hledalo,
+proč běží stará verze — tohle byla příčina. Propojení s gitem se dělá
+v dashboardu (Workers & Pages → just-yoga → Settings → Builds), ne
+wranglerem.
+
+⚠️ Workers přesměrují `/kontakt.html` na `/kontakt` (307). Neškodí:
+`normalisePath()` v `js/ui/chrome.js` příponu zahazuje, takže aktivní
+položka v menu sedne. **Kdyby se ta funkce měnila, přeměřit.**
+
+**2. GitHub Pages** — <https://josef-drdlicek.github.io/justyoga/>
+
+Běží z větve `gh-pages`, obsah je podstrom `web/`:
 
 ```
 git subtree push --prefix web origin gh-pages
@@ -762,6 +825,11 @@ git subtree push --prefix web origin gh-pages
 ⚠️ Trvá i několik minut a snadno narazí na timeout — pouštět zvlášť, ne
 v jednom příkazu s `git push`. Stav buildu:
 `gh api repos/Josef-Drdlicek/justyoga/pages --jq .status`.
+
+**⚠️ Než se cokoli z tohohle stane ostrým webem:** `web/robots.txt`
+s `Disallow: /` musí zmizet (dnes brání indexaci náhledů a je to správně),
+doplnit `canonical` + `og:url` a 301 ze starých URL. Celý checklist
+je v `CLAUDE.md`.
 
 ## Jak si web prohlédnout (lokálně, bez nasazení)
 Soubory jsou v `web/`. Používá se čistý HTML + ES moduly JavaScriptu — **nejde jen otevřít dvojklikem** (prohlížeče blokují moduly na `file://`), je potřeba lokální server, např.:

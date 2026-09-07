@@ -1,0 +1,18 @@
+// Nasazení web/ na Cloudflare Workers (statické soubory, žádný kód Workeru).
+//
+// Web nemá build krok, takže se nic nesestavuje — publikuje se obsah `web/`
+// tak, jak leží v repu. Kořen repa se nasazovat nesmí: `docs/`, `content/`
+// a STATUS.md jsou interní.
+//
+// Nasazení: npx wrangler@4 deploy
+//
+// POZOR: Workers přesměrují `/kontakt.html` na `/kontakt` (307). Je to
+// v pořádku — normalisePath() v js/ui/chrome.js příponu zahazuje, takže
+// aktivní položka v menu sedne. Kdyby se ta funkce měnila, přeměřit.
+{
+  "name": "just-yoga",
+  "compatibility_date": "2026-09-07",
+  "assets": {
+    "directory": "./web"
+  }
+}

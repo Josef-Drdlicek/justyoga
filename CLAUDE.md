@@ -311,6 +311,22 @@ Tohle jsou měřené hodnoty, ne odhady. Když se mění, **přeměřit**.
 - **`capacity: 10`** je číslo z příkladu klientky, ne potvrzený počet míst.
   Dnes se nikde nevykresluje; před oživením ověřit.
 
+## Publikování (Cloudflare Workers + GitHub Pages)
+
+Web je publikovaný na dvou adresách zdarma, obě jsou náhled — `justyoga.cz`
+pořád běží na starém WordPressu.
+
+```
+npx wrangler@4 deploy                      # Cloudflare Workers
+git subtree push --prefix web origin gh-pages   # GitHub Pages
+```
+
+Konfigurace Cloudflare je `wrangler.jsonc` v kořeni repa (publikuje se
+podsložka `web/`, žádný build krok). Adresy, pasti a proč se nasazuje
+ručně drží `STATUS.md`, sekce „Kde je web publikovaný" — hlavně tuhle:
+**Worker s gitem propojený není**, vznikl přímým uploadem, takže si pushe
+nevšimne.
+
 ## Nasazení do WordPressu (checklist)
 
 1. **`web/robots.txt` obsahuje `Disallow: /`** pro náhled. Jako motiv skončí
@@ -369,21 +385,27 @@ motivu**. Fakta, aby se to nemuselo zjišťovat znovu:
   vzhled je cizí, ale dá se přebít šablonami tak, aby plnil **naše** karty
   (`.news__item`). Vzhled tak zůstane náš a údržba cizí.
 
-## Co potřebuje souhlas klientky
+## Souhlas klientky a odchylky od brandbooku
 
-Redesign z 3. 9. 2026 je **návrh, ne schválený stav**. Žije na větvi
-`redesign-2026`; poslední klientkou schválená verze je na `main`.
+**7. 9. 2026 klientka redesign schválila** a `main` byl fast-forwardnut na
+`redesign-2026`. Obě větve drží totéž. Pravidlo „nemíchat redesign do
+`main`" tím skončilo.
 
-Tři body jdou nad rámec brandbooku a musí se s ní probrat:
+Souhlas se vztahuje na tu podobu, jak leží v repu, tedy **včetně tří
+odchylek od brandbooku**:
 
 1. **Fraunces místo Raleway** jako písmo nadpisů.
 2. **Dva stínové tokeny** proti `"shadows": "none"`.
 3. **Mint a žlutá degradované na značky**, korálová jen na tvary.
 
+⚠️ `content/brandbook-lenka-web.json` zůstal nezměněný, takže se s kódem
+v těchhle třech bodech **rozchází**. Brandbook je pořád zdroj pravdy pro
+všechno ostatní; u těchhle tří vyhrává kód.
+
 ⚠️ **22. 7. 2026 byl pokus zavést celý UX audit v jedné dávce zamítnut
-a `web/` se vracelo přes `git checkout`.** Proto: dokud klientka redesign
-neschválí, nemíchat ho do `main` a další vizuální změny dělat po jedné,
-každou jako samostatný commit se screenshotem před a po.
+a `web/` se vracelo přes `git checkout`.** Tohle pořád platí: vizuální
+změny dělat po jedné, každou jako samostatný commit se screenshotem
+před a po.
 
 ## Skilly a workflow
 
