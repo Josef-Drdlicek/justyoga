@@ -25,16 +25,48 @@ email.href = SITE_CONFIG.emailHref;
 $('[data-icon="phone"]').innerHTML = PHONE_ICON;
 $('[data-icon="mail"]').innerHTML = MAIL_ICON;
 
-// Not wired to anything yet (see the TODO in kontakt.html). Submitting is
-// prevented so a stray click cannot reload the page with the visitor's
-// answers pasted into the query string, and the visitor is told plainly
-// rather than being left to think the message went somewhere.
+// Odeslání formuláře. Statický web nemá server, takže POST obslouží
+// externí služba nastavená v SITE_CONFIG.formEndpoint. Dokud tam je `null`,
+// je odeslání zablokované a návštěvník to dozví — tiše zmizelá zpráva je
+// horší než formulář, který přizná, že nefunguje.
+const form = $("[data-contact-form]");
 const status = $("[data-form-status]");
-$("[data-contact-form]").addEventListener("submit", (event) => {
+const submit = $('[data-contact-form] button[type="submit"]');
+
+const fallbackText =
+  `Formulář zatím není propojený — napište mi prosím přímo na ${SITE_CONFIG.email} ` +
+  `nebo zavolejte na ${SITE_CONFIG.phone}.`;
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  status.textContent =
-    `Formulář zatím není propojený — napište mi prosím přímo na ${SITE_CONFIG.email} ` +
-    `nebo zavolejte na ${SITE_CONFIG.phone}.`;
+
+  if (!SITE_CONFIG.formEndpoint) {
+    status.textContent = fallbackText;
+    return;
+  }
+
+  // Dvojklik na tlačítko by odeslal zprávu dvakrát; disabled to drží po
+  // celou dobu requestu a finally ho vrátí i při chybě.
+  submit.disabled = true;
+  status.textContent = "Odesílám…";
+
+  try {
+    const response = await fetch(SITE_CONFIG.formEndpoint, {
+      method: "POST",
+      body: new FormData(form),
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    form.reset();
+    status.textContent = "Děkuji, zpráva odešla. Odpovím vám co nejdřív.";
+  } catch {
+    // Konkrétní chyba návštěvníkovi nepomůže, cesta k člověku ano.
+    status.textContent =
+      `Zprávu se nepodařilo odeslat. Napište mi prosím přímo na ${SITE_CONFIG.email} ` +
+      `nebo zavolejte na ${SITE_CONFIG.phone}.`;
+  } finally {
+    submit.disabled = false;
+  }
 });
 
 // Až po vykreslení obsahu: ukazatel si při startu hledá své zastávky
