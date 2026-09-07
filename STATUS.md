@@ -181,6 +181,15 @@ je poslala. **Zapracované jsou všechny.**
   chyba v opačném převodu by tiše rozbila firemní panel na Googlu, kde ji
   nikdo neuvidí. Leták bere stejný formátovač jako web.
 
+### Mobile-first (7. 9. 2026, 2. dávka)
+CSS je celé mobile-first a **jediný povolený zápis media query je
+`min-width`** — v CSS i v `matchMedia`. Základní pravidlo je vždy podoba
+pro telefon, širší obrazovka přidává. Důvod je měřený, ne estetický:
+`@media (width < N)` neumí Safari na iOS do 16.4 ani Samsung Internet
+do 20 (globálně 94,8 %) a zahodí celý blok, takže desktop-first
+komponenta na takovém telefonu dosedne na obsah v plné velikosti.
+Podrobně v `CLAUDE.md` a v komentáři na začátku `web/css/layout.css`.
+
 `main` drží poslední klientkou schválený stav a nesahá se na něj, dokud
 klientka redesign neuvidí.
 
@@ -208,6 +217,45 @@ klientka redesign neuvidí.
 7. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
+### 2026-09-07 (2. dávka) — mobile-first: `width < N` odchází z celého webu
+Ukazatel tempa na mobilu hlásili jako „přes celou obrazovku" i po tom, co
+měření říkalo 121 px. Analýza vysvětlila rozpor: **na části prohlížečů se
+mobilní podoba nikdy nezapnula.**
+
+Celý mobilní tvar ukazatele žil v `@media (width < 1280px)` — Media
+Queries Level 4 range syntax, kterou **Safari na iOS umí až od 16.4
+a Samsung Internet až od 20 (globálně 94,8 %)**. Prohlížeč, který ji
+nezná, zahodí celý blok, takže telefon dostal desktopové pravidlo:
+svislý panel 168×436 px přes obsah, menu bez hamburgeru roztažené na
+731 px a dokument přetékající z 375 px na 876 px (simulováno odstraněním
+těch bloků a změřeno).
+
+Kořen ale nebyla syntaxe, ale to, že ukazatel a navigace byly psané
+**desktop-first** — základní pravidlo velká podoba, malá v dotazu. Taková
+komponenta selhává katastrofálně; mobile-first selže mírně.
+
+Opraveno strukturálně: všech devět `width < N` dotazů je pryč, v CSS
+zbyly jen `min-width`. Obráceno na mobile-first: ukazatel (základ =
+proužek), navigace (základ = hamburger), fotka v hero, lepivá hlavička
+zóny, průvodce. Dva dotazy zmizely úplně — odsazení patičky
+(`--meter-clear`) a zvednutí průvodce (`--assistant-lift`) se řídí
+změřenou výškou proužku s fallbackem `0px`.
+
+Mimochodem se našla tichá chyba: `.nav__item--divide` v mobilním panelu
+nefungoval, protože ho přebíjelo `.nav__item + .nav__item` s vyšší
+specificitou — všech sedm řádků mělo stejnou linku místo silnějšího
+předělu u „Rozvrh".
+
+Ověření: otisk 22 selektorů a ~60 computed hodnot na 3 stránkách
+× 13 šířkách (360–1600, i telefon na šířku), před a po. **Geometrie
+žádného viditelného prvku se nezměnila.** Kolísání měření (reveal
+animace, fáze pulzu) ověřeno dvojím měřením téhož kódu. Nejhorší případ
+nového zápisu: po zahození všech `min-width` bloků se telefon vykreslí
+identicky a desktop dostane mobilní podobu bez přetečení.
+
+⚠️ Pravidlo v `CLAUDE.md` je přepsané: **jediný povolený zápis media
+query je `min-width`**, v CSS i v `matchMedia`.
+
 ### 2026-09-07 — připomínky klientky: ukazatel tempa, menu, rozvrh, texty
 Osm samostatných commitů na `redesign-2026`, každý jedna připomínka
 z e-mailu klientky ze 7. 9. 2026. Podrobně v „Current status" výš; tady
