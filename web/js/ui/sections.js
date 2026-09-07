@@ -5,7 +5,7 @@
    of "put this block here". */
 
 import { el, append } from "../lib/dom.js";
-import { SCHEDULE } from "../data/schedule.js";
+import { SCHEDULE, SCHEDULE_NOTE } from "../data/schedule.js";
 import { getActivityById } from "../data/activities.js";
 import { getVenueById, formatVenueAddress, venueNavigationUrl } from "../data/venues.js";
 import {
@@ -46,7 +46,12 @@ function lessonRow(row) {
   // that zone, so the page tells one story.
   return el("li", { class: "lesson", dataset: { zone: zone?.id ?? "" } }, [
     el("span", { class: "lesson__time", text: row.time }),
-    el("span", { class: "lesson__name", text: activity.shortName ?? activity.name }),
+    // `row.label` přebíjí název z activities.js: páteční termín je jóga,
+    // ale kurz pro začátečníky, ne otevřená lekce jako ostatní jógové řádky.
+    el("span", { class: "lesson__name", text: row.label ?? activity.shortName ?? activity.name }),
+    // Štítek jen tam, kde se termín chová jinak než zbytek rozvrhu. Vykresluje
+    // se před místem, protože mění to, co s řádkem jde udělat.
+    row.badge ? el("span", { class: "lesson__badge", text: row.badge }) : null,
     // Two venues, and mixing them up costs someone their lesson, so the
     // place is written out on every single row rather than implied.
     el("span", { class: "lesson__meta" }, [
@@ -72,7 +77,7 @@ export function renderWeekLegend() {
 }
 
 export function renderWeek() {
-  return el(
+  const week = el(
     "ol",
     { class: "week" },
     groupByDay(SCHEDULE).map(([day, rows], index) =>
@@ -82,6 +87,10 @@ export function renderWeek() {
       ])
     )
   );
+
+  // Pole, ne jeden uzel: `mount()` staví přes `append()`, který pole umí,
+  // takže poznámka nepotřebuje obal navíc.
+  return [week, el("p", { class: "week__note muted", text: SCHEDULE_NOTE })];
 }
 
 /* --- Activity cards --------------------------------------------------
