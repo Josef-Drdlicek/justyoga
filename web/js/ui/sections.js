@@ -367,11 +367,29 @@ export function renderFollow() {
   );
 }
 
+/* Nejnovější první — požadavek klientky ze 7. 9. 2026, a zároveň to, co
+   od sekce „co je u mě nového" každý čeká. Řadí se tady, ne v datech:
+   pořadí je pravidlo téhle sekce, takže se na něj nedá zapomenout ani
+   při ručním přidání položky, ani až obsah poteče z WordPressu.
+
+   Položka bez data (`date` smí být null) i s nečitelným datem jde na
+   konec a mezi sebou si takové položky drží pořadí ze zdroje. Kopie
+   před `sort`, aby se vstupní pole nezměnilo — a nula jako záložní
+   razítko, ne -Infinity: rozdíl dvou nekonečen je NaN a komparátor,
+   který vrátí NaN, řadí nedefinovaně. */
+function newestFirst(items) {
+  const stamp = (item) => {
+    const parsed = item.date ? Date.parse(item.date) : NaN;
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+  return [...items].sort((a, b) => stamp(b) - stamp(a));
+}
+
 export function renderNews(items) {
   return el(
     "div",
     { class: "news" },
-    items.map((item, index) => {
+    newestFirst(items).map((item, index) => {
       const source = item.source ? SOURCES[item.source] : null;
       const date = item.date ? new Date(item.date) : null;
 
