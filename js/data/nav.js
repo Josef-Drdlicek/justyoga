@@ -17,10 +17,11 @@
    řádku nevešel (změřeno) a cílová stránka má obojí v nadpisu.
 
    Popisky jsou plné, včetně „Tabata, HIIT a kruhový trénink". Sedm položek
-   s tímhle názvem potřebuje vedle loga 1108 px (změřeno), takže se do
-   vodorovného řádku vejdou až od 1180 px. Pod tím menu drží tlačítko —
-   viz komentář u breakpointu navigace v layout.css. Zkracovat popisek
-   kvůli řádku se zkoušelo a klientka to odmítla.
+   s tímhle názvem a s vlasovými linkami mezi lekcemi potřebuje vedle loga
+   1175 px (změřeno), takže se do vodorovného řádku vejdou až od 1220 px.
+   Pod tím menu drží tlačítko — viz komentář u breakpointu navigace
+   v layout.css. Zkracovat popisek kvůli řádku se zkoušelo a klientka to
+   odmítla.
 
    Odkazy na Instagram a Facebook v menu NEJSOU. Odkaz ven mezi sedmi
    odkazy dovnitř webu je nabídka, aby návštěvník odešel dřív, než najde
