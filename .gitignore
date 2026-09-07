@@ -13,3 +13,6 @@ diag*.html
 
 # Osobní korespondence s klientkou — do repa nepatří
 odpovedi/
+
+# Lokální cache wranglera (Cloudflare) — do repa nepatří.
+.wrangler/
