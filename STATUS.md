@@ -114,9 +114,9 @@ nebo Cloudflare Access před cestou `/letak`. Viz komentář v
 ⚠️ **Stránka není v `nav.js` a má `noindex, nofollow`.** Při nasazení ji
 nepřidávat do menu ani do sitemapy.
 
-### Připomínky klientky ze 7. 9. 2026 (7 dávek)
-Sedm samostatných commitů, každý jedna připomínka — pořadí podle toho, jak
-je poslala.
+### Připomínky klientky ze 7. 9. 2026 (8 dávek)
+Osm samostatných commitů, každý jedna připomínka — pořadí podle toho, jak
+je poslala. **Zapracované jsou všechny.**
 
 - **Dech v ukazateli tempa byl nesmysl.** Klientka: „6 dechů za minutu je
   taky blbost." Má pravdu; 6/min je pránájámové číslo, které mimo vedené
@@ -174,45 +174,42 @@ je poslala.
   slib nezmizel z webu: nesou ho FAQ a blok „Podle vaší kondice, ne podle
   skupiny" hned pod titulkem.
 
-⚠️ **Jedna připomínka není zapracovaná: „upravit v rozvrhu ty ':' tam
-podle češtiny."** Není jasné, co chce — časy jsou dnes `17:00–18:15`
-(dvojtečka, typografická pomlčka). Buď chce tradiční české `17.00–18.15`,
-nebo jí vadí něco jiného. Ptát se; přepsat formát naslepo znamená sáhnout
-na každý řádek rozvrhu a možná špatně.
+- **Časy v rozvrhu mají tečku.** Tradiční český zápis `17.00–18.15`.
+  Převádí se při vykreslení (`formatLessonTime`), data zůstávají
+  s dvojtečkou — stejné pole čte `js/seo/opening-hours.js` a schema.org
+  chce ISO 8601, kde je dvojtečka povinná. Kdyby se tečka zapsala do dat,
+  chyba v opačném převodu by tiše rozbila firemní panel na Googlu, kde ji
+  nikdo neuvidí. Leták bere stejný formátovač jako web.
 
 `main` drží poslední klientkou schválený stav a nesahá se na něj, dokud
 klientka redesign neuvidí.
 
 ## Next steps
-0. **Zeptat se klientky na formát časů v rozvrhu** — připomínka „upravit
-   v rozvrhu ty ':' tam podle češtiny" ze 7. 9. 2026 je jediná, která
-   zůstala nezapracovaná, protože není jasné, co chce. Dnes je
-   `17:00–18:15`.
-1. **Potvrdit zrušení „mostu"** — viz výš. Je to jediná změna ze 4. 9.,
+0. **Potvrdit zrušení „mostu"** — viz výš. Je to jediná změna ze 4. 9.,
    kterou klientka nezadala přímo.
-2. **Ukázat klientce** a získat souhlas se třemi odchylkami od brandbooku:
+1. **Ukázat klientce** a získat souhlas se třemi odchylkami od brandbooku:
    Fraunces místo Raleway, dva stínové tokeny proti `"shadows": "none"`,
    degradace mint/žluté na značky.
-3. **Rezervační odkazy** — nejdražší tření na webu, na redesignu nezávislé.
+2. **Rezervační odkazy** — nejdražší tření na webu, na redesignu nezávislé.
    [ZJISTIT u klientky: umí Tymuj veřejný odkaz na kalendář nebo přímo na
    termín? Totéž u chytre-rezervace.] Dnes vedou na pozvánku do týmu.
-4. **Hosting bez WordPressu** (rozhodnuto 4. 9. 2026) — checklist nasazení
+3. **Hosting bez WordPressu** (rozhodnuto 4. 9. 2026) — checklist nasazení
    v `CLAUDE.md` je psaný na WordPress a je tím z velké části neplatný:
    Gutenberg tabulky pro rozvrh a ceník, Contact Form 7, plugin pro
    sitemapu i tažení novinek přes WP cron padají. Nahradit rozhodnutím,
    kam web půjde, a hlavně **čím se nahradí kontaktní formulář** (statický
    web nemá kam poslat POST) a **jak bude klientka editovat ceník**, což
    byla klíčová podmínka zadání.
-5. **Fakta, která blokují nasazení:** parkování, kapacita, pravidla
+4. **Fakta, která blokují nasazení:** parkování, kapacita, pravidla
    odhlašování, souřadnice, věková hranice, přenosnost permanentky. Šest
    otázek ve `faq.js` na ně čeká zakomentovaných.
-6. **Reference a fotky zevnitř** — sociální důkaz na webu není ani jednou.
-7. **Měření prokliků do rezervace.** Bez něj je jakékoli další CRO slepé.
-8. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
+5. **Reference a fotky zevnitř** — sociální důkaz na webu není ani jednou.
+6. **Měření prokliků do rezervace.** Bez něj je jakékoli další CRO slepé.
+7. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
 ### 2026-09-07 — připomínky klientky: ukazatel tempa, menu, rozvrh, texty
-Sedm samostatných commitů na `redesign-2026`, každý jedna připomínka
+Osm samostatných commitů na `redesign-2026`, každý jedna připomínka
 z e-mailu klientky ze 7. 9. 2026. Podrobně v „Current status" výš; tady
 jen to, co stálo víc práce, než se čekalo:
 
@@ -234,8 +231,9 @@ Ověřeno headless Chromem: čtyři stránky × šířky 360/390/412/500/768/102
 1220/1280/1440/1600 px, žádná chyba v konzoli, žádné přetečení do šířky,
 rozvrh 10 lekcí, novinky v pořadí 2026-09-01 → 2026-08-20.
 
-⚠️ Nezapracováno: „upravit v rozvrhu ty ':' tam podle češtiny" — není
-jasné, co chce. Viz Next steps 0.
+- **Časy v rozvrhu mají tečku** (`17.00–18.15`), ale jen v zobrazení.
+  V datech zůstává dvojtečka, protože ze stejného pole se skládají
+  strukturovaná data pro Google, kde ISO 8601 dvojtečku vyžaduje.
 
 ### 2026-09-04 — průvodce zmizel z mobilu, menu se zavírá klepnutím mimo
 Dvě opravy z uživatelské zpětné vazby, každá samostatný commit na
