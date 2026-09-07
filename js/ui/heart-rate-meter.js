@@ -6,7 +6,7 @@
    od klidu k maximu a zase se ustálí.
 
    Proč čtyři hodnoty a ne jedna: samotné číslo tepu je hezké, ale nic
-   nevysvětluje. Dech 6 proti 35 za minutu řekne o rozdílu mezi jógou
+   nevysvětluje. Dech 10 proti 30 za minutu řekne o rozdílu mezi jógou
    a jumpingem víc než odstavec textu, a tepová zóna 1 proti 4 to zasadí
    do měřítka, které lidé znají z hodinek.
 
