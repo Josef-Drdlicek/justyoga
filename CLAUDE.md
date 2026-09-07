@@ -159,11 +159,14 @@ web/
   - **1280px u ukazatele tempa** — „vejde se vedle obsahu svislý panel?".
     Pod ním se ukazatel překlopí do vodorovného proužku dole.
   - **480px uvnitř toho proužku.**
-  - **1180px u navigace** — „vejde se sedm položek vedle loga do řádku?".
+  - **1220px u navigace** — „vejde se sedm položek vedle loga do řádku?".
     Klientka chce v menu plný název „Tabata, HIIT a kruhový trénink"
-    a s ním potřebuje řádek 1108px (změřeno). Pod 1180px drží menu
-    tlačítko. Zavedeno 4. 9. 2026; spravilo to zároveň starší chybu, kdy
-    se na 768–1023px vodorovné menu zapínalo, ale do řádku se nevešlo.
+    a s ním a s vlasovými linkami mezi lekcemi potřebuje 1175px obsahu;
+    přetékat přestane od 1200px (změřeno), hranice je 1220px s rezervou.
+    Pod ní drží menu tlačítko. Zavedeno 4. 9. 2026 jako 1180px, spravilo
+    to zároveň starší chybu, kdy se na 768–1023px vodorovné menu
+    zapínalo, ale do řádku se nevešlo; **posunuto na 1220px 7. 9. 2026**
+    po přidání linek mezi položkami lekcí. ⚠️ Sáhnutí do menu = přeměřit.
 
   Jinam se breakpoint nepřidává.
 - **Obsah je reálný**, stažený z justyoga.cz. Neověřené údaje jsou označené

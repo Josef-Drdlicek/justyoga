@@ -62,13 +62,29 @@ export function renderHeader() {
     }),
   ]);
 
-  // Dvě skupiny v jednom seznamu: nabídka lekcí a stránky webu. Oddělené
-  // vizuálně (viz .nav__item--divide), ale pořád jeden <ul>, aby čtečka
-  // ohlásila jednu navigaci a ne dvě.
+  /* Dvě skupiny v jednom seznamu: nabídka lekcí a stránky webu. Oddělené
+     vizuálně (viz .nav__item--divide), ale pořád jeden <ul>, aby čtečka
+     ohlásila jednu navigaci a ne dvě.
+
+     Vlasovou linku dostane i každá další položka NABÍDKY LEKCÍ, ne jen
+     předěl mezi skupinami. Připomínka klientky ze 7. 9. 2026: „Tabata,
+     HIIT a kruhový trénink" je vedle „Jóga" a „Jumping" tak dlouhý
+     popisek, že se z těch tří slil jeden pruh textu a nebylo poznat, kde
+     jedna položka končí. Ze skupiny lekcí je tím segmentovaný přepínač,
+     zatímco stránky webu zůstávají plynulým seznamem — tak se ta dvě
+     pásma pořád liší.
+
+     Dvě různé třídy, ne jedna: ve svislém panelu na telefonu má oddělovač
+     KAŽDÝ řádek (`.nav__item + .nav__item`), takže by se linkami mezi
+     lekcemi nic nezískalo a jen by se rozmazal ten jediný silnější
+     předěl, který tam odděluje lekce od stránek. `--split` proto kreslí
+     jen svislou linku ve vodorovném řádku. */
   const items = NAV_ITEMS.map((item, index) => {
     const link = navLink(item, here);
     const previous = NAV_ITEMS[index - 1];
-    if (previous && previous.group !== item.group) link.classList.add("nav__item--divide");
+    if (!previous) return link;
+    if (previous.group !== item.group) link.classList.add("nav__item--divide");
+    else if (item.group === "lessons") link.classList.add("nav__item--split");
     return link;
   });
 

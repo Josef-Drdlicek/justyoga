@@ -6,12 +6,18 @@
 
 /* ==== Header =========================================================
 
-   ⚠️ Navigace má vlastní breakpoint 1180 px, ne 768 px jako zbytek webu.
+   ⚠️ Navigace má vlastní breakpoint 1220 px, ne 768 px jako zbytek webu.
    Není to breakpoint layoutu, ale odpověď na otázku „vejde se sedm
    položek vedle loga do jednoho řádku?". Klientka chce v menu plný název
-   „Tabata, HIIT a kruhový trénink" a s ním potřebuje řádek 1108 px
-   (změřeno: logo + seznam + tlačítko Rezervovat). Pod 1180 px menu drží
+   „Tabata, HIIT a kruhový trénink" a s ním potřebuje logo + seznam +
+   tlačítko Rezervovat = 1175 px obsahu. Přetékat přestane od 1200 px
+   (změřeno), takže hranice je 1220 px s rezervou. Pod ní menu drží
    tlačítko. Stejná povaha výjimky jako 1280 px u ukazatele tempa.
+
+   ⚠️ Hodnota se posunula ze 1180 na 1220 px 7. 9. 2026, když do nabídky
+   lekcí přibyly vlasové linky mezi položkami (+40 px). Na 1180 px pak
+   hlavička přetékala o 17 px. Kdykoli se do menu sáhne, tohle se musí
+   PŘEMĚŘIT — je to jediné číslo, které drží hlavičku pohromadě.
 
    Tím se zároveň spravila starší chyba: na 768–1023 px se vodorovné menu
    zapínalo, ale do řádku se nevešlo ani se starými popisky, takže
@@ -51,17 +57,24 @@
   gap: var(--space-4);
 }
 
-/* Předěl mezi nabídkou lekcí a stránkami webu. Vlasová linka, ne mezera:
-   samotná mezera se v řádku ztratí a obě skupiny splynou v jeden seznam. */
-@media (min-width: 1180px) {
-  .nav__item--divide {
+/* Předěl mezi nabídkou lekcí a stránkami webu (`--divide`) a předěly mezi
+   jednotlivými lekcemi (`--split`). Vlasová linka, ne mezera: samotná
+   mezera se v řádku ztratí a položky splynou v jeden pruh textu — což se
+   dělo přesně u „Tabata, HIIT a kruhový trénink" mezi „Jóga" a „Jumping"
+   (připomínka klientky ze 7. 9. 2026). */
+@media (min-width: 1220px) {
+  .nav__item--divide,
+  .nav__item--split {
     margin-left: var(--space-1);
     padding-left: var(--space-4);
     border-left: 1px solid var(--color-border);
   }
 }
 
-@media (width < 1180px) {
+/* Ve svislém panelu jen předěl mezi skupinami. Linky mezi lekcemi tam
+   nepatří: oddělovač má každý řádek už z `.nav__item + .nav__item`,
+   takže by se jen rozmazalo, kde končí lekce a začínají stránky. */
+@media (width < 1220px) {
   .nav__item--divide {
     border-top-width: 1px;
     border-top-color: var(--color-border);
@@ -104,7 +117,7 @@
   display: none;
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 1220px) {
   .nav__panel {
     display: flex;
     align-items: center;
@@ -112,7 +125,7 @@
   }
 }
 
-@media (width < 1180px) {
+@media (width < 1220px) {
   .nav__toggle {
     display: flex;
     flex-direction: column;
