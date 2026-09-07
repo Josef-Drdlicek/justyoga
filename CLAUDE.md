@@ -150,16 +150,42 @@ web/
   typografii, tvar a motion. Nic nehardcoduje barvu, mezeru ani radius jinde —
   **a žádný literál v `transition`**: token se při `prefers-reduced-motion`
   nuluje, zapsaná hodnota ne.
-- **Jediný breakpoint layoutu 768px, dvě nezaměnitelná znění.**
-  `min-width: 768px` pro desktop a výš, `width < 768px` pro nižší.
-  `max-width: 768px` se nepoužívá — přesahoval by s prvním a na šířce
-  přesně 768px platily oba.
-  Výjimky jsou tři a všechny odpovídají na otázku „vejde se to sem?",
-  ne na „jak má vypadat rozvržení":
-  - **1280px u ukazatele tempa** — „vejde se vedle obsahu svislý panel?".
-    Pod ním se ukazatel překlopí do vodorovného proužku dole.
-  - **480px uvnitř toho proužku.**
-  - **1220px u navigace** — „vejde se sedm položek vedle loga do řádku?".
+- **Mobile-first. Jediný povolený zápis media query je `min-width`.**
+  Ne `max-width`, ne `width < N`, a to nikde — v CSS ani v `matchMedia`.
+  Zavedeno 7. 9. 2026 a je to invariant, ne vkus:
+
+  **Základní pravidlo (bez media query) je vždy podoba pro telefon**
+  a `min-width` na širší obrazovce přidává. Když pak jakýkoli dotaz selže
+  — nepodporovaná syntaxe, cizí stylesheet, chyba při úpravě — telefon
+  dostane **menší** tvar, ne větší. Ověřeno simulací: když se zahodí
+  všechny `min-width` bloky, telefon na 390px se vykreslí **identicky**
+  a desktop na 1440px dostane mobilní podobu, ošklivou ale použitelnou,
+  bez přetečení do šířky.
+
+  ⚠️ **Proč zmizel `width < N`.** Je to Media Queries Level 4 range
+  syntax: **Safari na iOS až od 16.4, Samsung Internet až od 20, globálně
+  94,8 %.** Prohlížeč, který ji nezná, zahodí CELÝ blok. Ukazatel tempa
+  byl do 7. 9. 2026 psaný desktop-first, takže na takovém telefonu na
+  obsah dosedl svislý panel 168×436px, který nešlo zavřít, a menu
+  přeteklo z 375px na 876px (změřeno). U webu, který se otevírá i ve
+  staré aplikaci nebo na starším telefonu, je každý dvacátý návštěvník
+  moc. `max-width` je zakázaný z původního důvodu (na šířce přesně 768px
+  by platil zároveň s `min-width: 768px`); mobile-first tu otázku ruší,
+  protože dolní hranice není potřeba vůbec.
+
+  Šířky, které web zná, a co je za nimi za otázku. **Jinam se breakpoint
+  nepřidává** a všechny odpovídají na „vejde se to sem?", ne na „jak má
+  vypadat rozvržení":
+  - **768px** — vejde se obsah do víc sloupců? Tohle je breakpoint
+    layoutu, ostatní tři jsou odpověď na konkrétní prvek.
+  - **1280px u ukazatele tempa** — vejde se vedle obsahu svislý panel?
+    Základ je proužek u spodní hrany, panel přidává tenhle blok. Drží
+    zároveň vyhrazený pruh v kontejneru a hlavičku, která z něj
+    vystupuje — všechno v jednom bloku, aby to číslo nestálo na třech
+    místech.
+  - **480px uvnitř toho proužku** — vejdou se tři hodnoty vedle názvu
+    zóny a tepu do jednoho řádku? Pod tím mají vlastní řádek.
+  - **1220px u navigace** — vejde se sedm položek vedle loga do řádku?
     Klientka chce v menu plný název „Tabata, HIIT a kruhový trénink"
     a s ním a s vlasovými linkami mezi lekcemi potřebuje 1175px obsahu;
     přetékat přestane od 1200px (změřeno), hranice je 1220px s rezervou.
@@ -168,7 +194,13 @@ web/
     zapínalo, ale do řádku se nevešlo; **posunuto na 1220px 7. 9. 2026**
     po přidání linek mezi položkami lekcí. ⚠️ Sáhnutí do menu = přeměřit.
 
-  Jinam se breakpoint nepřidává.
+  **Co se nerezervuje breakpointem, ale změřenou hodnotou.** Odsazení
+  patičky pod proužkem ukazatele (`--meter-clear`) a zvednutí průvodce
+  nad něj (`--assistant-lift`) žádnou media query nemají: hodnotu měří
+  JS z reálné výšky proužku a `0px` ve fallbacku znamená „nic
+  nerezervuj". Je to zároveň jediný správný zdroj pravdy — proužek zalomí
+  popisky na jiný počet řádků podle šířky, takže napevno zapsaná hodnota
+  se vždycky rozejde (7,5rem u průvodce byla o 40px menší než realita).
 - **Obsah je reálný**, stažený z justyoga.cz. Neověřené údaje jsou označené
   (viz Pasti v datech).
 

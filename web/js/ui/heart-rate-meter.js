@@ -16,10 +16,15 @@
    není `aria-live`: hodnoty se mění desítkykrát za scroll a čtečka by
    mluvila přes všechno ostatní.
 
-   ⚠️ Pod 1280 px je z panelu vodorovný proužek u spodní hrany. Ten je
+   ⚠️ Do 1280 px je z panelu vodorovný proužek u spodní hrany. Ten je
    z principu přes obsah, takže platí dvě pravidla: musí být co nejnižší
-   (proto na mobilu nemá budík ani tlačítko) a musí si dole vyhradit
-   místo, aby na konci stránky nic nezakrýval — viz reserveStripSpace().
+   (proto v něm není budík ani tlačítko) a musí si dole vyhradit místo,
+   aby na konci stránky nic nezakrýval — viz reserveBottomSpace().
+
+   ⚠️ Proužek je v CSS ZÁKLADNÍ podoba a panel ji přebíjí až od 1280 px.
+   Není to detail zápisu: dokud to bylo naopak, dostal telefon, který
+   `@media (width < N)` neumí, panel 168×436 px přes obsah. Viz invariant
+   na začátku css/layout.css.
 
    Tři věci, které z toho dělají přístroj a ne hračku:
 
@@ -40,6 +45,11 @@ const lerp = (a, b, t) => a + (b - a) * t;
    prázdný na většině obvodu už při nejklidnější lekci vypadá jako porucha. */
 const GAUGE_MIN = 60;
 const GAUGE_MAX = 180;
+
+/* Odstup proužku od spodní hrany, tedy `--space-3` v tokenech. Vejde se
+   do rezervovaného místa, aby obsah pod proužkem nekončil přesně na jeho
+   horní hraně — viz reserveBottomSpace(). */
+const STRIP_GAP = 12;
 
 /** Které hodnoty se interpolují. */
 export const METRICS = ["bpm", "hrZone", "breaths", "effort"];
@@ -222,30 +232,40 @@ function applyZone(meter, zone) {
   }
 }
 
-/* Pod 1280 px je z panelu proužek přilepený ke spodní hraně, a ten místo
-   pro sebe nikdo nedržel: ležel na patičce a na posledním obsahu stránky
-   trvale, na každé stránce. Připomínka klientky ze 7. 9. 2026 („na mobilu
-   zabírá obrazovku a nejde web proklikávat") mířila přesně sem.
+/* Ukazatel v podobě proužku leží přes obsah, a místo pro sebe nikdo
+   nedržel: ležel na patičce a na posledním obsahu stránky trvale, na
+   každé stránce. Připomínka klientky ze 7. 9. 2026 („na mobilu zabírá
+   obrazovku a nejde web proklikávat") mířila přesně sem.
 
    Výška se MĚŘÍ, ne hádá — proužek zalomí popisky na jiný počet řádků
    podle šířky a podle toho, jak dlouhý název zóny právě drží. Stejný
-   postup jako keepClearOfMeter() v js/ui/assistant.js; hodnota jde do
-   `--meter-strip` na <html> a CSS z ní dělá odsazení patičky
-   a scroll-padding pro kotvy. */
-function reserveStripSpace(meter) {
+   postup jako keepClearOfMeter() v js/ui/assistant.js.
+
+   Publikuje se JEDNA hodnota: `--meter-clear` na <html> = kolik místa si
+   ukazatel u spodní hrany bere, včetně svého odstupu od ní. CSS ji bere
+   surovou (odsazení patičky, scroll-padding pro kotvy), takže žádná
+   media query na straně CSS není potřeba — o tom, jestli se rezervuje,
+   rozhoduje samotná změřená výška.
+
+   Proto se tu netestuje breakpoint, ale výška: svislý panel u pravého
+   okraje ani skrytý ukazatel (stránka bez zón) žádné místo dole neberou
+   a offsetHeight je v obou případech ten správný zdroj pravdy. */
+function reserveBottomSpace(meter) {
   const root = document.documentElement;
-  const strip = window.matchMedia("(width < 1280px)");
+  const panel = window.matchMedia("(min-width: 1280px)");
 
   const sync = () => {
-    if (!strip.matches) {
-      root.style.removeProperty("--meter-strip");
+    // Svislý panel stojí ve vyhrazeném pruhu vedle obsahu, ne nad ním.
+    const height = panel.matches ? 0 : meter.offsetHeight;
+    if (height === 0) {
+      root.style.removeProperty("--meter-clear");
       return;
     }
-    root.style.setProperty("--meter-strip", `${meter.offsetHeight}px`);
+    root.style.setProperty("--meter-clear", `${height + STRIP_GAP}px`);
   };
 
   new ResizeObserver(sync).observe(meter);
-  strip.addEventListener("change", sync);
+  panel.addEventListener("change", sync);
   sync();
 }
 
@@ -267,7 +287,7 @@ export function initHeartRateMeter() {
   // a nezávisí na podpoře selektoru.
   document.documentElement.classList.add("has-meter");
 
-  reserveStripSpace(meter);
+  reserveBottomSpace(meter);
 
   const bpmNodeEarly = $("[data-hrm-bpm]", meter);
 
@@ -280,15 +300,15 @@ export function initHeartRateMeter() {
     .map((node) => ({ zone: byId.get(node.dataset.zoneStop), node }))
     .filter((stop) => stop.zone);
 
-  /* Stránka bez zastávek (kontakt, o mně) ukazatel nemaže — na desktopu
-     ho nechá v klidovém stavu. Je to pořád platná informace („tohle
-     studio jede od 75 do 165"), pořád to nese výzvu k akci a stojí to
-     ve vyhrazeném pruhu vedle obsahu, takže nic nestíní.
+  /* Stránka bez zastávek (kontakt, o mně) ukazatel nemaže — v podobě
+     panelu ho nechá v klidovém stavu. Je to pořád platná informace
+     („tohle studio jede od 75 do 165"), pořád to nese výzvu k akci
+     a stojí to ve vyhrazeném pruhu vedle obsahu, takže nic nestíní.
 
-     Na mobilu je to jiný obchod: proužek tam leží PŘES obsah, tlačítko
-     v něm není a hodnoty se nemají podle čeho měnit, takže by si vzal
-     ~100 px obrazovky za nic. `data-static` ho tam schová (viz CSS)
-     a ResizeObserver v reserveStripSpace() pak srovná rezervaci na nulu. */
+     V podobě proužku je to jiný obchod: leží PŘES obsah, tlačítko v něm
+     není a hodnoty se nemají podle čeho měnit, takže by si vzal ~100 px
+     obrazovky za nic. `data-static` ho tam schová (viz CSS) a
+     ResizeObserver v reserveBottomSpace() pak srovná rezervaci na nulu. */
   if (stops.length === 0) {
     applyZone(meter, REST_ZONE);
     bpmNodeEarly.textContent = String(REST_ZONE.bpm);
