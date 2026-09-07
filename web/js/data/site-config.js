@@ -21,8 +21,14 @@ export const SITE_CONFIG = {
   // i navigační odkazy potřebují ulici, PSČ a město zvlášť).
   phone: "723 466 926",
   phoneHref: "tel:+420723466926",
-  email: "info@justyoga.cz",
-  emailHref: "mailto:info@justyoga.cz",
+  email: "justlenicka@gmail.com",
+  emailHref: "mailto:justlenicka@gmail.com",
+  // Kam odesílá formulář na kontaktu. `null` znamená "nenapojeno" —
+  // js/pages/kontakt.js pak odeslání zablokuje a řekne to návštěvníkovi,
+  // místo aby zpráva tiše zmizela. Statický web nemá server, takže POST
+  // musí obsloužit externí služba (Web3Forms, Formspree, Netlify Forms).
+  // Čeká se URL, která přijme POST s FormData a vrátí 2xx.
+  formEndpoint: null,
   passValidityMonths: 6,
   social: {
     facebook: "https://www.facebook.com/justyogacz",

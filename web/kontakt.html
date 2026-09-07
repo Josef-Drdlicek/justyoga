@@ -104,12 +104,14 @@
                 <button type="submit" class="btn btn--primary btn--block">Odeslat</button>
                 <p class="contact__status" data-form-status role="status"></p>
               </form>
-              <!-- TODO: při nasazení do WordPressu nahradit shortcodem Contact
-                   Form 7 (plugin je na produkci aktivní). Názvy polí
-                   (your-name / your-email / your-subject / your-message)
-                   odpovídají reálnému formuláři na justyoga.cz/kontakt/,
-                   takže se mění jen obal, ne obsah. Do té doby odeslání
-                   nikam nevede — viz js/pages/kontakt.js. -->
+              <!-- Odeslání obsluhuje SITE_CONFIG.formEndpoint (viz
+                   js/pages/kontakt.js). Dokud je `null`, formulář odeslání
+                   zablokuje a pošle návštěvníka na e-mail nebo telefon.
+                   Názvy polí (your-name / your-email / your-subject /
+                   your-message) odpovídají reálnému formuláři na
+                   justyoga.cz/kontakt/, takže při případném nasazení do
+                   WordPressu stačí obal nahradit shortcodem Contact Form 7
+                   a obsah zůstane. -->
             </div>
           </div>
         </div>
