@@ -364,9 +364,21 @@
   gap: var(--space-6);
 }
 
+/* auto-fit, ne pevný počet sloupců. Napevno zapsané `repeat(4, 1fr)`
+   fungovalo přesně tak dlouho, dokud se cvičilo čtyři dny; s pátečním
+   kurzem (7. 9. 2026) by pátý den spadl sám na druhý řádek a ve chvíli,
+   kdy klientka přidá šestý, znovu. Odpověď „kolik dnů se sem vejde" patří
+   mřížce, ne breakpointu — a jinak by tady musel přibýt další, což
+   CLAUDE.md zakazuje.
+
+   10rem je nejužší sloupec, ve kterém se ještě vejde „Jóga pro
+   začátečníky" i štítek. Pět dnů se tak vejde do řádku od ~1024 px
+   nahoru; mezi 1280 a ~1400 px, kde svislý panel ukazatele bere
+   obsahu 26rem, pátek na druhý řádek spadne. Zúžit sloupec ještě víc
+   kvůli téhle jedné šířce by zlomilo názvy lekcí všude jinde. */
 @media (min-width: 768px) {
   .week {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
     gap: var(--space-5);
   }
 }
@@ -418,6 +430,34 @@
   gap: 0.35rem;
   font-size: var(--text-xs);
   color: var(--color-text-muted);
+}
+
+/* Štítek termínu, který se chová jinak než zbytek rozvrhu (páteční kurz).
+   Berry, ne korálová: nese text pod 24 px, takže potřebuje 4,5:1 —
+   berry má na bílé kartě 5,50, korálová 3,12 a smí jen kreslit tvary.
+   Obrys místo výplně, protože vyplněný štítek na řádku by soupeřil
+   s barevnou linkou zóny vlevo, a ta nese informaci. */
+.lesson__badge {
+  justify-self: start;
+  /* Zalomený štítek čte jako rozbitá grafika, ne jako informace. */
+  white-space: nowrap;
+  margin-top: var(--space-1);
+  padding: 0.15em 0.6em;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-accent);
+}
+
+/* Poznámka pod celým rozvrhem. Štítek na řádku říká, že je termín kurz;
+   tohle říká, že se do rozjetého kurzu dá přidat — bez toho si „kurz"
+   část lidí přeloží jako „už mi ujel". */
+.week__note {
+  margin: var(--space-5) 0 0;
+  max-width: var(--measure-narrow);
+  font-size: var(--text-sm);
 }
 
 /* ==== Activities ===================================================== */
