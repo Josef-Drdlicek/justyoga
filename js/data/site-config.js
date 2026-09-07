@@ -26,9 +26,15 @@ export const SITE_CONFIG = {
   // Kam odesílá formulář na kontaktu. `null` znamená "nenapojeno" —
   // js/pages/kontakt.js pak odeslání zablokuje a řekne to návštěvníkovi,
   // místo aby zpráva tiše zmizela. Statický web nemá server, takže POST
-  // musí obsloužit externí služba (Web3Forms, Formspree, Netlify Forms).
-  // Čeká se URL, která přijme POST s FormData a vrátí 2xx.
-  formEndpoint: null,
+  // musí obsloužit externí služba; tady je to Web3Forms, které zprávy
+  // přeposílá na e-mail zadaný při registraci klíče.
+  formEndpoint: "https://api.web3forms.com/submit",
+  // Klíč je veřejný záměrně — Web3Forms ho tak navrhlo, jede v kódu
+  // stránky a sám o sobě nic neodemyká. Nepatří proto mezi tajemství,
+  // ale patří sem, aby nebyl zapsaný uprostřed logiky odesílání.
+  // ⚠️ Váže se na schránku, která zprávy dostává. Změna schránky =
+  // nový klíč, tenhle přestane platit.
+  formAccessKey: "0a76feb4-c609-4439-8bca-432f1ce38e58",
   passValidityMonths: 6,
   social: {
     facebook: "https://www.facebook.com/justyogacz",

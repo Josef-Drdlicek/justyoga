@@ -50,13 +50,27 @@ form.addEventListener("submit", async (event) => {
   submit.disabled = true;
   status.textContent = "Odesílám…";
 
+  const payload = new FormData(form);
+  payload.append("access_key", SITE_CONFIG.formAccessKey);
+
+  // Bez tohohle přijde Lence do schránky předmět "New Submission" a odesílatel
+  // Web3Forms, takže nepozná, o co jde, ani komu odpovídá. `replyto` je tu
+  // nutné explicitně: Web3Forms si adresu tahá z pole jménem `email`, my ale
+  // máme `your-email` podle Contact Form 7 na produkci.
+  payload.append("subject", `Web justyoga.cz: ${payload.get("your-subject")}`);
+  payload.append("from_name", payload.get("your-name"));
+  payload.append("replyto", payload.get("your-email"));
+
   try {
     const response = await fetch(SITE_CONFIG.formEndpoint, {
       method: "POST",
-      body: new FormData(form),
+      body: payload,
       headers: { Accept: "application/json" },
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    // Web3Forms vrací 200 i pro odmítnutou zprávu (zachycený spam, vyčerpaná
+    // kvóta), takže samotný stavový kód nestačí — rozhoduje `success` v těle.
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message || `HTTP ${response.status}`);
     form.reset();
     status.textContent = "Děkuji, zpráva odešla. Odpovím vám co nejdřív.";
   } catch {
