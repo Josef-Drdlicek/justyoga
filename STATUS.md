@@ -644,10 +644,6 @@ o parkování nebo lhůtě je horší než chybějící, protože podle něj čl
 - **Přemapované barvy typů lekcí** (jumping → korál, tabata → oranžová) jsou
   vizuální změna na ceníku i v rozvrhu. Nechat klientku posoudit; je to
   jediná dávka, kterou lze samostatně vrátit (`13445ef`).
-- **Poprosit vlastníka organizace o archivaci starého repa**
-  `andreadamaskova-ops/Lenka-web`. Je veřejné, obsahuje fotky a videa
-  klientky, a z tohoto účtu s ním nelze nic dělat. Až po zavedení nového
-  odkazu na náhled, ať se klientce nerozpadne odkaz z e-mailu.
 - **Osud popupu „test"** (Popup Maker) a starých neaktivních šablon
   (yoga-coach, yogasana-lite, yoga-studio) — řeší se až u nasazení.
 
@@ -682,12 +678,6 @@ git subtree push --prefix web origin gh-pages
 ⚠️ Trvá i několik minut a snadno narazí na timeout — pouštět zvlášť, ne
 v jednom příkazu s `git push`. Stav buildu:
 `gh api repos/Josef-Drdlicek/justyoga/pages --jq .status`.
-
-⚠️ **Starý odkaz `andreadamaskova-ops.github.io/Lenka-web/` je zamrzlý na
-verzi 2** a z tohoto účtu ho aktualizovat nelze — repo hlásí `push: false`
-a `admin: false`. Klientka ho může mít v e-mailu; až bude nový odkaz
-zavedený, poprosit vlastníka organizace o archivaci starého repa (je
-veřejné a obsahuje fotky i videa klientky).
 
 ## Jak si web prohlédnout (lokálně, bez nasazení)
 Soubory jsou v `web/`. Používá se čistý HTML + ES moduly JavaScriptu — **nejde jen otevřít dvojklikem** (prohlížeče blokují moduly na `file://`), je potřeba lokální server, např.:
