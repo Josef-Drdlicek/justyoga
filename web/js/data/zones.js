@@ -16,8 +16,15 @@
    hrZone      – tepová zóna 1–5 podle běžného pětizónového modelu
                  (1 = regenerace, 3 = aerobní, 4 = anaerobní)
    breaths     – nádechů za minutu. U jógy je to ta nejvýmluvnější hodnota
-                 celého panelu: 6 proti 35 řekne o rozdílu mezi lekcemi víc
+                 celého panelu: 10 proti 30 řekne o rozdílu mezi lekcemi víc
                  než odstavec textu.
+                 ⚠️ Hodnoty musí zůstat ve fyziologickém rozsahu, jinak panel
+                 přestane být důvěryhodný. Klidová frekvence dospělého je
+                 12–18/min, při vědomém zklidnění na józe klesá k 10 a při
+                 maximální zátěži roste ke 30. Dřív tu bylo 6 a 35 — 6 je
+                 pránájámové číslo, které mimo dechové cvičení čte jako
+                 chyba, a 35 je nad běžným maximem. Připomínka klientky
+                 ze 7. 9. 2026.
    effort      – vnímaná námaha na běžné škále 1–10 (RPE)
    slug        – kotva sekce v URL. Čitelná (#joga), ne technická
                  (#zona-calm) — chodí se na ni z menu a lidi si ji posílají.
@@ -40,7 +47,7 @@ export const ZONES = [
     short: "Klid",
     bpm: 75,
     hrZone: 1,
-    breaths: 6,
+    breaths: 10,
     effort: 2,
     heading: "Nadechněte se a zklidněte mysl",
     slogan: "Váš prostor pro hluboký nádech.",
@@ -58,7 +65,7 @@ export const ZONES = [
     short: "Rytmus",
     bpm: 115,
     hrZone: 3,
-    breaths: 20,
+    breaths: 24,
     effort: 6,
     heading: "Najděte svůj rytmus",
     slogan: "Rozpohybujte tělo.",
@@ -76,7 +83,7 @@ export const ZONES = [
     short: "Maximum",
     bpm: 165,
     hrZone: 4,
-    breaths: 35,
+    breaths: 30,
     effort: 9,
     heading: "Nakopněte tep na maximum",
     slogan: "Vyskočte ze stereotypu a budujte sílu.",
@@ -96,7 +103,7 @@ export const REST_ZONE = {
   short: "Restart",
   bpm: 96,
   hrZone: 2,
-  breaths: 12,
+  breaths: 16,
   effort: 3,
   cta: { label: "Vybrat si lekci", href: "rozvrh-cenik.html#rozvrh" },
   heading: "Váš dech, váš tep, váš restart",
