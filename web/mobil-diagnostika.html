@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Diagnostika ukazatele tempa</title>
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!--
+      ⚠️ DOČASNÁ STRÁNKA. Není v `nav.js`, není v sitemapě, má `noindex`
+      a před ostrým nasazením se MAŽE.
+
+      Proč existuje: ukazatel tempa se na iPhonu 14 se Safari chová jinak,
+      než co dokáže naměřit headless Chrome, a bez čísel z toho konkrétního
+      telefonu se dá jen hádat. Tahle stránka vykreslí ukazatel přes ty
+      samé moduly a to samé CSS jako zbytek webu, jen k němu připíše, co si
+      prohlížeč o rozvržení skutečně myslí. Uživatel ji otevře na telefonu
+      a pošle screenshot.
+
+      Ukazatel je stejně jako všude jinde PŘÍMÝ POTOMEK <body> — position:
+      fixed se zasekne uvnitř předka s transform, filter nebo contain.
+      Zároveň je to důvod, proč tohle není iframe: fixed prvek uvnitř
+      iframu se na iOS chová jinak než na skutečné stránce, takže by
+      měření lhalo přesně tam, kde ho potřebujeme.
+    -->
+
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+
+    <style>
+      /* Vlastní styl jen pro výpis. Ukazatel sám si bere layout.css. */
+      .diag {
+        margin: 0 auto;
+        padding: var(--space-5) var(--space-4) 60vh;
+        max-width: 40rem;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .diag h1 {
+        font-size: 1.25rem;
+        line-height: 1.2;
+      }
+
+      .diag__group {
+        margin: var(--space-5) 0 0;
+        padding: var(--space-3);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
+      }
+
+      .diag__group h2 {
+        margin: 0 0 var(--space-2);
+        font-family: inherit;
+        font-size: 13px;
+        letter-spacing: var(--tracking-wide);
+        text-transform: uppercase;
+      }
+
+      .diag__group pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      /* Nálepka verdiktu: ať je na screenshotu na první pohled vidět,
+         jestli prohlížeč vybral proužek, nebo panel. */
+      .diag__verdict {
+        margin: var(--space-4) 0 0;
+        padding: var(--space-4);
+        border-radius: var(--radius-md);
+        background: var(--color-surface-sunk);
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      /* Zastávky, aby se ukazatel choval jako na homepage: hodnoty se
+         interpolují mezi nimi, takže bez nich by spadl do klidového
+         stavu a schoval se (data-static). */
+      .diag__stop {
+        display: grid;
+        place-items: center;
+        min-height: 80vh;
+        margin-top: var(--space-6);
+        border-top: 2px solid var(--color-text);
+        font-family: var(--font-display);
+        font-size: var(--text-2xl);
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="diag" id="main">
+      <h1>Diagnostika ukazatele tempa</h1>
+      <p>
+        Vyfoťte celou tuhle obrazovku (i s proužkem dole) a pošlete screenshot.
+        Rolujte dolů, ukazatel má tři zastávky.
+      </p>
+
+      <p class="diag__verdict" data-out="verdict">měřím…</p>
+
+      <div class="diag__group">
+        <h2>1 — Jakou šířku prohlížeč hlásí</h2>
+        <pre data-out="viewport"></pre>
+      </div>
+
+      <div class="diag__group">
+        <h2>2 — Které media query platí</h2>
+        <pre data-out="media"></pre>
+      </div>
+
+      <div class="diag__group">
+        <h2>3 — Kde ukazatel skutečně je</h2>
+        <pre data-out="meter"></pre>
+      </div>
+
+      <div class="diag__group">
+        <h2>4 — Co prohlížeč umí</h2>
+        <pre data-out="support"></pre>
+      </div>
+
+      <div class="diag__group">
+        <h2>5 — Prohlížeč</h2>
+        <pre data-out="ua"></pre>
+      </div>
+
+      <section class="diag__stop" data-zone-stop="calm">Zóna klidu</section>
+      <section class="diag__stop" data-zone-stop="move">Zóna rytmu</section>
+      <section class="diag__stop" data-zone-stop="burn">Zóna maxima</section>
+      <section class="diag__stop" data-zone-stop="rest">Restart</section>
+    </main>
+
+    <!-- ⚠️ MUSÍ zůstat přímým potomkem <body>, viz komentář v <head>. -->
+    <div data-heart-rate-meter></div>
+
+    <script type="module">
+      import { mountHeartRateMeter } from "./js/ui/heart-rate-meter.js";
+
+      mountHeartRateMeter();
+
+      const out = (key) => document.querySelector(`[data-out="${key}"]`);
+      const px = (value) => `${Math.round(value * 10) / 10}px`;
+
+      /* Dotazy se testují přes matchMedia, aby výpis říkal totéž, co
+         vybralo CSS — ne to, co bychom z čísel odvodili sami. */
+      const QUERIES = [
+        "(min-width: 480px)",
+        "(min-width: 768px)",
+        "(min-width: 1220px)",
+        "(min-width: 1280px)",
+        "(min-height: 560px)",
+        "(prefers-reduced-motion: reduce)",
+        // Kontrolní dotaz: kdyby ho prohlížeč neumí zpracovat, vrátí false
+        // i na širokém okně, a tím se pozná propast v podpoře range syntaxe.
+        "(width >= 1px)",
+      ];
+
+      function report() {
+        const meter = document.querySelector("[data-hrm]");
+        const vv = window.visualViewport;
+
+        out("viewport").textContent = [
+          `window.innerWidth      ${window.innerWidth}`,
+          `window.innerHeight     ${window.innerHeight}`,
+          `documentElement.client ${document.documentElement.clientWidth} × ${document.documentElement.clientHeight}`,
+          `visualViewport         ${vv ? `${Math.round(vv.width)} × ${Math.round(vv.height)}` : "není"}`,
+          `visualViewport.scale   ${vv ? vv.scale : "není"}`,
+          `screen                 ${screen.width} × ${screen.height}`,
+          `devicePixelRatio       ${window.devicePixelRatio}`,
+          `1rem =                 ${getComputedStyle(document.documentElement).fontSize}`,
+        ].join("\n");
+
+        out("media").textContent = QUERIES.map(
+          (q) => `${window.matchMedia(q).matches ? "ANO " : "ne  "} ${q}`
+        ).join("\n");
+
+        if (!meter) {
+          out("meter").textContent = "UKAZATEL V DOMU NENÍ — spadl import modulu.";
+          out("verdict").textContent = "CHYBA: ukazatel se vůbec nevykreslil.";
+          return;
+        }
+
+        const rect = meter.getBoundingClientRect();
+        const cs = getComputedStyle(meter);
+        const share = (rect.width * rect.height) / (window.innerWidth * window.innerHeight);
+
+        out("meter").textContent = [
+          `rozměr        ${px(rect.width)} × ${px(rect.height)}`,
+          `pozice        left ${px(rect.left)}  top ${px(rect.top)}`,
+          `podíl plochy  ${Math.round(share * 1000) / 10} % obrazovky`,
+          `display       ${cs.display}`,
+          `position      ${cs.position}`,
+          `inset         top ${cs.top}  right ${cs.right}  bottom ${cs.bottom}  left ${cs.left}`,
+          `width/height  ${cs.width} / ${cs.height}`,
+          `grid-cols     ${cs.gridTemplateColumns}`,
+          `grid-rows     ${cs.gridTemplateRows}`,
+          `pointerEvents ${cs.pointerEvents}`,
+          `data-static   ${meter.dataset.static ?? "(není)"}`,
+          `--meter-clear ${document.documentElement.style.getPropertyValue("--meter-clear") || "(nenastaveno)"}`,
+          `patička pad   ${(() => {
+            const f = document.querySelector(".footer");
+            return f ? getComputedStyle(f).paddingBottom : "(patička tu není)";
+          })()}`,
+        ].join("\n");
+
+        out("support").textContent = [
+          `backdrop-filter          ${CSS.supports("backdrop-filter", "blur(10px)")}`,
+          `-webkit-backdrop-filter  ${CSS.supports("-webkit-backdrop-filter", "blur(10px)")}`,
+          `color-mix()              ${CSS.supports("color", "color-mix(in srgb, red 50%, blue)")}`,
+          `range syntax v @media    ${window.matchMedia("(width >= 1px)").matches}`,
+          `CSS.registerProperty     ${typeof window.CSS?.registerProperty === "function"}`,
+          `aspect-ratio             ${CSS.supports("aspect-ratio", "1")}`,
+          `skutečný backdrop na ukazateli  ${
+            getComputedStyle(meter).webkitBackdropFilter || getComputedStyle(meter).backdropFilter || "(žádný)"
+          }`,
+        ].join("\n");
+
+        out("verdict").textContent =
+          cs.display === "grid"
+            ? `PROUŽEK (správně na telefonu) — ${px(rect.height)} vysoký, ${
+                Math.round(share * 1000) / 10
+              } % obrazovky`
+            : `PANEL (podoba pro desktop!) — ${px(rect.width)} × ${px(rect.height)}, ${
+                Math.round(share * 1000) / 10
+              } % obrazovky`;
+      }
+
+      out("ua").textContent = navigator.userAgent;
+
+      report();
+      // Rozvržení se na iOS mění, když se schová/objeví lišta prohlížeče
+      // a při zoomu, takže se výpis obnovuje.
+      window.addEventListener("resize", report, { passive: true });
+      window.addEventListener("scroll", report, { passive: true });
+      window.visualViewport?.addEventListener("resize", report, { passive: true });
+      window.addEventListener("load", report);
+    </script>
+  </body>
+</html>
