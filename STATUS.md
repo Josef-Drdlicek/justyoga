@@ -225,6 +225,32 @@ v těchhle třech bodech rozchází.
 7. Checklist nasazení v `CLAUDE.md` — canonical, 301, Contact Form 7.
 
 ## Log
+### 2026-09-10 — nový klíč Web3Forms; zjištěno, že apex už jede ostře
+
+**Formulář posílá pod novým klíčem.** `SITE_CONFIG.formAccessKey` je teď
+`ed4a29bc-041b-4118-8773-3bf517ecd8d8`, registrovaný na
+`justlenicka@gmail.com`. Klíč se váže na schránku, která zprávy přijímá,
+takže starý přestal platit. ⚠️ Web3Forms u nové registrace chce potvrzení
+schránky — dokud majitelka neklikne na aktivační mail, API vrátí
+`success: false` a návštěvník uvidí chybovou hlášku. **Neověřeno reálným
+odesláním.**
+
+**`justyoga.cz` už servíruje nový web, ne WordPress.** Zjištěno při tomhle
+nasazení: apex vrací `css/tokens.css`. V repu tomu odpovídají dvě
+nezacommitované změny (route `justyoga.cz/*` ve `wrangler.jsonc`, smazaný
+`web/robots.txt`) — přehození proběhlo v session, která se do logu
+nezapsala, takže **datum ani okolnosti nejsou známé**. Sekce „Kde je web
+publikovaný" byla podle toho opravená.
+
+**Co z checklistu ostrého nasazení pořád chybí** (změřeno na živém webu
+10. 9. 2026):
+- **Staré URL vracejí 404** — `justyoga.cz/rozvrh/` je pryč bez 301. Každá
+  stará adresa v Googlu i v odkazech vede na chybovou stránku. Tohle je
+  z otevřených položek nejdražší.
+- **`canonical` v HTML není** (`og:url` skládá až `js/seo.js`).
+- `robots.txt` je v pořádku: soubor v repu zmizel a apex vrací
+  Cloudflare managed verzi s `Allow: /`, takže indexaci nic nebrání.
+
 ### 2026-09-07 (4. dávka) — redesign schválen, publikováno na Cloudflare, spravený kontakt
 
 **Klientka redesign schválila.** `main` fast-forwardnut na `redesign-2026`
@@ -791,10 +817,12 @@ o parkování nebo lhůtě je horší než chybějící, protože podle něj čl
 
 ## Kde je web publikovaný
 
-Dvě adresy, obě zdarma, obě náhled — `justyoga.cz` pořád beží na starém
-WordPressu a nikam se nepřesměrovalo.
+**Ostrý web je `justyoga.cz`** — apex servíruje worker (route
+`justyoga.cz/*` ve `wrangler.jsonc`), ne starý WordPress. `www` route
+schválně nemá: origin ho 301 přesměruje na apex, odkud ho převezme worker.
 
-**1. Cloudflare Workers** — <https://just-yoga.drdlicek-josef.workers.dev/>
+**1. Cloudflare Workers** — ostrý <https://justyoga.cz/>, technická adresa
+<https://just-yoga.drdlicek-josef.workers.dev/>
 
 Konfigurace je `wrangler.jsonc` v kořeni repa (publikuje se podsložka
 `web/`, žádný build krok). Nasazení:
@@ -826,10 +854,10 @@ git subtree push --prefix web origin gh-pages
 v jednom příkazu s `git push`. Stav buildu:
 `gh api repos/Josef-Drdlicek/justyoga/pages --jq .status`.
 
-**⚠️ Než se cokoli z tohohle stane ostrým webem:** `web/robots.txt`
-s `Disallow: /` musí zmizet (dnes brání indexaci náhledů a je to správně),
-doplnit `canonical` + `og:url` a 301 ze starých URL. Celý checklist
-je v `CLAUDE.md`.
+**⚠️ Web je ostrý, ale checklist není dojetý.** `web/robots.txt`
+s `Disallow: /` už zmizel (apex vrací Cloudflare managed verzi s
+`Allow: /`). Pořád chybí **301 ze starých URL** — `justyoga.cz/rozvrh/`
+dnes vrací 404 — a `canonical` v HTML. Celý checklist je v `CLAUDE.md`.
 
 ## Jak si web prohlédnout (lokálně, bez nasazení)
 Soubory jsou v `web/`. Používá se čistý HTML + ES moduly JavaScriptu — **nejde jen otevřít dvojklikem** (prohlížeče blokují moduly na `file://`), je potřeba lokální server, např.:

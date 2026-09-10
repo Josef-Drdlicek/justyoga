@@ -14,5 +14,14 @@
   "compatibility_date": "2026-09-07",
   "assets": {
     "directory": "./web"
-  }
+  },
+  // Route na apex, ne custom domain: DNS záznam pro justyoga.cz už je
+  // proxovaný Cloudflarem, takže route předřadí worker před starý origin
+  // a nepotřebuje zápis do DNS (OAuth token na to nemá oprávnění).
+  //
+  // www.justyoga.cz route NEMÁ schválně — origin ho 301 přesměruje na apex,
+  // odkud ho převezme worker. Route na obou by web servírovala dvakrát.
+  "routes": [
+    { "pattern": "justyoga.cz/*", "zone_name": "justyoga.cz" }
+  ]
 }
