@@ -34,7 +34,7 @@ export const SITE_CONFIG = {
   // ale patří sem, aby nebyl zapsaný uprostřed logiky odesílání.
   // ⚠️ Váže se na schránku, která zprávy dostává. Změna schránky =
   // nový klíč, tenhle přestane platit.
-  formAccessKey: "0a76feb4-c609-4439-8bca-432f1ce38e58",
+  formAccessKey: "ed4a29bc-041b-4118-8773-3bf517ecd8d8",
   passValidityMonths: 6,
   social: {
     facebook: "https://www.facebook.com/justyogacz",
